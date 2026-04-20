@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DEPARTURZ — Professional Production & Post-Production Services. Film editing, cinematography, and visual storytelling based in Los Angeles.">
+  <meta name="author" content="DEPARTURZ">
+  <meta name="theme-color" content="#FF6D00">
+  <title>DEPARTURZ | Production & Post-Production</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cinematic.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PRELOADER — Dark screen, logo, loading bar
+       ═══════════════════════════════════════════════════════ -->
+  <div class="preloader" id="preloader">
+    <div class="preloader__logo">
+      <img src="assets/images/logo-white.png" alt="DEPARTURZ" class="preloader__logo-img">
+    </div>
+    <div class="preloader__bar">
+      <div class="preloader__bar-fill" id="preloaderBar"></div>
+    </div>
+  </div>
+
+  <!-- Film Grain Overlay -->
+  <canvas class="grain-canvas" id="grainCanvas"></canvas>
+
+  <!-- Particle Field Background -->
+  <canvas class="particle-canvas" id="particleCanvas"></canvas>
+
+  <!-- Navigation -->
+  <nav class="nav" id="mainNav">
+    <a href="index.html" class="nav__logo">
+      <img src="assets/images/logo-black.png" alt="DEPARTURZ" class="nav__logo-img">
+    </a>
+    <div class="nav__links" id="navLinks">
+      <a href="pages/work.html" class="nav__link">Work</a>
+      <a href="pages/services.html" class="nav__link">Services</a>
+      <a href="pages/about.html" class="nav__link">About</a>
+      <a href="pages/contact.html" class="nav__link">Contact</a>
+      <a href="#" class="nav__link nav__link--client">Client Portal</a>
+    </div>
+    <button class="nav__burger" id="navBurger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="pages/work.html" class="mobile-menu__link">Work</a>
+    <a href="pages/services.html" class="mobile-menu__link">Services</a>
+    <a href="pages/about.html" class="mobile-menu__link">About</a>
+    <a href="pages/contact.html" class="mobile-menu__link">Contact</a>
+    <a href="#" class="mobile-menu__link mobile-menu__link--client">Client Portal</a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CINEMATIC HERO — Pinned section with scroll-driven story
+       Phase 1: NY Image + Logo + Tagline
+       Phase 2: Image fades, video plays underneath
+       ═══════════════════════════════════════════════════════ -->
+  <section class="cinematic-hero" id="cinematicHero">
+    <div class="cinematic-hero__pin">
+
+      <!-- Layer 1: NY Video (underneath, plays on scroll) -->
+      <div class="cinematic-hero__video-layer" id="heroVideoLayer">
+        <video class="cinematic-hero__video" id="heroVideo" muted playsinline preload="auto" loop>
+          <source src="assets/videos/ny-mix.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <!-- Layer 2: NY Still Image (covers video initially) -->
+      <div class="cinematic-hero__image-layer" id="heroImageLayer">
+        <img src="assets/images/hero/ny-skyline.jpg" alt="New York City Skyline" class="cinematic-hero__image">
+      </div>
+
+      <!-- Layer 3: Dark overlay for branding -->
+      <div class="cinematic-hero__overlay" id="heroOverlay"></div>
+
+      <!-- Layer 4: Logo + Tagline (centered) -->
+      <div class="cinematic-hero__branding" id="heroBranding">
+        <img src="assets/images/logo-white.png" alt="DEPARTURZ" class="cinematic-hero__logo" id="heroLogo">
+        <h1 class="cinematic-hero__tagline" id="heroTagline">Where Your Story Takes Off.</h1>
+      </div>
+
+      <!-- Layer 5: Scroll indicator -->
+      <div class="cinematic-hero__scroll" id="heroScroll">
+        <span>Scroll</span>
+        <div class="cinematic-hero__scroll-line"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       WORK SECTION — Doomsdayent-style video grid
+       3 Categories: Drone Edits, Client's Content, Films/Series
+       ═══════════════════════════════════════════════════════ -->
+  <section class="work-showcase" id="workSection">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Selected Work</span>
+        <h2 class="section-title">Our Work</h2>
+      </div>
+
+      <!-- Drone Edits -->
+      <div class="work-category">
+        <h3 class="work-category__title">Drone Edits</h3>
+        <div class="work-video-grid">
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/new-york.jpg" alt="New York" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Drone Edit</span>
+              <h4 class="work-card__title">New York</h4>
+            </div>
+          </a>
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/ghana.jpg" alt="Ghana" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Drone Edit</span>
+              <h4 class="work-card__title">Ghana</h4>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Client's Content -->
+      <div class="work-category">
+        <h3 class="work-category__title">Client's Content</h3>
+        <div class="work-video-grid work-video-grid--3col">
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/besla.jpg" alt="BESLA" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Client Content</span>
+              <h4 class="work-card__title">Black Entertainment Sports and Law Association</h4>
+            </div>
+          </a>
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/dcrc.jpg" alt="DCRC" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Client Content</span>
+              <h4 class="work-card__title">Digital Civil Rights Coalition in Ghana</h4>
+            </div>
+          </a>
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/sapphire-golf.jpg" alt="Sapphire Golf" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Client Content</span>
+              <h4 class="work-card__title">Sapphire Golf Tournament in Houston</h4>
+            </div>
+          </a>
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/interview-amber.jpg" alt="Sapphire Golf - Amber" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Client Content</span>
+              <h4 class="work-card__title">A&amp;M x Sapphire Golf Tournament with Amber</h4>
+            </div>
+          </a>
+          <a href="pages/work.html" class="work-card">
+            <div class="work-card__media">
+              <img src="assets/images/work/interview-cami.jpg" alt="Sapphire Golf - Cami" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Client Content</span>
+              <h4 class="work-card__title">A&amp;M x Sapphire Golf Tournament with Cami</h4>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Films/Series -->
+      <div class="work-category">
+        <h3 class="work-category__title">Films / Series</h3>
+        <div class="work-video-grid">
+          <a href="pages/work.html" class="work-card work-card--featured">
+            <div class="work-card__media">
+              <img src="assets/images/work/boiling-point.jpg" alt="Boiling Point" class="work-card__thumb">
+              <div class="work-card__overlay">
+                <svg class="work-card__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="work-card__info">
+              <span class="work-card__cat">Film / Series</span>
+              <h4 class="work-card__title">Boiling Point</h4>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="work-showcase__cta">
+        <a href="pages/work.html" class="btn btn--outline">View All Work &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SERVICES — Below Work
+       ═══════════════════════════════════════════════════════ -->
+  <section class="services-preview" id="servicesPreview">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">What We Do</span>
+        <h2 class="section-title">Full-Service Production</h2>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <h3 class="service-card__title">Post-Production</h3>
+          <p class="service-card__desc">Multi-cam long form, narrative, and branded content editing with color grading and sound design.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3 class="service-card__title">Creative Production</h3>
+          <p class="service-card__desc">End-to-end production from concept development to final delivery for commercials, events, and branded content.</p>
+        </div>
+      </div>
+      <div class="services-preview__cta">
+        <a href="pages/services.html" class="btn btn--outline">Explore Services &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">How We Work</span>
+        <h2 class="section-title">Our Process</h2>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="process-step__number">01</div>
+          <h3 class="process-step__title">Consultation</h3>
+          <p class="process-step__desc">We discuss your vision, scope, timeline, and budget. You receive a detailed proposal and service agreement.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__number">02</div>
+          <h3 class="process-step__title">Production</h3>
+          <p class="process-step__desc">Whether on set as your DP or receiving footage for post, we ensure every frame meets professional standards.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__number">03</div>
+          <h3 class="process-step__title">Post-Production</h3>
+          <p class="process-step__desc">Assembly, rough cut, fine cut, color, audio, and final delivery. Two revision rounds included in every project.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step__number">04</div>
+          <h3 class="process-step__title">Delivery</h3>
+          <p class="process-step__desc">Final files delivered via our Client Portal in all required formats. Review, approve, and download securely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client Portal CTA -->
+  <section class="portal-cta" id="portalCta">
+    <div class="container">
+      <div class="portal-cta__content">
+        <span class="section-label">For Our Clients</span>
+        <h2 class="portal-cta__title">DEPARTURZ Client Portal</h2>
+        <p class="portal-cta__desc">Track your project, review cuts, download deliverables, and communicate with our team &mdash; all in one place.</p>
+        <a href="#" class="btn btn--primary">Access Client Portal</a>
+      </div>
+      <div class="portal-cta__visual">
+        <div class="portal-cta__mockup">
+          <div class="portal-cta__screen">
+            <div class="portal-mock__header">
+              <div class="portal-mock__dot"></div>
+              <div class="portal-mock__dot"></div>
+              <div class="portal-mock__dot"></div>
+            </div>
+            <div class="portal-mock__content">
+              <div class="portal-mock__sidebar">
+                <div class="portal-mock__nav-item portal-mock__nav-item--active"></div>
+                <div class="portal-mock__nav-item"></div>
+                <div class="portal-mock__nav-item"></div>
+                <div class="portal-mock__nav-item"></div>
+              </div>
+              <div class="portal-mock__main">
+                <div class="portal-mock__card"></div>
+                <div class="portal-mock__card portal-mock__card--wide"></div>
+                <div class="portal-mock__card"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="assets/images/logo-white.png" alt="DEPARTURZ" class="footer__logo">
+          <p class="footer__tagline">Professional Production & Post-Production</p>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__group-title">Navigate</h4>
+          <a href="pages/work.html" class="footer__link">Work</a>
+          <a href="pages/services.html" class="footer__link">Services</a>
+          <a href="pages/about.html" class="footer__link">About</a>
+          <a href="pages/contact.html" class="footer__link">Contact</a>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__group-title">Services</h4>
+          <a href="pages/services.html" class="footer__link">Post-Production</a>
+          <a href="pages/services.html" class="footer__link">Creative Production</a>
+          <a href="pages/contact.html" class="footer__link">Get a Quote</a>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__group-title">Connect</h4>
+          <a href="https://www.instagram.com/departurzinc" target="_blank" class="footer__link">Instagram</a>
+          <a href="https://www.youtube.com/@DEPARTURZ" target="_blank" class="footer__link">YouTube</a>
+          <a href="#" class="footer__link">LinkedIn</a>
+          <a href="#" class="footer__link">X (Twitter)</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copyright">&copy; 2026 DEPARTURZ. All rights reserved.</span>
+        <span class="footer__location">Los Angeles, California &middot; Houston, Texas</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/grain.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/cinematic.js"></script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DEPARTURZ Work — Drone edits, client content, and film/series production.">
+  <meta name="theme-color" content="#FF6D00">
+  <title>Work | DEPARTURZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+
+  <nav class="nav scrolled" id="mainNav">
+    <a href="../index.html" class="nav__logo"><img src="../assets/images/logo-black.png" alt="DEPARTURZ" class="nav__logo-img"></a>
+    <div class="nav__links">
+      <a href="work.html" class="nav__link nav__link--active">Work</a>
+      <a href="services.html" class="nav__link">Services</a>
+      <a href="about.html" class="nav__link">About</a>
+      <a href="contact.html" class="nav__link">Contact</a>
+      <a href="#" class="nav__link nav__link--client">Client Portal</a>
+    </div>
+    <button class="nav__burger" id="navBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="work.html" class="mobile-menu__link">Work</a>
+    <a href="services.html" class="mobile-menu__link">Services</a>
+    <a href="about.html" class="mobile-menu__link">About</a>
+    <a href="contact.html" class="mobile-menu__link">Contact</a>
+  </div>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="section-label">Selected Projects</span>
+      <h1 class="page-hero__title">Our Work</h1>
+      <p class="page-hero__subtitle">Drone edits, client content, and film/series production.</p>
+    </div>
+  </section>
+
+  <!-- Work Filter -->
+  <section class="work-filter">
+    <div class="container">
+      <div class="work-filter__tabs">
+        <button class="work-filter__tab work-filter__tab--active" data-filter="drone-edit">Drone Edits</button>
+        <button class="work-filter__tab" data-filter="client-content">Client's Content</button>
+        <button class="work-filter__tab" data-filter="film-series">Films / Series</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="work-page-grid">
+    <div class="container">
+
+      <!-- Drone Edits -->
+      <div class="work-card-page" data-category="drone-edit" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/new-york.jpg" alt="New York" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Drone Edit</span>
+          <h3 class="work-card-page__title">New York</h3>
+          <p class="work-card-page__desc">Cinematic drone footage set to music, capturing the energy and architecture of New York City.</p>
+        </div>
+      </div>
+
+      <div class="work-card-page" data-category="drone-edit" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/ghana.jpg" alt="Ghana" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Drone Edit</span>
+          <h3 class="work-card-page__title">Ghana</h3>
+          <p class="work-card-page__desc">Aerial drone cinematography showcasing the landscapes, culture, and people of Ghana.</p>
+        </div>
+      </div>
+
+      <!-- Client's Content -->
+      <div class="work-card-page" data-category="client-content" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/besla.jpg" alt="BESLA" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Client Content</span>
+          <h3 class="work-card-page__title">Black Entertainment Sports and Law Association</h3>
+          <p class="work-card-page__desc">Full event coverage and commercial video production for the BESLA Conference.</p>
+        </div>
+      </div>
+
+      <div class="work-card-page" data-category="client-content" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/dcrc.jpg" alt="DCRC" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Client Content</span>
+          <h3 class="work-card-page__title">Digital Civil Rights Coalition in Ghana</h3>
+          <p class="work-card-page__desc">Documentary-style commercial production covering the DCRC's mission and impact in Ghana.</p>
+        </div>
+      </div>
+
+      <div class="work-card-page" data-category="client-content" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/sapphire-golf.jpg" alt="Sapphire Golf" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Client Content</span>
+          <h3 class="work-card-page__title">Sapphire Golf Tournament in Houston</h3>
+          <p class="work-card-page__desc">Commercial video production capturing the energy and prestige of the Sapphire Golf Tournament.</p>
+        </div>
+      </div>
+
+      <div class="work-card-page" data-category="client-content" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/interview-amber.jpg" alt="Sapphire Golf - Amber" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Client Content</span>
+          <h3 class="work-card-page__title">A&amp;M x Sapphire Golf Tournament with Amber</h3>
+          <p class="work-card-page__desc">On-location interview with Amber at the A&amp;M x Sapphire Golf Tournament.</p>
+        </div>
+      </div>
+
+      <div class="work-card-page" data-category="client-content" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/interview-cami.jpg" alt="Sapphire Golf - Cami" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Client Content</span>
+          <h3 class="work-card-page__title">A&amp;M x Sapphire Golf Tournament with Cami</h3>
+          <p class="work-card-page__desc">On-location interview with Cami at the A&amp;M x Sapphire Golf Tournament.</p>
+        </div>
+      </div>
+
+      <!-- Films / Series -->
+      <div class="work-card-page" data-category="film-series" data-animate>
+        <div class="work-card-page__media">
+          <img src="../assets/images/work/boiling-point.jpg" alt="Boiling Point" class="work-card-page__thumb">
+          <div class="work-card-page__overlay">
+            <svg class="work-card-page__play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="work-card-page__info">
+          <span class="work-card-page__cat">Film / Series</span>
+          <h3 class="work-card-page__title">Boiling Point</h3>
+          <p class="work-card-page__desc">Narrative film production — full post-production including editing, color grading, and sound design.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="page-cta">
+    <div class="container">
+      <h2 class="page-cta__title">Have a Project in Mind?</h2>
+      <p class="page-cta__desc">Let's create something together.</p>
+      <a href="contact.html" class="btn btn--primary">Get in Touch</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom">
+        <span class="footer__copyright">&copy; 2026 DEPARTURZ. All rights reserved.</span>
+        <span class="footer__location">Los Angeles, California &middot; Houston, Texas</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    // Work filter functionality
+    (function() {
+      const tabs = document.querySelectorAll('.work-filter__tab');
+      const cards = document.querySelectorAll('.work-card-page');
+
+      function filterCards(filter) {
+        cards.forEach(function(card, i) {
+          if (card.getAttribute('data-category') === filter) {
+            card.style.display = '';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(function() {
+              card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 50 + (i * 60));
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          tabs.forEach(function(t) { t.classList.remove('work-filter__tab--active'); });
+          tab.classList.add('work-filter__tab--active');
+          filterCards(tab.getAttribute('data-filter'));
+        });
+      });
+
+      // Show first category on load
+      filterCards('drone-edit');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+/* ═══════════════════════════════════════════════════════════
+   DEPARTURZ — Cinematic Hero
+   GTA VI-inspired scroll storytelling
+   Flow: Preloader → NY Image + Logo → Video plays → Orange sections
+   ═══════════════════════════════════════════════════════════ */
+
+/* The full cinematic container — tall enough for scroll phases */
+.cinematic-hero {
+  position: relative;
+  z-index: 10;
+  /* Height = viewport + scroll distance for animation phases */
+  height: 400vh;
+}
+
+/* Pinned viewport — stays fixed while we scroll through phases */
+.cinematic-hero__pin {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Layer 1: Video (bottom layer) ─── */
+.cinematic-hero__video-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #0a0a0a;
+}
+
+.cinematic-hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cinematic-hero__video.playing {
+  opacity: 1;
+}
+
+/* ─── Layer 2: NY Still Image (covers video) ─── */
+.cinematic-hero__image-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.cinematic-hero__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  /* Subtle Ken Burns on load */
+  animation: heroImageDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes heroImageDrift {
+  0% { transform: scale(1.05) translate(0, 0); }
+  100% { transform: scale(1.1) translate(-1%, -0.5%); }
+}
+
+/* ─── Layer 3: Dark overlay for contrast ─── */
+.cinematic-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* ─── Layer 4: Branding (logo + tagline) ─── */
+.cinematic-hero__branding {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.cinematic-hero__logo {
+  width: clamp(200px, 30vw, 400px);
+  height: auto;
+  margin-bottom: 2rem;
+  filter: brightness(0) invert(1);
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.cinematic-hero__tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Sub removed — DEPARTURZ works everywhere, no location lock */
+
+/* ─── Layer 5: Scroll indicator ─── */
+.cinematic-hero__scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+}
+
+.cinematic-hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+/* ─── Video playing state — orange border glow ─── */
+.cinematic-hero__video-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  /* Vignette effect */
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
+}
+
+/* ─── Transition to orange — bottom gradient bleed ─── */
+.cinematic-hero__pin::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  z-index: 6;
+  background: linear-gradient(to top, var(--color-bg), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.cinematic-hero__pin.bleed-orange::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .cinematic-hero__logo {
+    width: clamp(150px, 50vw, 280px);
+  }
+
+  .cinematic-hero__tagline {
+    font-size: clamp(1.25rem, 6vw, 2rem);
+  }
+
+  .cinematic-hero {
+    height: 350vh;
+  }
+}
