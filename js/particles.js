@@ -70,10 +70,10 @@
         p.alpha += (p.baseAlpha - p.alpha) * 0.05;
       }
 
-      // Draw particle — WHITE on orange
+      // Draw particle — ORANGE on dark
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+      ctx.fillStyle = `rgba(255, 109, 0, ${p.alpha})`;
       ctx.fill();
     }
 
@@ -95,7 +95,7 @@
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.strokeStyle = `rgba(255, 109, 0, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }

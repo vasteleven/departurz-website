@@ -59,8 +59,8 @@
   height: 48px;
   flex-shrink: 0;
   padding: 10px;
-  background: var(--color-white);
-  color: var(--color-bg);
+  background: var(--color-orange);
+  color: var(--color-white);
   border-radius: 12px;
 }
 
@@ -172,8 +172,8 @@
 }
 
 .work-filter__tab--active {
-  background: var(--color-white);
-  color: var(--color-bg);
+  background: var(--color-orange);
+  color: var(--color-white);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -260,7 +260,7 @@
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-bg);
+  color: var(--color-orange);
   margin-bottom: 0.5rem;
 }
 
@@ -391,7 +391,7 @@
 }
 
 .contact-card__value a:hover {
-  color: var(--color-dark);
+  color: var(--color-orange);
 }
 
 /* Contact Form */
@@ -476,12 +476,12 @@
 }
 
 .page-cta .btn--primary {
-  background: var(--color-bg);
+  background: var(--color-orange);
   color: var(--color-white);
 }
 
 .page-cta .btn--primary:hover {
-  background: var(--color-bg-light);
+  background: var(--color-orange-light);
   color: var(--color-white);
 }
 

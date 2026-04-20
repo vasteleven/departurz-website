@@ -4,28 +4,33 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-  /* Orange Palette */
-  --color-bg: #FF6D00;
-  --color-bg-light: #FF8124;
-  --color-bg-dark: #E55E00;
-  --color-bg-deep: #CC5200;
-  --color-bg-glow: #FF9A40;
+  /* Dark Background */
+  --color-bg: #0A0A0A;
+  --color-bg-light: #1A1A1A;
+  --color-bg-dark: #000000;
+  --color-bg-deep: #050505;
+  --color-bg-glow: #222222;
+
+  /* Orange Accent */
+  --color-orange: #FF6D00;
+  --color-orange-light: #FF8124;
+  --color-orange-dark: #E55E00;
 
   /* Core Colors */
-  --color-dark: #0A0A0A;
+  --color-dark: #111111;
   --color-dark-soft: #1A1A1A;
   --color-dark-muted: #333333;
   --color-white: #ffffff;
 
-  /* Text on orange */
+  /* Text on dark */
   --color-text: #ffffff;
   --color-text-muted: rgba(255, 255, 255, 0.7);
   --color-text-subtle: rgba(255, 255, 255, 0.5);
-  --color-text-hover: #0A0A0A;
+  --color-text-hover: #FF6D00;
 
   /* Accent */
   --color-accent: #ffffff;
-  --color-accent-hover: #0A0A0A;
+  --color-accent-hover: #FF6D00;
 
   /* Fonts */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -68,7 +73,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-text-hover);
+  color: var(--color-orange);
 }
 
 img, video {
@@ -128,7 +133,7 @@ img, video {
 .preloader__bar-fill {
   height: 100%;
   width: 0%;
-  background: var(--color-bg);
+  background: var(--color-orange);
   transition: width 0.1s ease;
 }
 
@@ -178,7 +183,7 @@ img, video {
 }
 
 .nav.scrolled {
-  background: rgba(255, 109, 0, 0.9);
+  background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -207,21 +212,21 @@ img, video {
 
 .nav__link:hover {
   opacity: 1;
-  color: var(--color-dark);
+  color: var(--color-orange);
 }
 
 .nav__link--client {
   opacity: 1;
   padding: 0.5rem 1.25rem;
-  background: var(--color-white);
-  color: var(--color-bg);
+  background: var(--color-orange);
+  color: var(--color-white);
   border-radius: 50px;
   font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .nav__link--client:hover {
-  background: var(--color-dark);
+  background: var(--color-orange-light);
   color: var(--color-white);
 }
 
@@ -276,13 +281,13 @@ img, video {
 }
 
 .mobile-menu__link:hover {
-  color: var(--color-bg);
+  color: var(--color-orange);
 }
 
 .mobile-menu__link--client {
   font-size: 1rem;
   padding: 0.75rem 2rem;
-  background: var(--color-bg);
+  background: var(--color-orange);
   color: var(--color-white);
   border-radius: 50px;
   margin-top: 1rem;
@@ -398,12 +403,12 @@ img, video {
 }
 
 .btn--primary {
-  background: var(--color-white);
-  color: var(--color-bg);
+  background: var(--color-orange);
+  color: var(--color-white);
 }
 
 .btn--primary:hover {
-  background: var(--color-dark);
+  background: var(--color-orange-light);
   color: var(--color-white);
   transform: translateY(-2px);
 }
@@ -415,9 +420,9 @@ img, video {
 }
 
 .btn--outline:hover {
-  background: var(--color-dark);
+  background: var(--color-orange);
   color: var(--color-white);
-  border-color: var(--color-dark);
+  border-color: var(--color-orange);
   transform: translateY(-2px);
 }
 
@@ -535,7 +540,7 @@ img, video {
 }
 
 .work-showcase .section-label {
-  color: var(--color-bg);
+  color: var(--color-orange);
 }
 
 .work-showcase .section-title {
@@ -552,8 +557,8 @@ img, video {
 }
 
 .work-showcase .btn--outline:hover {
-  background: var(--color-bg);
-  border-color: var(--color-bg);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
   color: var(--color-white);
 }
 
@@ -568,7 +573,7 @@ img, video {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-bg);
+  color: var(--color-orange);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -669,7 +674,7 @@ img, video {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-bg);
+  color: var(--color-orange);
   margin-bottom: 0.25rem;
 }
 
@@ -761,12 +766,12 @@ img, video {
 }
 
 .portal-cta .btn--primary {
-  background: var(--color-bg);
+  background: var(--color-orange);
   color: var(--color-white);
 }
 
 .portal-cta .btn--primary:hover {
-  background: var(--color-bg-light);
+  background: var(--color-orange-light);
   color: var(--color-white);
 }
 
@@ -822,7 +827,7 @@ img, video {
 }
 
 .portal-mock__nav-item--active {
-  background: var(--color-bg);
+  background: var(--color-orange);
 }
 
 .portal-mock__main {
@@ -901,7 +906,7 @@ img, video {
 }
 
 .footer__link:hover {
-  color: var(--color-bg);
+  color: var(--color-orange);
 }
 
 .footer__bottom {
