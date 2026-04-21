@@ -84,16 +84,16 @@
   masterTL.to('.cinematic-hero__video', { opacity: 1, duration: 0.15 }, 0.2);
   masterTL.to(overlay, { opacity: 0.25, duration: 0.15 }, 0.2);
 
-  // ── 50-65%: Video fades to orange, LOGO APPEARS ──
+  // ── 50-65%: Video fades to black, LOGO APPEARS ──
   masterTL.to(overlay, {
-    opacity: 0.9,
-    background: 'rgba(255, 109, 0, 0.95)',
+    opacity: 0.95,
+    background: 'rgba(10, 10, 10, 1)',
     duration: 0.15,
   }, 0.5);
 
   masterTL.to(videoLayer, { opacity: 0, duration: 0.15 }, 0.55);
 
-  // Logo scales up and fades in on the orange
+  // Logo scales up and fades in on black
   masterTL.to(logo, {
     opacity: 1,
     scale: 1,
