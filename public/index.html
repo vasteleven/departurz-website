@@ -1,0 +1,1771 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>DEPARTURZ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="DEPARTURZ. Web design, production, and post-production from Los Angeles and Houston.">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Big+Shoulders+Display:wght@800;900&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a pinned grey stage holds the wire smiley. Scrolling turns it to face you, it winks,
+   and the camera flies through the open eye into a night-black page read like a departures board. */
+:root{
+  --stage:#DDDCD7;      /* the recording's warm grey */
+  --stage-ink:#2A2B2E;
+  --stage-mute:#6C6A65;
+  --stage-line:#B9B7B0;
+  --night:#0A0A0A;      /* departurz.com theme color */
+  --night-2:#111214;
+  --paper:#ECEBE6;
+  --mute:#8D8C88;
+  --rule:#232427;
+  --sky:#3FB8EE;        /* glow, top of the object */
+  --violet:#9E80F2;     /* glow, bottom of the object */
+  --f-display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--night);color:var(--paper);font-family:var(--f-body);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin:0}
+h1,h2,h3{text-wrap:balance;margin:0}
+h2{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(44px,7vw,96px);line-height:.88;letter-spacing:.005em}
+
+.mark{font-family:var(--f-display);font-weight:900;font-size:24px;letter-spacing:.06em;line-height:1}
+
+/* ---------- pinned stage ---------- */
+/* scroll budget: 330vh for the smiley, 100vh per picture in the chain (8), 50vh resting on the wordmark */
+.intro{position:relative;height:1280vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--stage);isolation:isolate}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;touch-action:pan-y}
+.inside{position:absolute;inset:0;z-index:1;display:grid;place-items:center;text-align:center;
+  background:
+    radial-gradient(70% 55% at 50% 42%, rgba(63,184,238,.16), transparent 70%),
+    radial-gradient(55% 45% at 50% 78%, rgba(158,128,242,.16), transparent 72%),
+    var(--night);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0px, transparent 0px);
+  mask-image:radial-gradient(circle at 50% 50%, #000 0px, transparent 0px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.inside canvas.chain,.inside canvas.blobs{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.inside-copy{position:relative;z-index:2;display:grid;gap:clamp(14px,2vw,26px);justify-items:center;width:100%;max-width:none;opacity:0;transform:scale(.94);will-change:opacity,transform}
+.wordmark{margin:0;width:min(86vw,1180px);max-width:100%;aspect-ratio:1280 / 107;background:var(--night);-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap;font-size:16px;line-height:1}
+.tagline{margin:0;font-family:var(--f-mono);font-size:clamp(11px,1.05vw,14px);letter-spacing:.32em;text-transform:uppercase;color:var(--paper);background:var(--night);padding:10px calc(20px - .32em) 10px 20px;border-radius:999px}
+.tagline b{font-weight:500;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.video .wordmark{background:var(--paper)}
+/* the logo: its rays turn slowly around the D */
+.logo-mark{position:relative;width:clamp(84px,11vw,180px);aspect-ratio:1 / 1;max-width:100%}
+.logo-mark span{position:absolute;inset:0;background:var(--night);
+  -webkit-mask:url(logo/rays.png) center / contain no-repeat;mask:url(logo/rays.png) center / contain no-repeat}
+.logo-mark .d{-webkit-mask-image:url(logo/d.png);mask-image:url(logo/d.png)}
+.logo-mark .rays{animation:raySpin 48s linear infinite}
+@keyframes raySpin{to{transform:rotate(360deg)}}
+.video .logo-mark span{background:var(--paper)}
+@media (prefers-reduced-motion: reduce){ .logo-mark .rays{animation:none} }
+.video .tagline{background:none}
+.hud{position:absolute;inset:auto 0 0;z-index:3;pointer-events:none;color:var(--stage-ink);
+  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:16px;
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;line-height:1.7}
+.hud .hint{justify-self:center;text-align:center;opacity:.75;transition:opacity .6s}
+.hud .hint.done{opacity:0}
+.hud .cue{justify-self:end;display:flex;align-items:center;gap:10px}
+.hud .cue i{display:block;width:1px;height:34px;background:currentColor;transform-origin:top;animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0)}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-width:620px){ .hud{grid-template-columns:1fr auto} .hud .hint{grid-column:1 / -1;grid-row:1} }
+/* loader: ten pieces of kit flash by at the smiley's size, slow down, and settle on the director's chair */
+.loader{position:absolute;inset:0;z-index:4;display:grid;place-items:center;pointer-events:none}
+.loader img{grid-area:1 / 1;width:var(--ball, 50vmin);height:var(--ball, 50vmin);max-width:none;object-fit:contain;opacity:0;transform:scale(1)}
+.loader img.on{opacity:1}
+.loader.out img.on{opacity:0;transform:scale(.94);transition:opacity .6s ease, transform .8s cubic-bezier(.2,.7,.2,1)}
+.loader.gone{display:none}
+.stage.loading .hud,.stage.loading .hint{opacity:0}
+.stage .hud{transition:opacity .6s}
+.stage.nogl canvas,.stage.nogl .hint,.stage.nogl .loader{display:none}
+.stage.nogl .inside{-webkit-mask-image:none;mask-image:none;background:var(--stage)}
+.stage.nogl .inside-copy{opacity:1;transform:none}
+.intro.nogl{height:100vh}
+
+.more{display:inline-flex;align-items:center;gap:12px;margin-top:36px;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;padding-block:8px;border-bottom:1px solid var(--rule);transition:border-color .25s,color .25s}
+.more:hover{color:var(--sky);border-color:var(--sky)}
+.btn{justify-self:start;display:inline-flex;align-items:center;gap:14px;padding:16px 22px;border:1px solid var(--paper);color:var(--paper);text-decoration:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;transition:background-color .25s,color .25s}
+.btn:hover{background:var(--paper);color:var(--night)}
+
+/* ---------- studio: the services as a room you can click around ---------- */
+.studio{background:var(--stage);color:var(--stage-ink);padding-top:clamp(14px,2vw,26px)}
+.studio-head{margin-bottom:clamp(10px,1.3vw,16px);text-align:center}
+.studio h2{color:var(--stage-ink);font-size:clamp(22px,2.4vw,34px);line-height:1;letter-spacing:.04em}
+/* the room always runs the full width of the page, edge to edge */
+.room-wrap{width:100%;max-width:none;margin-inline:0}
+.room{position:relative;width:100%;max-width:100%;aspect-ratio:2736 / 1536;overflow:hidden;background:#2B2C30}
+.room-img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.room canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+/* on phones the studio stays big enough to tap; swipe across it */
+@media (max-width:820px){
+  .room-wrap{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .room-wrap::-webkit-scrollbar{display:none}
+  .room{width:max(820px, calc(66svh*16/9));max-width:none}
+}
+.spot{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);
+  margin:0;padding:0;border:0;background:transparent;border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.spot:focus-visible{outline:2px solid var(--sky);outline-offset:4px}
+.spot .tag{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,6px);opacity:0;white-space:nowrap;pointer-events:none;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:var(--night);color:var(--paper);
+  padding:8px 12px;border-radius:999px;transition:opacity .25s,transform .25s}
+.spot:hover .tag,.spot:focus-visible .tag,.spot[aria-expanded="true"] .tag{opacity:1;transform:translate(-50%,0)}
+.spot .tag{bottom:auto;top:calc(100% + 8px)}
+#spot-tv .tag,#spot-camera .tag,#spot-sound .tag,#spot-chair .tag{top:auto;bottom:calc(100% + 8px)}
+@media (hover:none){ .spot .tag{opacity:1;transform:translate(-50%,0);font-size:9.5px;padding:6px 9px;letter-spacing:.1em} .spot.quiet .tag{opacity:0} }
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.svc-panel{position:fixed;z-index:40;right:max(16px, env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  width:min(520px, calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;color:#0E1116;background:#FFFFFF;
+  border:1px solid #E7E4DC;border-radius:18px;box-shadow:0 30px 70px -24px rgba(10,12,20,.55);animation:panelIn .4s cubic-bezier(.2,.7,.2,1)}
+.svc-panel[data-side="left"]{right:auto;left:max(16px, env(safe-area-inset-left, 0px))}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.svc-panel .eyebrow{color:#6B6A65}
+.svc-panel h3{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:46px;line-height:.9;outline:none;margin:0;color:#0E1116}
+.svc-panel p{margin:0;color:#4A4A47;line-height:1.55}
+.svc-panel ul{margin:0;padding:0;list-style:none}
+.svc-close{position:absolute;z-index:3;top:10px;right:10px;font:inherit;font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:#4A4A47;background:#F4F1EC;border:1px solid #E7E4DC;border-radius:999px;padding:7px 11px;cursor:pointer}
+.svc-close:hover{color:#0E1116;background:#ECE9E2}
+.svc-close:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.svc-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;padding:4px 24px 22px}
+.svc-actions .more{margin-top:0;color:#0E1116;border-color:#D5D2CA}
+.svc-actions .more:hover{color:#1C7FB0;border-color:#1C7FB0}
+.svc-panel .btn{border-color:transparent;background:#0E1116;color:#FFFFFF;font-weight:500}
+.svc-panel .btn:hover{background:linear-gradient(90deg,var(--sky),var(--violet));color:#0A0A0A}
+.mono{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+
+/* Web Design: a browser window */
+.win-bar{display:flex;align-items:center;gap:7px;padding:12px 16px;background:#F4F1EC;border-bottom:1px solid #E7E4DC;border-radius:18px 18px 0 0}
+.win-bar i{width:11px;height:11px;border-radius:50%}
+.win-bar i:nth-child(1){background:#FF5F57}.win-bar i:nth-child(2){background:#FEBC2E}.win-bar i:nth-child(3){background:#28C840}
+.win-url{margin-left:14px;margin-right:64px;flex:1;min-width:0;padding:6px 12px;border-radius:8px;background:#FFFFFF;border:1px solid #E7E4DC;color:#8A8984;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-url b{color:#0E1116;font-weight:500}
+.win-body{padding:22px 24px 18px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.caret{display:inline-block;width:.08em;height:.78em;margin-left:.06em;background:#1C7FB0;vertical-align:-.04em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.code-list{display:grid;gap:2px;padding:12px 0;border-radius:12px;background:#FBFAF7;border:1px solid #E7E4DC;font-size:15px}
+.code-list li{display:grid;grid-template-columns:40px 1fr;align-items:baseline;padding:3px 14px 3px 0}
+.code-list .ln{font-family:var(--f-mono);font-size:11px;color:#B3B1AA;text-align:right;padding-right:14px}
+.code-list li:hover{background:#F2F8FC}
+.code-list .tag-o{font-family:var(--f-mono);font-size:12px;color:#6B4FD8}
+.code-list .tag-o b{color:#1C7FB0;font-weight:400}
+
+/* Production: through the camera's viewfinder */
+.vf{position:relative;margin:12px;padding:46px 30px 24px;border-radius:12px;background:radial-gradient(120% 90% at 50% 35%, #FFFFFF, #F6F4EF 75%);border:1px solid #EFECE5}
+.vf::before,.vf::after{content:"";position:absolute;inset:10px;pointer-events:none;border:2px solid transparent;
+  border-image:linear-gradient(#0E1116,#0E1116) 1;
+  -webkit-mask:linear-gradient(#000 0 0) top left / 22px 22px no-repeat, linear-gradient(#000 0 0) top right / 22px 22px no-repeat,
+               linear-gradient(#000 0 0) bottom left / 22px 22px no-repeat, linear-gradient(#000 0 0) bottom right / 22px 22px no-repeat;
+          mask:linear-gradient(#000 0 0) top left / 22px 22px no-repeat, linear-gradient(#000 0 0) top right / 22px 22px no-repeat,
+               linear-gradient(#000 0 0) bottom left / 22px 22px no-repeat, linear-gradient(#000 0 0) bottom right / 22px 22px no-repeat}
+.vf::after{inset:auto;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:0;opacity:.14;
+  -webkit-mask:none;mask:none;background:linear-gradient(#0E1116,#0E1116) center / 1px 100% no-repeat, linear-gradient(#0E1116,#0E1116) center / 100% 1px no-repeat}
+.vf-hud{position:absolute;left:20px;right:20px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#0E1116}
+.vf-top{top:18px;right:92px}.vf-bot{bottom:14px;color:#6B6A65}
+.rec{display:inline-flex;align-items:center;gap:7px;color:#D92D2D}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#FF3B3B;box-shadow:0 0 8px rgba(255,59,59,.6);animation:blink 1.2s steps(1) infinite}
+.vf-body{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding-block:6px 30px}
+.shots{display:grid;border-top:1px solid #E7E4DC}
+.shots li{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:baseline;padding:9px 6px 9px 0;border-bottom:1px solid #EFECE5}
+.shots .sh{color:#1C7FB0}
+.meters{display:inline-flex;align-items:flex-end;gap:3px;height:14px}
+.meters i{display:block;width:4px;height:100%;background:linear-gradient(0deg,#28C840 0 60%,#FEBC2E 60% 85%,#FF5F57 85%);transform-origin:bottom;animation:meter .9s ease-in-out infinite alternate}
+.meters i:nth-child(2){animation-duration:.7s}.meters i:nth-child(3){animation-duration:1.1s}.meters i:nth-child(4){animation-duration:.8s}
+@keyframes meter{from{transform:scaleY(.25)}to{transform:scaleY(.95)}}
+
+/* Post-Production: an edit timeline */
+.nle-viewer{padding:24px 24px 18px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;border-bottom:1px solid #E7E4DC}
+.nle-tc{display:flex;justify-content:space-between;gap:12px;margin-right:70px;color:#6B6A65}
+.nle-tc b{color:#0E1116;font-weight:500;font-variant-numeric:tabular-nums}
+.timeline{position:relative;padding:12px 16px 18px;overflow:hidden;background:#F7F5F0}
+.ruler{display:flex;justify-content:space-between;margin-left:46px;padding-bottom:8px;color:#9C9A94;border-bottom:1px solid #E2DFD7;font-size:9.5px}
+.tracks{display:grid;gap:6px;padding-top:10px}
+.tracks li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;align-items:center}
+.tracks .tk{color:#8A8984;font-size:10px}
+.clip{display:block;width:max-content;max-width:calc(100% - var(--o));margin-left:var(--o);padding:7px 11px;border-radius:6px;font-size:13.5px;line-height:1.25;color:#0B0B0C;font-weight:500;
+  background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.clip.v{--c:linear-gradient(180deg,#9DDAF6,#6CC7F1)}
+.clip.c{--c:linear-gradient(180deg,#CFC2FA,#B4A0F6)}
+.clip.a{--c:linear-gradient(180deg,#A6E6C7,#7DD6AC)}
+.clip.d{--c:linear-gradient(90deg,#7CCBF1,#B4A0F6)}
+.playhead{position:absolute;top:8px;bottom:10px;left:70px;width:2px;background:#E5484D;box-shadow:0 0 6px rgba(229,72,77,.45);animation:play 7s linear infinite;pointer-events:none}
+.playhead::before{content:"";position:absolute;top:-2px;left:-5px;border:6px solid transparent;border-top:8px solid #E5484D}
+@keyframes play{from{left:62px}to{left:calc(100% - 18px)}}
+
+/* Sound: a two-deck DJ controller */
+.decks{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:48px 22px 16px;margin-right:0;background:#F4F1EC;border-bottom:1px solid #E7E4DC;border-radius:18px 18px 0 0}
+.deck{display:flex;align-items:center;gap:12px;min-width:0}
+.deck.right{flex-direction:row-reverse;text-align:right}
+.vinyl{position:relative;flex:none;width:74px;height:74px;border-radius:50%;
+  background:repeating-radial-gradient(circle at 50% 50%, #1A1B1E 0 2px, #26282C 2px 3px);box-shadow:0 0 0 3px #0E1116, 0 8px 18px -8px rgba(0,0,0,.5);animation:spin 1.9s linear infinite}
+.deck.right .vinyl{animation-duration:1.85s}
+.vinyl i{position:absolute;inset:30%;border-radius:50%;background:conic-gradient(from 0deg,var(--sky),var(--violet),var(--sky))}
+.vinyl i::after{content:"";position:absolute;inset:42%;border-radius:50%;background:#F4F1EC}
+.vinyl::after{content:"";position:absolute;top:8px;left:50%;width:2px;height:16px;margin-left:-1px;background:#FFFFFF;opacity:.7;border-radius:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.deck-read{display:grid;gap:3px;color:#4A4A47;min-width:0}
+.deck-read b{color:#0E1116;font-weight:500}
+.deck-read .bpm{color:#0E1116;font-size:15px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.mixer{display:grid;justify-items:center;gap:6px;color:#8A8984}
+.fader{position:relative;width:64px;height:8px;border-radius:99px;background:#E2DFD7}
+.fader i{position:absolute;top:50%;left:50%;width:16px;height:22px;margin:-11px 0 0 -8px;border-radius:4px;background:#0E1116;animation:xfade 4s ease-in-out infinite alternate}
+@keyframes xfade{from{transform:translateX(-18px)}to{transform:translateX(18px)}}
+.wave{position:relative;height:46px;background:#0E1116;overflow:hidden}
+.wave svg{position:absolute;top:0;left:0;height:100%;width:200%;animation:wave 9s linear infinite}
+.wave-head{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#FFFFFF;box-shadow:0 0 8px rgba(255,255,255,.6)}
+@keyframes wave{to{transform:translateX(-50%)}}
+.snd-body{padding:20px 24px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.crate{margin:0;padding:0;list-style:none;border:1px solid #E7E4DC;border-radius:12px;overflow:hidden}
+.crate li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 14px 9px 12px;border-bottom:1px solid #EFECE5}
+.crate li:last-child{border-bottom:0}
+.crate li:nth-child(odd){background:#FBFAF7}
+.crate li:hover{background:#F2F8FC}
+.crate .no{color:#1C7FB0}
+.crate li:nth-child(n+4) .no{color:#6B4FD8}
+.crate .key{color:#8A8984;font-size:10px}
+
+/* The director's chair: a slate with two takes, About and Contact */
+.slate{padding:12px 12px 12px}
+.clap{position:relative;height:42px;border-radius:10px 10px 3px 3px;overflow:hidden;background:#0E1116;transform-origin:10px 100%}
+.clap i{position:absolute;inset:0;background:repeating-linear-gradient(118deg,#0E1116 0 24px,var(--sky) 24px 48px,#0E1116 48px 72px,var(--violet) 72px 96px)}
+.svc-panel:not([hidden]) .clap{animation:clap .8s cubic-bezier(.3,1.5,.45,1) .12s both}
+@keyframes clap{0%{transform:rotate(-16deg)}100%{transform:rotate(0)}}
+.slate-body{margin-top:4px;padding:22px 20px 20px;border-radius:3px 3px 12px 12px;background:#0E1116;color:#F2F0EB;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.svc-panel .slate-body .eyebrow{color:#9C9A94}
+.svc-panel .slate-body h3{color:#F2F0EB}
+.svc-panel .slate-body p{color:#BEBCB6}
+.slate-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid rgba(242,240,235,.22);border-radius:8px}
+.slate-grid span{display:grid;gap:5px;padding:9px 10px;border-right:1px solid rgba(242,240,235,.18);color:#8A8984;font-size:9px;min-width:0}
+.slate-grid span:last-child{border-right:0}
+.slate-grid b{font-family:var(--f-display);font-weight:600;font-size:16px;letter-spacing:.02em;text-transform:none;color:#F2F0EB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.takes{display:grid;gap:10px;margin-top:2px}
+.take{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 14px;padding:14px 16px 14px 18px;border-radius:12px;background:#F2F0EB;color:#0E1116;text-decoration:none;transition:transform .2s,background-color .2s}
+.take .mono{color:#1C7FB0}
+.take b{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:30px;line-height:.95}
+.take small{grid-column:1;font-size:13px;color:#4A4A47}
+.take i{grid-column:2;grid-row:1 / span 3;font-style:normal;font-size:24px;transition:transform .2s}
+.take:hover{background:linear-gradient(90deg,var(--sky),var(--violet));transform:translateY(-2px)}
+.take:hover .mono,.take:hover small{color:#0E1116}
+.take:hover i{transform:translateX(4px)}
+.take:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.svc-panel[data-svc="chair"] .svc-actions{display:none}
+@media (max-width:640px){ .slate-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .slate-grid span:nth-child(2){border-right:0} .slate-grid span:nth-child(-n+2){border-bottom:1px solid rgba(242,240,235,.18)} .take b{font-size:26px} }
+@media (prefers-reduced-motion: reduce){ .clap{animation:none!important} }
+
+@media (max-width:640px){
+  .vinyl{width:56px;height:56px}
+  .decks{padding:46px 16px 12px;gap:10px}
+  .fader{width:44px}
+  .deck-read .bpm{font-size:13px}
+}
+@media (prefers-reduced-motion: reduce){ .vinyl,.fader i,.wave svg{animation:none} }
+
+@media (max-width:640px){
+  .svc-panel,.svc-panel[data-side="left"]{left:max(10px, env(safe-area-inset-left, 0px));right:max(10px, env(safe-area-inset-right, 0px));width:auto;bottom:calc(10px + env(safe-area-inset-bottom, 0px));max-height:72vh}
+  .svc-panel h3{font-size:38px}
+  .vf{padding:44px 20px 22px}
+  .vf-top{right:84px}
+  .vf-top span:nth-child(3){display:none}
+  .vf-top,.vf-bot{white-space:nowrap}
+  .nle-tc span{display:none}
+  .nle-tc{margin-right:76px}
+  .shots li{grid-template-columns:62px 1fr}
+}
+@media (prefers-reduced-motion: reduce){ .svc-panel{animation:none} .caret,.rec::before,.meters i,.playhead{animation:none} }
+
+/* ---------- the assistant, in the same shape as the one on juliewenah.com: a round face in the corner that opens a white chat ---------- */
+.dzbub{position:fixed;z-index:180;right:calc(28px + env(safe-area-inset-right, 0px));bottom:calc(28px + env(safe-area-inset-bottom, 0px));width:66px;height:66px;padding:0;border:0;border-radius:50%;
+  display:grid;place-items:center;background:#0A0A0A;cursor:pointer;overflow:visible;
+  box-shadow:0 14px 34px -12px rgba(10,12,20,.55),0 0 0 3px #FFFFFF;
+  transform:translateY(160%) rotate(25deg);opacity:0;transition:transform .7s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+.dzbub.on{transform:none;opacity:1}
+.dzbub.on:hover{transform:translateY(-3px) rotate(-6deg)}
+.dzbub .face{position:absolute;inset:0;width:100%;height:100%;max-width:none;border-radius:50%;transition:opacity .12s}
+.dzbub .wink,.dzbub.winking .face:not(.wink){opacity:0}
+.dzbub.winking .wink{opacity:1}
+.dzbub .x{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;color:#FFFFFF;font-size:18.4px;background:#0A0A0A;opacity:0;transition:opacity .2s}
+.dzbub[aria-expanded="true"] .x{opacity:1}
+.dzbub .ping{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#3FD07F;border:2.5px solid #FFFFFF}
+.dzbub .ping::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:2px solid #3FD07F;animation:ping 2s ease-out infinite}
+.dzbub[aria-expanded="true"] .ping{display:none}
+@keyframes ping{from{transform:scale(.8);opacity:.9}to{transform:scale(2);opacity:0}}
+.dzbub:focus-visible{outline:2px solid var(--sky);outline-offset:5px}
+
+.dzpan{position:fixed;z-index:181;right:calc(28px + env(safe-area-inset-right, 0px));bottom:calc(110px + env(safe-area-inset-bottom, 0px));width:min(376px, calc(100vw - 32px));
+  height:min(560px, calc(100vh - 140px));display:flex;flex-direction:column;background:#FFFFFF;color:#0E1116;border:1px solid #E7E4DC;border-radius:18px;
+  box-shadow:0 30px 70px -24px rgba(10,12,20,.55);overflow:hidden;transform-origin:bottom right;animation:panIn .35s cubic-bezier(.2,.8,.2,1);
+  font-family:var(--f-body)}
+.dzpan[hidden]{display:none}
+@keyframes panIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+.dzhead{display:flex;align-items:center;gap:10px;padding:14px 16px}
+.dzhead img{width:34px;height:34px;border-radius:50%;flex:none}
+.dzhead b{flex:1;font-size:15px;font-weight:600}
+.dzhead button{font:inherit;font-size:12.5px;color:#5B6068;background:transparent;border:1px solid #E7E4DC;border-radius:999px;padding:6px 12px;cursor:pointer}
+.dzhead button:hover{color:#0E1116;border-color:#0E1116}
+.dznote{margin:0;padding:10px 16px;background:#FBFAF7;color:#5B6068;font-size:11px;line-height:1.5;border-block:1px solid #EFECE5}
+.dznote a{color:#0E1116}
+.dzlog{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.dzmsg{max-width:86%;padding:11px 14px;font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.dzmsg.you{align-self:flex-end;background:linear-gradient(135deg,#1C7FB0,#6B4FD8);color:#FFFFFF;border-radius:14px 14px 4px 14px}
+.dzmsg.it{align-self:flex-start;background:#F4F1EC;color:#0E1116;border-radius:14px 14px 14px 4px}
+.dzmsg.it a{color:#0E1116;font-weight:600}
+.dzdots{display:inline-flex;gap:4px;padding:3px 0}
+.dzdots i{width:6px;height:6px;border-radius:50%;background:#9C9A94;animation:dzdot 1s infinite ease-in-out}
+.dzdots i:nth-child(2){animation-delay:.15s}.dzdots i:nth-child(3){animation-delay:.3s}
+@keyframes dzdot{0%,80%,100%{opacity:.3;transform:none}40%{opacity:1;transform:translateY(-3px)}}
+.dzchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.dzchips button{font:inherit;font-size:13px;line-height:1.25;color:#0E1116;background:#FFFFFF;border:1px solid #E7E4DC;border-radius:999px;padding:8px 12px;cursor:pointer;text-align:left}
+.dzchips button:hover{border-color:#0E1116}
+.dzform{display:flex;gap:8px;padding:12px;border-top:1px solid #EFECE5}
+.dzform input{flex:1;min-width:0;font:inherit;font-size:15px;color:#0E1116;background:#FBFAF7;border:1px solid #E7E4DC;border-radius:999px;padding:10px 16px;outline:none}
+.dzform input:focus{border-color:#1C7FB0}
+.dzform button{flex:none;width:42px;height:42px;border:0;border-radius:50%;background:#0E1116;color:#FFFFFF;font-size:17px;cursor:pointer}
+.dzform button:disabled{opacity:.45;cursor:default}
+.dzpan :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+@media (max-width:640px){
+  .dzbub{right:calc(16px + env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));width:60px;height:60px}
+  .dzpan{left:max(10px, env(safe-area-inset-left, 0px));right:max(10px, env(safe-area-inset-right, 0px));width:auto;bottom:calc(88px + env(safe-area-inset-bottom, 0px));height:min(560px, calc(100svh - 110px))}
+}
+@media (prefers-reduced-motion: reduce){ .dzbub,.dzpan{transition:none;animation:none} .dzbub .ping::after,.dzdots i{animation:none} }
+
+/* ---------- footer ---------- */
+footer{padding-block:36px calc(36px + env(safe-area-inset-bottom, 0px));border-top:1px solid var(--rule)}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+.foot .mark{text-decoration:none;font-size:22px;display:inline-flex;align-items:center;gap:12px}
+/* phones: room under the footer so the chat bubble never sits on its links */
+@media (max-width:640px){ footer{padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px))} }
+.wm{display:block;flex:none;height:.68em;aspect-ratio:1280 / 107;background:currentColor;-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
+.foot-logo{width:30px;height:30px;flex:none;background:var(--paper);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.foot-links a{text-decoration:none;padding-block:6px}
+.foot-links a:hover{color:var(--sky)}
+.legal{margin:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+
+/* ---------- video render mode (used only to export the MP4) ---------- */
+.video .hud,.video main > section:not(.intro),.video footer{display:none}
+.video .intro{height:100vh}
+
+@media (prefers-reduced-motion: reduce){
+  .hud .cue i{animation:none}
+  .more,.btn{transition:none}
+}
+</style>
+
+
+<main>
+  <section class="intro" id="intro" aria-label="Introduction">
+    <div class="stage loading" id="stage">
+      <div class="inside" id="inside">
+        <canvas class="blobs" id="blobs" aria-hidden="true"></canvas>
+        <canvas class="chain" id="chain" aria-hidden="true"></canvas>
+        <div class="inside-copy" id="insideCopy">
+          <div class="logo-mark" aria-hidden="true"><span class="rays"></span><span class="d"></span></div>
+          <h1 class="wordmark">DEPARTURZ</h1>
+          <p class="tagline">Where your story <b>takes off.</b></p>
+        </div>
+      </div>
+      <div class="loader" id="loader" aria-hidden="true">
+        <img src="loader/01-camera.webp" alt="" decoding="async">
+        <img src="loader/02-slate.webp" alt="" decoding="async">
+        <img src="loader/03-laptop.webp" alt="" decoding="async">
+        <img src="loader/04-boom.webp" alt="" decoding="async">
+        <img src="loader/05-turntable.webp" alt="" decoding="async">
+        <img src="loader/06-drone.webp" alt="" decoding="async">
+        <img src="loader/07-tv.webp" alt="" decoding="async">
+        <img src="loader/08-light.webp" alt="" decoding="async">
+        <img src="loader/09-overhead.webp" alt="" decoding="async">
+        <img src="loader/10-chair.webp" alt="" decoding="async">
+      </div>
+      <canvas id="gl" aria-label="A smiley face made of tangled wire. It lights up blue and violet under your cursor, winks as you scroll, and the view travels through its open eye." role="img"></canvas>
+      <div class="hud" id="hud">
+        <div>Web Design · Production · Post-Production<br>Los Angeles · Houston</div>
+        <div class="hint" id="hint">Hover to light it up</div>
+        <div class="cue">Scroll <i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="studio" id="studio" aria-labelledby="studioTitle">
+    <div class="wrap studio-head">
+      <h2 id="studioTitle">In the studio</h2>
+    </div>
+    <div class="room-wrap" id="roomWrap">
+      <div class="room" id="room">
+        <img class="room-img" id="roomImg" src="studio/studio-2000.webp" srcset="studio/studio-1200.webp 1200w, studio/studio-2000.webp 2000w, studio/studio-2736.webp 2736w" sizes="(max-width: 820px) 1200px, 100vw" width="2736" height="1536" alt="The DEPARTURZ studio: an editing desk with a laptop and two monitors, a large screen on the wall, a camera on a tripod in front of a white backdrop, and a DJ and sound corner." decoding="async">
+        <canvas id="roomFx" aria-hidden="true"></canvas>
+        <button class="spot" type="button" id="spot-tv" data-svc="post-production" data-group="edit" data-eyebrow="Service · The screen" aria-controls="svcPanel" aria-expanded="false" style="--x:34.72;--y:16.15;--w:14.18;--h:24.87"><span class="tag">Post-Production</span><span class="sr">Open Post-Production details</span></button>
+        <button class="spot quiet" type="button" id="spot-monitors" data-svc="post-production" data-group="edit" data-eyebrow="Service · The editing desk" aria-controls="svcPanel" aria-expanded="false" style="--x:51.9;--y:41.67;--w:12.06;--h:19.53"><span class="tag">Post-Production</span><span class="sr">Open Post-Production details</span></button>
+        <button class="spot" type="button" id="spot-laptop" data-svc="web-design" data-group="web" data-eyebrow="Service · The laptop" aria-controls="svcPanel" aria-expanded="false" style="--x:41.67;--y:44.92;--w:6.21;--h:9.11"><span class="tag">Web Design</span><span class="sr">Open Web Design details</span></button>
+        <button class="spot" type="button" id="spot-camera" data-svc="production" data-group="camera" data-eyebrow="Service · The camera" aria-controls="svcPanel" aria-expanded="false" style="--x:72.73;--y:27.15;--w:6.25;--h:20.96"><span class="tag">Production</span><span class="sr">Open Production details</span></button>
+        <button class="spot" type="button" id="spot-sound" data-svc="sound" data-group="sound" aria-controls="svcPanel" aria-expanded="false" style="--x:19.99;--y:68.55;--w:13.01;--h:27.67"><span class="tag">Sound</span><span class="sr">Open Sound details</span></button>
+        <button class="spot" type="button" id="spot-chair" data-svc="chair" data-group="chair" data-eyebrow="The director's chair" aria-controls="svcPanel" aria-expanded="false" style="--x:82.2;--y:50.4;--w:6.4;--h:19.9"><span class="tag">About · Contact</span><span class="sr">Open About and Contact</span></button>
+      </div>
+    </div>
+    <aside class="svc-panel" id="svcPanel" role="dialog" aria-modal="false" aria-labelledby="svcTitle-web-design" hidden>
+      <button class="svc-close" type="button" id="svcClose">Close</button>
+
+      <article data-svc="web-design" hidden>
+        <div class="win-bar" aria-hidden="true"><i></i><i></i><i></i><span class="win-url mono">https://<b>yourbrand</b>.com</span></div>
+        <div class="win-body">
+          <p class="eyebrow" data-default="Service · The laptop">Service · The laptop</p>
+          <h3 tabindex="-1" data-type="Web Design">Web Design</h3>
+          <p>Websites designed and built in-house, from a one-page portfolio to a full organization site. Clean layouts, motion where it helps, and pages that are easy to keep current.</p>
+          <ul class="code-list">
+            <li><span class="ln">01</span><span><span class="tag-o" aria-hidden="true">&lt;<b>design</b>&gt; </span>Design and build</span></li>
+            <li><span class="ln">02</span><span><span class="tag-o" aria-hidden="true">&lt;<b>layout</b>&gt; </span>Phones, tablets, and desktop</span></li>
+            <li><span class="ln">03</span><span><span class="tag-o" aria-hidden="true">&lt;<b>motion</b>&gt; </span>Motion and interactive moments</span></li>
+            <li><span class="ln">04</span><span><span class="tag-o" aria-hidden="true">&lt;<b>launch</b>&gt; </span>Launch support and updates</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article data-svc="production" hidden>
+        <div class="vf">
+          <div class="vf-hud vf-top mono" aria-hidden="true"><span class="rec">Rec</span><span>TC <b class="tc" data-tc>01:00:00:00</b></span><span>4K · 24.000</span></div>
+          <div class="vf-body">
+            <p class="eyebrow" data-default="Service · The camera">Service · The camera</p>
+            <h3 tabindex="-1">Production</h3>
+            <p>End-to-end production from concept development to final delivery for films, documentaries, commercials, events, and branded content.</p>
+            <ul class="shots">
+              <li><span class="sh mono">Shot 01</span><span>Concept and planning</span></li>
+              <li><span class="sh mono">Shot 02</span><span>Cinematography, on set as your DP</span></li>
+              <li><span class="sh mono">Shot 03</span><span>Films and documentaries, start to finish</span></li>
+              <li><span class="sh mono">Shot 04</span><span>Drone aerials by an FAA Part 107 certified pilot</span></li>
+              <li><span class="sh mono">Shot 05</span><span>Event and branded content coverage</span></li>
+              <li><span class="sh mono">Shot 06</span><span>On-set sound with boom and lav mics</span></li>
+            </ul>
+          </div>
+          <div class="vf-hud vf-bot mono" aria-hidden="true"><span>ISO 800 · 5600K · T2.8 · 180°</span><span class="meters"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+      </article>
+
+      <article data-svc="post-production" hidden>
+        <div class="nle-viewer">
+          <div class="nle-tc mono" aria-hidden="true"><span>Timeline · Your Film v3</span><b data-tc>01:00:00:00</b></div>
+          <p class="eyebrow" data-default="Service · The screen">Service · The screen</p>
+          <h3 tabindex="-1">Post-Production</h3>
+          <p>Editing for films, documentaries, multi-cam long form, and branded content, with color grading and sound design.</p>
+        </div>
+        <div class="timeline">
+          <div class="ruler mono" aria-hidden="true"><span>00:00</span><span>00:30</span><span>01:00</span><span>01:30</span><span>02:00</span></div>
+          <ul class="tracks">
+            <li><span class="tk mono" aria-hidden="true">V2</span><span class="clip c" style="--o:6%">Color grading</span></li>
+            <li><span class="tk mono" aria-hidden="true">V1</span><span class="clip v" style="--o:0%">Editing, from assembly to fine cut</span></li>
+            <li><span class="tk mono" aria-hidden="true">A1</span><span class="clip a" style="--o:10%">Sound design and mix</span></li>
+            <li><span class="tk mono" aria-hidden="true">REV</span><span class="clip v" style="--o:26%">Two revision rounds included</span></li>
+            <li><span class="tk mono" aria-hidden="true">OUT</span><span class="clip d" style="--o:38%">Delivered through the Client Portal</span></li>
+          </ul>
+          <span class="playhead" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <article data-svc="sound" hidden>
+        <div class="decks" aria-hidden="true">
+          <div class="deck"><span class="vinyl"><i></i></span><span class="deck-read mono"><b>Deck A</b><span class="bpm" data-bpm="124">124.0</span> BPM</span></div>
+          <div class="mixer"><span class="fader"><i></i></span><span class="mono">X-fade</span></div>
+          <div class="deck right"><span class="vinyl"><i></i></span><span class="deck-read mono"><b>Deck B</b><span class="bpm" data-bpm="126">126.0</span> BPM</span></div>
+        </div>
+        <div class="wave" aria-hidden="true" data-wave><span class="wave-head"></span></div>
+        <div class="snd-body">
+          <p class="eyebrow">Service · The sound corner</p>
+          <h3 tabindex="-1">Sound</h3>
+          <p>Music, audio and sound engineering. DJs who get booked for events, and sound engineers who make sure every room, set and recording sounds right.</p>
+          <ol class="crate">
+            <li><span class="no mono" aria-hidden="true">A1</span><span>DJs for events</span><span class="key mono" aria-hidden="true">8A</span></li>
+            <li><span class="no mono" aria-hidden="true">A2</span><span>Live sound for events</span><span class="key mono" aria-hidden="true">9A</span></li>
+            <li><span class="no mono" aria-hidden="true">A3</span><span>On-set sound with boom and lav mics</span><span class="key mono" aria-hidden="true">4B</span></li>
+            <li><span class="no mono" aria-hidden="true">B1</span><span>Recording, mixing and mastering</span><span class="key mono" aria-hidden="true">11A</span></li>
+            <li><span class="no mono" aria-hidden="true">B2</span><span>Sound design for film and video</span><span class="key mono" aria-hidden="true">2B</span></li>
+          </ol>
+        </div>
+      </article>
+
+      <article data-svc="chair" hidden>
+        <div class="slate">
+          <div class="clap" aria-hidden="true"><i></i></div>
+          <div class="slate-body">
+            <p class="eyebrow" data-default="The director's chair">The director's chair</p>
+            <h3 tabindex="-1" data-type="Take a seat.">Take a seat.</h3>
+            <p>Meet the people behind the camera, or tell us what you're making.</p>
+            <div class="slate-grid mono" aria-hidden="true"><span>Prod.<b>DEPARTURZ</b></span><span>Director<b>Nate</b></span><span>Studio<b>LA · HTX</b></span><span>Take<b>01</b></span></div>
+            <div class="takes">
+              <a class="take" href="about.html"><span class="mono">Scene 01</span><b>About</b><small>Our story, the founder and the crew</small><i aria-hidden="true">→</i></a>
+              <a class="take" href="contact.html"><span class="mono">Scene 02</span><b>Contact</b><small>Start a project, find both studios</small><i aria-hidden="true">→</i></a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="svc-actions">
+        <a class="btn" id="svcFiles" href="work.html">Open the files →</a>
+        <a class="more" id="svcStart" href="contact.html">Start a project</a>
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+<button class="dzbub" id="dzbub" type="button" aria-expanded="false" aria-controls="dzpan" aria-label="Ask about DEPARTURZ" hidden>
+  <img class="face" src="assistant/head-open.webp" alt="" width="256" height="256" decoding="async">
+  <img class="face wink" src="assistant/head-wink.webp" alt="" width="256" height="256" decoding="async">
+  <span class="x" aria-hidden="true">▾</span>
+  <span class="ping" aria-hidden="true"></span>
+</button>
+<div class="dzpan" id="dzpan" role="dialog" aria-modal="false" aria-label="Ask about DEPARTURZ" hidden>
+  <div class="dzhead">
+    <img src="assistant/head-wink.webp" alt="" width="256" height="256" decoding="async">
+    <b>Ask DEPARTURZ</b>
+    <button type="button" id="dzend">Close</button>
+  </div>
+  <p class="dznote">You're talking to an assistant, not to Nate. It answers from what this site says about DEPARTURZ and will tell you when it doesn't know. Anything that needs Nate goes <a href="contact.html" target="_blank" rel="noopener">straight to him</a>.</p>
+  <div class="dzlog" id="dzlog" aria-live="polite">
+    <div class="dzchips" id="dzchips">
+      <button type="button">Which service do I need?</button>
+      <button type="button">Do you shoot documentaries?</button>
+      <button type="button">Can you build my website?</button>
+      <button type="button">How do I get a quote?</button>
+    </div>
+  </div>
+  <form class="dzform" id="dzform">
+    <input id="dzin" type="text" autocomplete="off" maxlength="500" placeholder="Ask anything" aria-label="Ask about DEPARTURZ">
+    <button type="submit" id="dzsend" aria-label="Send">↑</button>
+  </form>
+</div>
+
+
+<footer>
+  <div class="wrap foot">
+    <a class="mark" href="./"><span class="foot-logo" aria-hidden="true"></span><span class="wm">DEPARTURZ</span></a>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="portal.html">Client Portal</a>
+      <a href="#terms" data-legal="terms">Terms of Use</a>
+      <a href="#privacy" data-legal="privacy">Privacy</a>
+    </nav>
+    <p class="legal">© 2026 DEPARTURZ · Los Angeles · Houston</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+const VIDEO = !!window.__VIDEO_MODE;
+if (VIDEO) document.documentElement.classList.add('video');
+const RM = !VIDEO && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const intro = document.getElementById('intro');
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('gl');
+const inside = document.getElementById('inside');
+const insideCopy = document.getElementById('insideCopy');
+const hud = document.getElementById('hud');
+const hint = document.getElementById('hint');
+let lastDive = 0;
+const canHover = window.matchMedia('(hover: hover)').matches;
+hint.textContent = canHover ? 'Hover to light it up' : 'Tap or drag to light it up';
+
+function noGL(){ stage.classList.add('nogl'); intro.classList.add('nogl'); stage.classList.remove('loading'); }
+if (typeof THREE === 'undefined') { noGL(); return; }
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'high-performance', preserveDrawingBuffer: VIDEO});
+} catch(e) { noGL(); return; }
+renderer.setClearColor(0x000000, 0);
+
+/* ---------- helpers ---------- */
+const clamp = (x,a,b) => Math.min(b, Math.max(a, x));
+const sm = (a,b,x) => { const t = clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); };
+const approach = (v, target, step) => v < target ? Math.min(target, v + step) : Math.max(target, v - step);
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- the wire: thousands of looping random-walk strands packed into a sphere ---------- */
+const small = Math.min(window.innerWidth, window.innerHeight) < 700;
+const STRANDS = VIDEO ? 6800 : (small ? 2700 : 5200);
+const STEPS = 120;
+function buildWire(strands, steps){
+  const R = mulberry32(20261021);
+  const N = strands*steps;
+  const pos = new Float32Array(N*3), rnd = new Float32Array(N*2), shade = new Float32Array(N), along = new Float32Array(N);
+  const idx = new Uint32Array(strands*(steps-1)*2);
+  const STEP = 0.015;
+  let k = 0, ii = 0;
+  for (let s = 0; s < strands; s++){
+    const shell = R() < 0.74;
+    const u = R()*2-1, th = R()*Math.PI*2, sq = Math.sqrt(1-u*u);
+    const r = shell ? 0.86 + 0.12*R() : 0.86*Math.cbrt(R());
+    let px = sq*Math.cos(th)*r, py = sq*Math.sin(th)*r, pz = u*r;
+    let vx = R()*2-1, vy = R()*2-1, vz = R()*2-1, l = Math.hypot(vx,vy,vz)||1; vx/=l; vy/=l; vz/=l;
+    const curl = 15 + R()*17;
+    let wx = R()*2-1, wy = R()*2-1, wz = R()*2-1; l = Math.hypot(wx,wy,wz)||1; wx*=curl/l; wy*=curl/l; wz*=curl/l;
+    const sRand = R(), sh = Math.pow(R(), 1.9);
+    for (let i = 0; i < steps; i++){
+      pos[k*3] = px; pos[k*3+1] = py; pos[k*3+2] = pz;
+      rnd[k*2] = sRand; rnd[k*2+1] = R(); shade[k] = sh; along[k] = i/(steps-1);
+      if (i < steps-1){ idx[ii++] = k; idx[ii++] = k+1; }
+      k++;
+      wx += (R()*2-1)*3; wy += (R()*2-1)*3; wz += (R()*2-1)*3;
+      const wl = Math.hypot(wx,wy,wz)||1; wx*=curl/wl; wy*=curl/wl; wz*=curl/wl;
+      vx += (wy*vz - wz*vy)*STEP; vy += (wz*vx - wx*vz)*STEP; vz += (wx*vy - wy*vx)*STEP;
+      const rr = Math.hypot(px,py,pz)||1e-6;
+      if (rr > 0.965){ const p2 = (rr-0.965)*10; vx -= px/rr*p2; vy -= py/rr*p2; vz -= pz/rr*p2; }
+      if (shell && rr < 0.84){ const p2 = (0.84-rr)*10; vx += px/rr*p2; vy += py/rr*p2; vz += pz/rr*p2; }
+      l = Math.hypot(vx,vy,vz)||1; vx/=l; vy/=l; vz/=l;
+      px += vx*STEP; py += vy*STEP; pz += vz*STEP;
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  g.setAttribute('aRnd', new THREE.BufferAttribute(rnd,2));
+  g.setAttribute('aShade', new THREE.BufferAttribute(shade,1));
+  g.setAttribute('aAlong', new THREE.BufferAttribute(along,1));
+  g.setIndex(new THREE.BufferAttribute(idx,1));
+  return g;
+}
+
+/* Face features are cut straight through the ball, like the slit in the original:
+   two eyes and a crescent smile. The right eye morphs from an open oval into a closed "wink" arc. */
+const FACE = `
+uniform float uWink;
+uniform float uBlink;
+uniform float uSlit;
+float sdEllipse(vec2 p, vec2 r){ float k0 = length(p/r); float k1 = length(p/(r*r)); return k0*(k0-1.0)/max(k1,1e-4); }
+float sdArc(vec2 p, vec2 sc, float ra, float rb){ p.x = abs(p.x); return ((sc.y*p.x > sc.x*p.y) ? length(p - sc*ra) : abs(length(p) - ra)) - rb; }
+float faceSDF(vec2 p){
+  float ry = 0.155*(1.0 - 0.9*uBlink);
+  float dL  = sdEllipse(p - vec2(-0.33, 0.26), vec2(0.095, ry)*(1.0 + uSlit));
+  float dRo = sdEllipse(p - vec2( 0.33, 0.26), vec2(0.095, ry));
+  float dRw = sdArc(p - vec2(0.33, 0.17), vec2(0.906, 0.423), 0.15, 0.03);
+  float dR  = mix(dRo, dRw, uWink);
+  float m1 = length(p - vec2(0.0, 0.02)) - 0.56;
+  float m2 = length(p - vec2(0.0, 0.15)) - 0.58;
+  float dM = max(m1, -m2);
+  return min(min(dL, dR), dM);
+}`;
+
+const vert = `
+uniform float uTime;
+uniform float uSoakR;
+uniform float uSoakA;
+uniform vec3 uSoakC;
+uniform vec4 uEye;
+uniform vec4 uTrail[TRAIL];
+attribute vec2 aRnd;
+attribute float aShade;
+attribute float aAlong;
+varying float vAlong;
+varying float vGlow;
+varying float vShade;
+varying float vLit;
+varying float vY;
+varying vec2 vRnd;
+varying vec3 vPos;
+void main(){
+  vec3 p = position;
+  float local = 0.0;
+  for (int i = 0; i < TRAIL; i++) {
+    vec4 t = uTrail[i];
+    local = max(local, t.w*(1.0 - smoothstep(0.0, 0.68, distance(p, t.xyz))));
+  }
+  local = max(local, uEye.w*(1.0 - smoothstep(0.0, 0.8, distance(p, uEye.xyz))));
+  float soak = 1.0 - smoothstep(uSoakR - 0.7, uSoakR, distance(p, uSoakC));
+  soak *= smoothstep(aRnd.x*0.85, aRnd.x*0.85 + 0.15, uSoakA);
+  float patchy = 0.55 + 0.45*sin(3.1*p.x + 1.7*sin(2.3*p.y) + uTime*0.25)*sin(2.9*p.z + 2.6*p.y + 0.7);
+  soak *= smoothstep(0.02, 0.62, patchy);
+  float g = max(local, soak*(0.42 + 0.55*aRnd.y));
+  g *= 0.86 + 0.14*sin(uTime*2.1 + aRnd.y*37.0 + aRnd.x*11.0);
+  vGlow = g;
+  vec3 wn = normalize((modelMatrix*vec4(p, 0.0)).xyz + 1e-5);
+  vLit = max(dot(wn, normalize(vec3(-0.45, 0.7, 0.55))), 0.0);
+  vShade = aShade; vPos = p; vY = p.y; vRnd = aRnd; vAlong = aAlong;
+  gl_Position = projectionMatrix*modelViewMatrix*vec4(p, 1.0);
+}`;
+
+const frag = `
+varying float vGlow;
+varying float vShade;
+varying float vLit;
+varying vec3 vPos;
+varying float vY;
+varying vec2 vRnd;
+varying float vAlong;
+uniform vec3 uFocus;
+uniform float uDraw;
+${FACE}
+/* the cuts are cones aimed at a point in front of the face, so from the front they read as clean openings */
+vec2 coneXY(vec3 P){ float den = max(uFocus.z - P.z, 0.03); return uFocus.xy + (P.xy - uFocus.xy)*(uFocus.z/den); }
+void main(){
+  float dr = pow(uDraw, 2.2)*1.3;
+  if (uDraw < 1.0 && (vRnd.x > dr || vAlong > (dr - vRnd.x)*3.4)) discard;
+  if (faceSDF(coneXY(vPos)) < 0.0) discard;
+  vec3 base = vec3(0.075) + vec3(0.62)*vShade*(0.3 + 0.7*vLit) + vec3(0.06)*vLit;
+  float g = clamp(vGlow, 0.0, 1.2);
+  float vioZone = 1.0 - smoothstep(-0.62, 0.15, vY);
+  float vio = mix(vioZone, step(fract(vRnd.x*5.3), vioZone*1.15), 0.6);
+  float k = fract(vRnd.x*7.9);
+  vec3 deep = mix(vec3(0.10, 0.50, 0.86), vec3(0.40, 0.26, 0.84), vio);
+  vec3 mid  = mix(vec3(0.38, 0.85, 1.00), vec3(0.68, 0.56, 1.00), vio);
+  vec3 hot  = mix(vec3(0.86, 0.97, 1.00), vec3(0.97, 0.90, 1.00), vio);
+  float gg = g*mix(0.72, 1.15, k);
+  vec3 gc = mix(deep, mid, smoothstep(0.25, 0.6, gg));
+  gc = mix(gc, hot, smoothstep(0.62, 1.0, gg));
+  float spark = smoothstep(0.42, 0.8, g)*step(0.7, fract(vRnd.y*9.1 + vRnd.x*2.3));
+  gc = mix(gc, hot, spark*0.85);
+  float fleck = step(0.88, fract(vRnd.x*13.7 + vRnd.y*3.1))*smoothstep(0.55, 0.95, g);
+  gc = mix(gc, vec3(0.86, 0.48, 0.86), fleck*0.75);
+  float on = smoothstep(0.05, 0.2, g)*step(0.46, fract(vRnd.x*3.7));
+  gl_FragColor = vec4(mix(base, gc, on), 1.0);
+}`;
+
+const TRAIL = 20;
+const trail = Array.from({length:TRAIL}, () => new THREE.Vector4(0,0,0,0));
+const uniforms = {
+  uTime:{value:0}, uWink:{value:0}, uBlink:{value:0}, uSlit:{value:0},
+  uSoakR:{value:0}, uSoakA:{value:0}, uSoakC:{value:new THREE.Vector3(0,0.4,0.9)},
+  uEye:{value:new THREE.Vector4(0.33,0.32,0.888,0)}, uTrail:{value:trail}, uFocus:{value:new THREE.Vector3(0,0,7.5)}, uDraw:{value:1}
+};
+const material = new THREE.ShaderMaterial({ uniforms, vertexShader:vert, fragmentShader:frag, defines:{TRAIL} });
+const wire = new THREE.LineSegments(buildWire(STRANDS, STEPS), material);
+wire.frustumCulled = false;
+
+const scene = new THREE.Scene();
+const group = new THREE.Group();
+group.add(wire); scene.add(group);
+const camera = new THREE.PerspectiveCamera(30, 1, 0.005, 60);
+const TAN = Math.tan(THREE.MathUtils.degToRad(15));
+let W = 1, H = 1, baseDist = 7.5;
+
+function resize(){
+  W = stage.clientWidth || window.innerWidth; H = stage.clientHeight || window.innerHeight;
+  renderer.setPixelRatio(VIDEO ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setSize(W, H, false);
+  camera.aspect = W/H; camera.updateProjectionMatrix();
+  const aspect = W/H;
+  const fill = VIDEO ? 0.6 : 0.5;
+  baseDist = Math.max(1/(TAN*fill), 1/(TAN*aspect*0.82));
+  stage.style.setProperty('--ball', (H/(baseDist*TAN)).toFixed(1) + 'px');
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* ---------- pointer ---------- */
+const pointer = { x:0, y:0, inside:false, touchUntil:0 };
+let dragging = false, lastDragX = 0, dragVel = 0;
+const raycaster = new THREE.Raycaster();
+const inv = new THREE.Matrix4();
+const ro = new THREE.Vector3(), rd = new THREE.Vector3();
+function setPointer(e){
+  const r = canvas.getBoundingClientRect();
+  pointer.x = ((e.clientX - r.left)/r.width)*2 - 1;
+  pointer.y = -((e.clientY - r.top)/r.height)*2 + 1;
+}
+function hitObject(nx, ny){
+  raycaster.setFromCamera({x:nx, y:ny}, camera);
+  inv.copy(group.matrixWorld).invert();
+  ro.copy(raycaster.ray.origin).applyMatrix4(inv);
+  rd.copy(raycaster.ray.direction).transformDirection(inv);
+  const b = ro.dot(rd), c = ro.lengthSq() - 1.0, disc = b*b - c;
+  if (disc < 0) return null;
+  const t = -b - Math.sqrt(disc);
+  if (t < 0) return null;
+  return ro.clone().addScaledVector(rd, t);
+}
+if (!VIDEO){
+  canvas.addEventListener('pointermove', e => {
+    setPointer(e); pointer.inside = true;
+    if (e.pointerType !== 'mouse') pointer.touchUntil = performance.now() + 900;
+    if (dragging){ const dx = e.clientX - lastDragX; lastDragX = e.clientX; userOff += dx*0.008; dragVel = dx*0.008*60; }
+  });
+  canvas.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') pointer.inside = false; });
+  canvas.addEventListener('pointerdown', e => {
+    setPointer(e); pointer.inside = true;
+    if (e.pointerType !== 'mouse') pointer.touchUntil = performance.now() + 1400;
+    if (hitObject(pointer.x, pointer.y)){ dragging = true; lastDragX = e.clientX; dragVel = 0; try{ canvas.setPointerCapture(e.pointerId); }catch(_){} }
+  });
+  const end = e => { if (dragging){ dragging = false; offVel = clamp(dragVel, -8, 8); } if (e.pointerType !== 'mouse') pointer.touchUntil = performance.now() + 700; };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+}
+
+/* ---------- state ---------- */
+const SPIN_T = 3.6, HOLD_T = 3.0, CYCLE = SPIN_T + HOLD_T;
+function autoAngle(c){ const n = Math.floor(c/CYCLE), s = clamp((c - n*CYCLE)/SPIN_T, 0, 1); const e = s < 0.5 ? 4*s*s*s : 1 - Math.pow(-2*s + 2, 3)/2; return (n + e)*Math.PI*2; }
+const nearestTurn = a => Math.round(a/(Math.PI*2))*Math.PI*2;
+let rotY = 0, autoClock = SPIN_T + 0.6, userOff = 0, offVel = 0, tiltX = 0;
+let soakA = 0, soakR = 0, trailIdx = 0, trailClock = 0;
+const lastPush = new THREE.Vector3(9,9,9);
+let blinkStart = -10, nextBlink = 2.6, hinted = false;
+const EYE = new THREE.Vector3(-0.33, 0.26, 0.9075);       // the open eye: where the camera goes
+const WINK_EYE = new THREE.Vector3(0.33, 0.32, 0.888);
+const eyeW = new THREE.Vector3(), centerW = new THREE.Vector3(), tmp = new THREE.Vector3();
+
+/* p = scroll progress through the pinned intro (0..1). opts.pointer = {x,y} in NDC, or null. */
+function step(dt, t, p, opts){
+  const face = sm(0.02, 0.16, p);
+  const wink = RM ? (p > 0.25 ? 1 : 0) : sm(0.19, 0.31, p);
+  const dive = RM ? 0 : sm(0.38, 0.985, p);
+
+  // a 360 spin, a beat facing front, repeat. Dragging adds a spin of its own that settles back to the front.
+  if (opts.autoClock != null) autoClock = opts.autoClock;
+  else if (!RM) autoClock += dt*(1 - face);
+  if (!dragging){
+    userOff += offVel*dt;
+    offVel *= Math.exp(-dt*2.2);
+    if (Math.abs(offVel) < 0.35) userOff += (nearestTurn(userOff) - userOff)*(1 - Math.exp(-dt*1.6));
+  }
+  const A = autoAngle(autoClock) + userOff;
+  rotY = A + (nearestTurn(A) - A)*face;
+  const pt = opts.pointer;
+  const wantTilt = pt ? clamp(pt.y, -1, 1)*0.14 : 0;
+  tiltX += (wantTilt*(1-dive) - tiltX)*(1 - Math.exp(-dt*3));
+  group.rotation.set(tiltX, rotY, -0.085*wink);
+  group.updateMatrixWorld(true);
+
+  // blink now and then while both eyes are open
+  if (!RM && wink < 0.02){
+    if (opts.blinks){ for (const b of opts.blinks) if (t >= b && t < b + 0.25) blinkStart = b; }
+    else if (t > nextBlink){ blinkStart = t; nextBlink = t + 3.5 + Math.random()*4.5; }
+  }
+  const bt = (t - blinkStart)/0.24;
+  uniforms.uBlink.value = (bt >= 0 && bt <= 1 && wink < 0.02) ? Math.sin(Math.PI*bt) : 0;
+  uniforms.uWink.value = wink;
+  uniforms.uSlit.value = 0.7*sm(0.35, 0.8, dive);   // the open eye widens as the camera arrives
+
+  // camera: always looks straight ahead, slides over to the open eye, then flies through it
+  eyeW.copy(EYE).applyMatrix4(group.matrixWorld);
+  const a = sm(0, 0.35, dive);
+  const s0 = baseDist - eyeW.z;
+  let cz;
+  if (dive < 0.86) cz = eyeW.z + s0*Math.pow(0.006, dive/0.86);
+  else cz = eyeW.z + s0*0.006 - (dive - 0.86)/0.14*0.8;
+  camera.position.set(eyeW.x*a, eyeW.y*a, cz);
+  camera.lookAt(eyeW.x*a, eyeW.y*a, cz - 1);
+  camera.updateMatrixWorld(true);
+  inv.copy(group.matrixWorld).invert();
+  tmp.copy(camera.position).applyMatrix4(inv);
+  uniforms.uFocus.value.set(0, 0, baseDist).lerp(tmp, face);
+
+  // hover light: hot spot under the cursor, then it soaks through the whole ball
+  const hit = pt && dive < 0.3 ? hitObject(pt.x, pt.y) : null;
+  if (!VIDEO) canvas.style.cursor = dragging ? 'grabbing' : (hit ? 'grab' : '');
+  if (hit){
+    if (!hinted){ hinted = true; hint.classList.add('done'); }
+    if (soakA < 0.05) uniforms.uSoakC.value.copy(hit);
+    soakA = approach(soakA, 1, dt*1.6);
+    soakR = approach(soakR, 1, dt*0.3);
+    uniforms.uSoakC.value.lerp(hit, 1 - Math.exp(-dt*1.2));
+    trailClock += dt;
+    if (trailClock > 0.12 || hit.distanceTo(lastPush) > 0.05){
+      trailClock = 0; lastPush.copy(hit);
+      trail[trailIdx].set(hit.x, hit.y, hit.z, 1); trailIdx = (trailIdx + 1) % TRAIL;
+    }
+  } else {
+    soakA = approach(soakA, 0, dt*0.4);
+    if (soakA < 0.01) soakR = approach(soakR, 0, dt*2);
+  }
+  const decay = Math.exp(-dt/1.0);
+  for (const tr of trail) tr.w *= decay;
+
+  // the wink flashes the eye; the dive lights the whole face from the eye outward
+  const pulse = Math.sin(Math.PI*clamp((p - 0.19)/0.16, 0, 1));
+  tmp.copy(WINK_EYE).lerp(EYE, sm(0.31, 0.4, p));     // the light hops from the wink to the open eye
+  uniforms.uEye.value.set(tmp.x, tmp.y, tmp.z, Math.max(0.95*pulse, 0.4*wink*(1 - dive)));
+  const diveSoak = sm(0.0, 0.45, dive);
+  if (diveSoak > 0) uniforms.uSoakC.value.lerp(EYE, diveSoak);
+  uniforms.uSoakA.value = Math.max(soakA, diveSoak);
+  uniforms.uSoakR.value = Math.max(soakR*2.5, sm(0.0, 0.6, dive)*2.7);
+  uniforms.uTime.value = t;
+
+  // what's inside the eye: revealed through the slit, kept inside the ball's outline until the ball fills the screen
+  if (RM){
+    const f = sm(0.45, 0.8, p);
+    inside.style.webkitMaskImage = 'none'; inside.style.maskImage = 'none';
+    inside.style.opacity = f; if (!CHAIN_ON){ insideCopy.style.opacity = f; insideCopy.style.transform = 'none'; }
+    canvas.style.opacity = 1 - sm(0.6, 0.85, p);
+  } else {
+    tmp.copy(eyeW).project(camera);
+    const ex = (tmp.x*0.5 + 0.5)*W, ey = (-tmp.y*0.5 + 0.5)*H;
+    centerW.set(0,0,0).applyMatrix4(group.matrixWorld);
+    const dist = camera.position.distanceTo(centerW);
+    tmp.copy(centerW).project(camera);
+    const cx = (tmp.x*0.5 + 0.5)*W, cy = (-tmp.y*0.5 + 0.5)*H;
+    const diag = Math.hypot(W, H);
+    const eyePx = 0.2*(1 + uniforms.uSlit.value)*(H/2)/(Math.max(cz - eyeW.z, 0.02)*TAN);
+    const want = Math.max(eyePx*sm(0.02, 0.14, dive), Math.pow(sm(0.3, 0.92, dive), 1.3)*diag*1.15);
+    let r = want;
+    if (dist > 1.03){
+      const sr = (H/2)*(1/Math.sqrt(dist*dist - 1))/TAN;
+      r = Math.min(want, Math.max(0, (sr*0.96 - Math.hypot(ex - cx, ey - cy) - 24)/1.35));
+    }
+    const feather = r*0.35 + 24;
+    const m = r > 0.5 ? `radial-gradient(circle at ${ex.toFixed(1)}px ${ey.toFixed(1)}px, #000 ${r.toFixed(1)}px, transparent ${(r + feather).toFixed(1)}px)`
+                      : 'radial-gradient(circle at 50% 50%, #000 0px, transparent 0px)';
+    inside.style.webkitMaskImage = m; inside.style.maskImage = m;
+    if (!CHAIN_ON){
+      const io = sm(0.72, 0.97, dive);
+      insideCopy.style.opacity = io;
+      insideCopy.style.transform = `scale(${(0.94 + 0.06*io).toFixed(4)})`;
+    }
+    canvas.style.opacity = 1 - sm(0.93, 1.0, dive);
+  }
+  hud.style.opacity = 1 - sm(0.0, 0.2, Math.max(dive, sm(0.15, 0.3, p)));
+  lastDive = dive;
+}
+
+function render(){ renderer.render(scene, camera); }
+
+/* ---------- live page loop ---------- */
+/* The pinned intro scrolls 1180 units (vh): 330 for the smiley, 100 for each of the eight pictures, 50 on the wordmark. */
+const SMILEY_UNITS = 330, PIC_UNITS = 100, INTRO_UNITS = 1180;
+function scrollG(){
+  const r = intro.getBoundingClientRect();
+  const total = r.height - stage.clientHeight;
+  return total > 0 ? clamp(-r.top/total, 0, 1)*INTRO_UNITS : 0;
+}
+// the scroll position is eased, so each wheel step glides instead of jumping
+let gS = null;
+function scrollState(dt){
+  const g = scrollG();
+  if (gS === null || RM || dt == null || Math.abs(g - gS) > 400) gS = g;
+  else gS += (g - gS)*(1 - Math.exp(-dt*6));
+  return { p: clamp(gS/SMILEY_UNITS, 0, 1), u: clamp((gS - SMILEY_UNITS)/PIC_UNITS, 0, CHAIN.length) };
+}
+
+/* ---------- through the eye: each picture opens through an eye, a letter or the sun into the next ---------- */
+/* kind says what the next picture looks like inside this one's target:
+   eye    the whole next picture, tiny, sitting in the pupil (or the sun), growing as you push in
+   window the next picture seen through a letter's opening
+   screen the next picture playing on a monitor, inside its frame lines
+   lens   his sunglasses: the dark, then the headline */
+const CHAIN = [
+  { src: 'chain/01-collage.webp',   kind: 'eye',    t: [830, 872],    r: [26, 20] },                 // her eye
+  { src: 'chain/02-dancers.webp',   kind: 'eye',    t: [871, 746],    r: [12, 7] },                  // the dancer's eye
+  { src: 'chain/04-hanbok.webp',    kind: 'eye',    t: [834, 529],    r: [11, 10] },                 // her eye
+  { src: 'chain/06-group.webp',     kind: 'eye',    t: [1780, 779],   r: [13, 11] },                 // her eye
+  { src: 'chain/07-miami.webp',     kind: 'window', t: [1084, 1384],  r: [8.5, 21] },                // the 0 in "10 ST"
+  { src: 'chain/08-overhead.webp',  kind: 'eye',    t: [722, 741],    r: [12, 6] },                  // her eye, looking up
+  { src: 'chain/09-hollywood.webp', kind: 'window', t: [1094, 1548],  r: [12.5, 30] },               // the last O in HOLLYWOOD
+  { src: 'chain/10-joshua.webp',    kind: 'lens',   t: [1535, 995],   r: [15, 9], rot: -0.12 }      // his sunglasses
+];
+const CHAIN_ON = !VIDEO;
+const chainCanvas = document.getElementById('chain');
+const cctx = chainCanvas.getContext('2d');
+const off = document.createElement('canvas'), octx = off.getContext('2d');
+let CW = 1, CH = 1, CDPR = 1, chainLoading = false;
+function sizeChain(){
+  CDPR = Math.min(window.devicePixelRatio || 1, 2);
+  CW = stage.clientWidth || window.innerWidth; CH = stage.clientHeight || window.innerHeight;
+  chainCanvas.width = off.width = Math.round(CW*CDPR);
+  chainCanvas.height = off.height = Math.round(CH*CDPR);
+}
+function loadChain(){
+  if (chainLoading || !CHAIN_ON) return; chainLoading = true;
+  CHAIN.forEach(item => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = item.src;
+    const done = () => {
+      // a tiny copy, drawn large, gives a soft backdrop past the picture's edges
+      const sm2 = document.createElement('canvas');
+      sm2.width = 48; sm2.height = Math.max(1, Math.round(48*img.naturalHeight/img.naturalWidth));
+      sm2.getContext('2d').drawImage(img, 0, 0, sm2.width, sm2.height);
+      item.img = img; item.small = sm2; item.ready = true;
+    };
+    (img.decode ? img.decode() : new Promise(r => { img.onload = r; })).then(done).catch(() => { img.onload = done; });
+  });
+}
+function restOf(item){
+  const iw = item.img.naturalWidth, ih = item.img.naturalHeight;
+  const s = Math.max(CW/iw, CH/ih);
+  const hw = CW/2/s, hh = CH/2/s;
+  let cx = clamp(iw/2, item.t[0] - 0.28*CW/s, item.t[0] + 0.28*CW/s);
+  let cy = clamp(ih/2, item.t[1] - 0.28*CH/s, item.t[1] + 0.28*CH/s);
+  return { s, cx: clamp(cx, hw, iw - hw), cy: clamp(cy, hh, ih - hh) };
+}
+// screen scale at which the target's opening (inside its soft edge) covers the whole screen
+function endScale(item){
+  if (item.kind === 'screen') return Math.max((CW/2)/item.r[0], (CH/2)/item.r[1])*1.06;
+  const a = item.r[0]*0.78, b = item.r[1]*0.78;
+  return Math.sqrt((CW/2)*(CW/2)/(a*a) + (CH/2)*(CH/2)/(b*b))*1.04;
+}
+// keep only an oval with a soft edge (destination-in over the whole canvas)
+function featherMask(ctx, cx, cy, rx, ry, rot, solid){
+  rx = Math.max(rx, 1e-3); ry = Math.max(ry, 1e-3);
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.save();
+  ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(rx, ry);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+  g.addColorStop(0, '#000'); g.addColorStop(solid, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  const big = (CW + CH)/Math.min(rx, ry) + 2;
+  ctx.fillRect(-big, -big, big*2, big*2);
+  ctx.restore();
+  ctx.globalCompositeOperation = 'source-over';
+}
+// draw img so source point (ax, ay) lands on screen point (px, py) at scale s, cropping to what's visible
+function drawAt(ctx, img, iw, ih, ax, ay, px, py, s){
+  const sx0 = Math.max(0, ax - px/s), sy0 = Math.max(0, ay - py/s);
+  const sx1 = Math.min(iw, ax + (CW - px)/s), sy1 = Math.min(ih, ay + (CH - py)/s);
+  if (sx1 <= sx0 || sy1 <= sy0) return;
+  ctx.drawImage(img, sx0, sy0, sx1 - sx0, sy1 - sy0, px + (sx0 - ax)*s, py + (sy0 - ay)*s, (sx1 - sx0)*s, (sy1 - sy0)*s);
+}
+/* Each picture gets a share of the scroll in proportion to how far it zooms, so the camera travels
+   at one steady speed through the whole chain instead of speeding up and slowing down per picture. */
+let chainSpans = null;
+function spans(){
+  const key = `${CW}x${CH}`;
+  if (chainSpans && chainSpans.key === key) return chainSpans;
+  if (!CHAIN.every(c => c.ready)) return null;
+  const w = CHAIN.map(c => Math.max(1, Math.log(endScale(c)/restOf(c).s)));
+  const total = w.reduce((a, b) => a + b, 0);
+  const cum = [0];
+  w.forEach(x => cum.push(cum[cum.length - 1] + x*CHAIN.length/total));
+  return (chainSpans = { key, cum });
+}
+function locate(u){
+  const sp = spans();
+  if (!sp){ const i = Math.min(Math.floor(u), CHAIN.length - 1); return [i, clamp(u - i, 0, 1)]; }
+  const c = sp.cum; let i = 0;
+  while (i < CHAIN.length - 1 && u >= c[i + 1]) i++;
+  return [i, clamp((u - c[i])/(c[i + 1] - c[i]), 0, 1)];
+}
+function drawChain(u){
+  const ctx = cctx;
+  ctx.setTransform(CDPR, 0, 0, CDPR, 0, 0);
+  ctx.fillStyle = '#0A0A0A'; ctx.fillRect(0, 0, CW, CH);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  const [i, local] = locate(u);
+  const A = CHAIN[i];
+  if (!A.ready) return;
+  const ra = restOf(A);
+  if (RM){                                        // reduced motion: a plain crossfade, no zoom
+    drawAt(ctx, A.img, A.img.naturalWidth, A.img.naturalHeight, ra.cx, ra.cy, CW/2, CH/2, ra.s);
+    const B = CHAIN[i + 1], fade = sm(0.6, 1, local);
+    if (B && B.ready && fade > 0){ const rb = restOf(B); ctx.globalAlpha = fade; drawAt(ctx, B.img, B.img.naturalWidth, B.img.naturalHeight, rb.cx, rb.cy, CW/2, CH/2, rb.s); ctx.globalAlpha = 1; }
+    else if (!B && fade > 0){ ctx.globalAlpha = fade; ctx.fillRect(0, 0, CW, CH); ctx.globalAlpha = 1; }
+    return;
+  }
+  const f = local;                                // no stops: the camera keeps moving from one dive into the next
+  const S0 = ra.s, S1 = endScale(A);
+  const S = S0*Math.pow(S1/S0, f);
+  const prx = CW/2 + (A.t[0] - ra.cx)*S0, pry = CH/2 + (A.t[1] - ra.cy)*S0;
+  const e = 1 - Math.pow(1 - f, 2.4);
+  const px = prx + (CW/2 - prx)*e, py = pry + (CH/2 - pry)*e;
+  drawAt(ctx, A.img, A.img.naturalWidth, A.img.naturalHeight, A.t[0], A.t[1], px, py, S);
+  const mx = A.r[0]*S, my = A.r[1]*S;
+  if (mx < 0.6) return;
+  // what's inside the target: the next picture (or, for his sunglasses, the dark)
+  const B = CHAIN[i + 1], k = S/S1, ang = A.rot || 0;
+  octx.setTransform(CDPR, 0, 0, CDPR, 0, 0);
+  octx.globalCompositeOperation = 'source-over';
+  octx.clearRect(0, 0, CW, CH);
+  octx.imageSmoothingEnabled = true; octx.imageSmoothingQuality = 'high';
+  if (B && B.ready && A.kind !== 'lens'){
+    const rb = restOf(B), bw = B.img.naturalWidth, bh = B.img.naturalHeight;
+    // scale at which the next picture fills whatever part of the opening is on screen
+    const c = Math.abs(Math.cos(ang)), sn = Math.abs(Math.sin(ang));
+    const hx = mx*c + my*sn, hy = mx*sn + my*c;
+    const L = Math.max(0, px - hx), R = Math.min(CW, px + hx), T = Math.max(0, py - hy), Bo = Math.min(CH, py + hy);
+    const need = Math.max((px - L)/rb.cx, (R - px)/(bw - rb.cx), (py - T)/rb.cy, (Bo - py)/(bh - rb.cy));
+    const sWin = Math.max(rb.s*k, need*1.01);
+    if (A.kind === 'eye'){
+      // a small round picture sitting in the pupil, cropped around its subject; it opens up on the final approach
+      const w = Math.pow(sm(0.5, 1, f), 1.8);
+      const r0 = Math.max(0.33*Math.min(mx, my), 0.5);
+      const rEnd = Math.hypot(CW, CH)*0.55;
+      const rc = Math.exp(Math.log(r0)*(1 - w) + Math.log(rEnd)*w);
+      const Lc = Math.max(0, px - rc), Rc = Math.min(CW, px + rc), Tc = Math.max(0, py - rc), Bc = Math.min(CH, py + rc);
+      const needC = Math.max((px - Lc)/rb.cx, (Rc - px)/(bw - rb.cx), (py - Tc)/rb.cy, (Bc - py)/(bh - rb.cy))*1.01;
+      const sB = Math.max(needC, Math.exp(Math.log(needC)*(1 - w) + Math.log(sWin)*w));
+      drawAt(octx, B.img, bw, bh, rb.cx, rb.cy, px, py, sB);
+      featherMask(octx, px, py, rc, rc, 0, 0.88);
+    } else if (A.kind === 'screen'){
+      octx.save();
+      octx.translate(px, py); octx.rotate(ang);
+      octx.beginPath(); octx.rect(-mx, -my, mx*2, my*2);
+      octx.setTransform(CDPR, 0, 0, CDPR, 0, 0);
+      octx.clip();
+      drawAt(octx, B.img, bw, bh, rb.cx, rb.cy, px, py, sWin);
+      octx.restore();
+    } else {
+      drawAt(octx, B.img, bw, bh, rb.cx, rb.cy, px, py, sWin);
+    }
+  } else if (A.kind === 'screen'){
+    // the last monitor keeps its own shot, then goes dark as you reach it
+    octx.save(); octx.translate(px, py); octx.rotate(ang);
+    octx.globalAlpha = B ? 1 : sm(0.45, 0.92, f);
+    octx.fillStyle = '#0A0A0A'; octx.fillRect(-mx, -my, mx*2, my*2);
+    octx.restore();
+  } else {
+    octx.fillStyle = '#0A0A0A'; octx.fillRect(0, 0, CW, CH);
+  }
+  // cut it to the target's shape with a soft edge (a monitor keeps its hard frame)
+  if (A.kind !== 'screen') featherMask(octx, px, py, mx, my, ang, 0.78);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(off, 0, 0);
+}
+if (CHAIN_ON){ sizeChain(); window.addEventListener('resize', sizeChain); }
+else { chainCanvas.style.display = 'none'; }
+/* ---------- behind the wordmark: blue and violet ribbons that flow, and part around the cursor ---------- */
+const blobs = (function(){
+  const cvb = document.getElementById('blobs');
+  if (!cvb || !CHAIN_ON) return null;
+  let gl = null;
+  try { gl = cvb.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false }); } catch (e) {}
+  if (!gl){ cvb.style.background = 'var(--stage)'; return { update(){} }; }
+  const vs = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+  const fs = `
+precision highp float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform float uReveal;
+uniform vec3 uMouse;      // xy in the same units as uv, z = how much the cursor counts
+vec3 permute(vec3 x){ return mod(((x*34.0) + 1.0)*x, 289.0); }
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
+  i = mod(i, 289.0);
+  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0*fract(p*C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314*(a0*a0 + h*h);
+  vec3 g; g.x = a0.x*x0.x + h.x*x0.y; g.yz = a0.yz*x12.xz + h.yz*x12.yw;
+  return 130.0*dot(m, g);
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy/uRes.y;
+  vec2 ctr = vec2(0.5*uRes.x/uRes.y, 0.5);
+  float t = uTime;
+  // the cursor pushes the ribbons aside
+  vec2 d = uv - uMouse.xy; float md = length(d);
+  vec2 push = d*uMouse.z*0.9*exp(-md*md*9.0);
+  vec2 p = (uv - push)*2.6;
+  vec2 q = vec2(snoise(p*0.55 + vec2(0.0, 0.07*t)), snoise(p*0.55 + vec2(5.2, -0.05*t)));
+  float n = snoise(p + 1.25*q + vec2(0.03*t, -0.02*t));
+  float w = 0.21 + 0.07*snoise(p*0.45 + vec2(9.1, 0.02*t));
+  float aa = 3.2*2.6/uRes.y;
+  float ribbon = smoothstep(w + aa, w - aa, abs(n));
+  // the site's colours: the smiley's grey stage, ribbons lit like its glow, blue from above and violet below
+  vec3 stageGrey = vec3(0.867, 0.863, 0.843);
+  vec3 sky    = vec3(0.247, 0.722, 0.933);
+  vec3 violet = vec3(0.620, 0.502, 0.949);
+  float k = smoothstep(0.85, 0.15, gl_FragCoord.y/uRes.y + 0.12*q.x);
+  vec3 ink = mix(sky, violet, k);
+  vec3 col = mix(stageGrey, ink, ribbon);
+  // it opens out from the middle, where the sunglasses were
+  float r = uReveal*1.35*length(ctr) + 0.05*snoise(uv*5.0 + 0.1*t);
+  float shown = smoothstep(r, r - 0.08, length(uv - ctr));
+  gl_FragColor = vec4(mix(vec3(0.039), col, shown), 1.0);
+}`;
+  function sh(type, src){ const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
+  let prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { cvb.style.background = 'var(--stage)'; return { update(){} }; }
+  gl.useProgram(prog);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = n => gl.getUniformLocation(prog, n);
+  const uRes = U('uRes'), uTime = U('uTime'), uReveal = U('uReveal'), uMouse = U('uMouse');
+  let bw = 0, bh = 0;
+  function size(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = Math.round((stage.clientWidth || innerWidth)*dpr), h = Math.round((stage.clientHeight || innerHeight)*dpr);
+    if (w !== bw || h !== bh){ bw = cvb.width = w; bh = cvb.height = h; gl.viewport(0, 0, w, h); }
+  }
+  const m = { x: 0, y: 0, on: 0, target: 0 };
+  stage.addEventListener('pointermove', e => {
+    const r = stage.getBoundingClientRect();
+    m.x = (e.clientX - r.left)/r.height; m.y = (r.bottom - e.clientY)/r.height; m.target = 1;
+  });
+  stage.addEventListener('pointerleave', () => { m.target = 0; });
+  let t0 = performance.now(), last = performance.now();
+  return {
+    update(reveal){
+      if (reveal <= 0.001){ return; }
+      const now = performance.now(), dt = Math.min(0.05, (now - last)/1000); last = now;
+      m.on += (m.target - m.on)*(1 - Math.exp(-dt*4));
+      size();
+      gl.uniform2f(uRes, bw, bh);
+      gl.uniform1f(uTime, RM ? 0 : (now - t0)/1000);
+      gl.uniform1f(uReveal, reveal);
+      gl.uniform3f(uMouse, m.x, m.y, RM ? 0 : m.on);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+  };
+})();
+let lastU = -1, lastChainKey = '';
+function updateChain(u, dive){
+  // nothing to draw until the smiley's eye starts to open
+  const key = `${u.toFixed(4)}|${CW}x${CH}|${CHAIN.map(c => c.ready ? 1 : 0).join('')}`;
+  if ((dive > 0.01 || u > 0) && key !== lastChainKey){ drawChain(u); lastChainKey = key; }
+  const head = sm(CHAIN.length - 0.12, CHAIN.length, u);
+  if (blobs) blobs.update(sm(CHAIN.length - 0.1, CHAIN.length - 0.005, u));
+  insideCopy.style.opacity = head;
+  insideCopy.style.transform = `scale(${(0.94 + 0.06*head).toFixed(4)})`;
+  chainCanvas.style.opacity = 1 - sm(CHAIN.length - 0.08, CHAIN.length, u);
+}
+/* ---------- loader: round one fast, round two slowing down, then a long hold on the director's chair ---------- */
+const loaderEl = document.getElementById('loader');
+const shots = Array.from(loaderEl.querySelectorAll('img'));
+const ROUND1 = shots.map(() => 85);
+const ROUND2 = shots.slice(0, -1).map((_, i) => Math.round(110*Math.pow(1.3, i)));
+ROUND2.push(3200);                              // director's chair
+const sequence = [...shots.map((_, i) => [i, ROUND1[i]]), ...shots.map((_, i) => [i, ROUND2[i]])];
+let phase = 'loading', liveT = 0, drawT = 0, loaderTimer = 0, skipped = false;
+function showShot(i){ shots.forEach((im, j) => im.classList.toggle('on', j === i)); }
+function goLive(){
+  if (phase !== 'loading') return;
+  phase = 'drawing'; drawT = 0; clearTimeout(loaderTimer);
+  autoClock = SPIN_T;                           // face front for a beat before the first spin
+  loaderEl.classList.add('out');
+  stage.classList.remove('loading');
+  setTimeout(() => loaderEl.classList.add('gone'), 900);
+  setTimeout(loadChain, 1200);
+}
+function runLoader(){
+  let k = 0;
+  const next = () => {
+    if (phase !== 'loading') return;
+    if (k >= sequence.length){ goLive(); return; }
+    const [i, ms] = sequence[k++];
+    showShot(i);
+    loaderTimer = setTimeout(next, ms);
+  };
+  next();
+}
+function skipLoader(){ if (phase === 'loading' && !skipped){ skipped = true; goLive(); } }
+if (VIDEO || RM || window.scrollY > 10){
+  phase = 'live'; loaderEl.classList.add('gone'); stage.classList.remove('loading'); loadChain();
+} else {
+  uniforms.uDraw.value = 0;
+  ['wheel','touchstart','keydown'].forEach(ev => window.addEventListener(ev, skipLoader, {passive:true, once:true}));
+  stage.addEventListener('pointerdown', skipLoader, {once:true});
+  const ready = Promise.all(shots.map(im => im.decode ? im.decode().catch(() => {}) : Promise.resolve()));
+  Promise.race([ready, new Promise(r => setTimeout(r, 4000))]).then(runLoader);
+}
+
+if (!VIDEO){
+  let last = performance.now(), t = 0;
+  const loop = now => {
+    const dt = Math.min(0.05, (now - last)/1000); last = now; t += dt;
+    const r = intro.getBoundingClientRect();
+    if (phase === 'drawing'){
+      drawT += dt;
+      const d = clamp(drawT/1.9, 0, 1);
+      uniforms.uDraw.value = d*d*(3 - 2*d);
+      if (d >= 1){ phase = 'live'; uniforms.uDraw.value = 1; }
+    }
+    if (phase !== 'loading') liveT += dt;
+    if (r.bottom > 0 && phase !== 'loading'){
+      const touchActive = pointer.touchUntil > now;
+      let pt = (pointer.inside && (canHover || touchActive || dragging)) ? {x:pointer.x, y:pointer.y} : null;
+      // phones have no hover, so the light sweeps across the face once on its own
+      if (!pt && !canHover && !RM && !pointer.inside && liveT > 1.4 && liveT < 4.6){
+        const f = (liveT - 1.4)/3.2, ar = W/H, rx = Math.min(0.5, 0.41/ar);
+        pt = { x: rx*(0.55 - 1.0*f)*Math.cos(f*2.2), y: 0.42 - 0.85*f };
+      }
+      const ss = scrollState(dt);
+      step(dt, t, ss.p, {pointer: pt});
+      if (lastDive < 0.999) render();
+      if (CHAIN_ON){ if (ss.p > 0.3) loadChain(); updateChain(ss.u, lastDive); }
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+/* ---------- MP4 export: a fixed timeline, stepped frame by frame ---------- */
+if (VIDEO){
+  const SPIN_END = 5.0;   // clock starts 0.8 s before a spin; the 3.6 s spin ends at 4.4 s
+  const path = [ // [time, x, y] in screen space; null = cursor away
+    [0.0, null], [1.0, 0.30, 0.40], [1.5, 0.10, 0.26], [2.1, -0.06, 0.20], [2.7, 0.08, 0.08],
+    [3.3, 0.02, -0.18], [3.9, -0.08, -0.34], [4.3, 0.05, -0.30], [4.6, null]
+  ];
+  function cursorAt(t){
+    for (let i = 0; i < path.length - 1; i++){
+      const a = path[i], b = path[i+1];
+      if (t >= a[0] && t < b[0]){
+        if (a[1] == null) return null;
+        if (b[1] == null) return {x:a[1], y:a[2]};
+        const f = sm(0, 1, (t - a[0])/(b[0] - a[0]));
+        return {x:a[1] + (b[1]-a[1])*f, y:a[2] + (b[2]-a[2])*f};
+      }
+    }
+    return null;
+  }
+  function progressAt(t){
+    if (t < SPIN_END) return 0;
+    if (t < 5.5) return 0.17*sm(SPIN_END, 5.5, t);
+    if (t < 6.2) return 0.17 + 0.16*sm(5.5, 6.2, t);
+    if (t < 6.9) return 0.33 + 0.05*((t - 6.2)/0.7);
+    if (t < 10.4) return 0.38 + 0.61*sm(6.9, 10.4, t);
+    return 1;
+  }
+  let simT = 0;
+  window.__renderAt = function(t, skipDraw){
+    const DT = 1/240;
+    while (simT + DT <= t + 1e-9){
+      simT += DT;
+      step(DT, simT, progressAt(simT), {pointer: cursorAt(simT), autoClock: CYCLE - 0.8 + Math.min(simT, SPIN_END), blinks:[0.35]});
+    }
+    if (!skipDraw) render();
+    return true;
+  };
+  window.__draw = v => { uniforms.uDraw.value = v; };
+  window.__videoReady = true;
+}
+})();
+</script>
+
+<script>
+/* ---------- the studio: a real room, each piece of kit a service ---------- */
+(function(){
+"use strict";
+const room = document.getElementById('room');
+const wrap = document.getElementById('roomWrap');
+const img = document.getElementById('roomImg');
+const cv = document.getElementById('roomFx');
+const panel = document.getElementById('svcPanel');
+if (!room || !cv || !cv.getContext || !panel) return;
+const ctx = cv.getContext('2d');
+const closeBtn = document.getElementById('svcClose');
+const spots = Array.from(room.querySelectorAll('.spot'));
+const picks = Array.from(document.querySelectorAll('.svc-pick button'));
+const articles = Array.from(panel.querySelectorAll('article'));
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IW = 2736, IH = 1536;                 // the photo's own pixels
+
+/* Outlines of each piece of kit, in the photo's pixels. They are softened when drawn. */
+const GROUPS = {
+  web:    { svc: 'web-design',      shapes: [ [[1186,706],[1290,716],[1284,786],[1294,808],[1158,802],[1176,772]] ] },
+  edit:   { svc: 'post-production', shapes: [ [[942,310],[1344,236],[1344,536],[942,640]],
+                                              [[1416,634],[1590,698],[1756,762],[1756,932],[1642,950],[1560,892],[1416,792]] ] },
+  camera: { svc: 'production',      shapes: [ [[2028,418],[2162,428],[2162,508],[2112,522],[2168,724],[2122,744],[2072,566],[2012,742],[1984,726],[2048,522],[2032,502]] ] },
+  sound:  { svc: 'sound',           shapes: [ [[548,1262],[642,1178],[700,1040],[872,1058],[884,1190],[866,1300],[884,1440],[602,1480],[546,1384]] ] },
+  chair:  { svc: 'chair',           shapes: [ [[2330,774],[2424,807],[2419,857],[2415,905],[2400,925],[2415,1060],[2340,1080],[2310,1040],[2250,1047],[2280,950],[2262,890],[2260,845],[2322,820],[2326,785]] ] }
+};
+const GKEYS = Object.keys(GROUPS);
+const SVCS = ['web-design', 'production', 'post-production', 'sound'];
+const PANELS = SVCS.concat('chair');            // the director's chair opens About and Contact
+
+/* ---------- drawing the light ---------- */
+let S = 1, DPR = 1;
+function size(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const w = room.clientWidth || 800, h = room.clientHeight || 450;
+  cv.width = Math.round(w*DPR); cv.height = Math.round(h*DPR);
+  S = cv.width/IW;
+  draw();
+}
+const BIG = 100000;
+// fill a shape far off canvas and let its shadow land in place: a soft-edged shape that works in every browser
+function softShape(poly, blur, color, dx, dy){
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.shadowColor = color; ctx.shadowBlur = blur;
+  ctx.shadowOffsetX = BIG; ctx.shadowOffsetY = 0;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  poly.forEach(([x, y], i) => { const X = x*S - BIG + (dx || 0)*S, Y = y*S + (dy || 0)*S; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+const amt = {}; GKEYS.forEach(k => amt[k] = 0);
+function draw(){
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  const top = Math.max(...GKEYS.map(k => amt[k]));
+  if (top < 0.005) return;
+  // the rest of the room dims a little
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = `rgba(8,10,14,${(0.5*top).toFixed(3)})`;
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  // a blue and violet rim around what you're pointing at, the smiley's colours: blue from above, violet from below
+  for (const k of GKEYS){
+    const a = amt[k]; if (a < 0.005) continue;
+    for (const p of GROUPS[k].shapes){
+      softShape(p, 70*S*3.2, `rgba(63,184,238,${(0.55*a).toFixed(3)})`, 0, -16);
+      softShape(p, 70*S*3.2, `rgba(158,128,242,${(0.5*a).toFixed(3)})`, 0, 18);
+    }
+  }
+  // then the object itself is cut out of the veil and the rim, so it stays crisp and in full light
+  ctx.globalCompositeOperation = 'destination-out';
+  for (const k of GKEYS){
+    if (amt[k] < 0.005) continue;
+    for (const p of GROUPS[k].shapes) softShape(p, 22*S*3.2, `rgba(0,0,0,${amt[k].toFixed(3)})`);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+/* ---------- state ---------- */
+let hovered = null, selected = null, demo = null, raf = 0, last = 0;
+const want = k => (k === hovered || k === demo || (selected && GROUPS[k].svc === selected)) ? 1 : 0;
+function tick(now){
+  const dt = Math.min(0.05, (now - (last || now))/1000); last = now;
+  let moving = false;
+  for (const k of GKEYS){
+    const t = want(k), n = RM ? t : amt[k] + (t - amt[k])*(1 - Math.exp(-dt*8));
+    const done = Math.abs(n - t) < 0.004;
+    amt[k] = done ? t : n; if (!done) moving = true;
+  }
+  draw();
+  raf = moving ? requestAnimationFrame(tick) : 0;
+  if (!moving) last = 0;
+}
+function kick(){ if (!raf) raf = requestAnimationFrame(tick); }
+
+/* ---------- the details panel ---------- */
+let opener = null;
+articles.forEach(a => { a.querySelector('h3').id = 'svcTitle-' + a.dataset.svc; });
+/* the Sound pop-up's waveform: two identical halves so it can scroll forever */
+(function(){
+  const host = panel.querySelector('[data-wave]'); if (!host) return;
+  let x = 0, d = '', d2 = '';
+  const N = 120, W = 4;
+  const hs = [];
+  for (let i = 0; i < N; i++){ const t = i/N; hs.push(0.18 + 0.8*Math.abs(Math.sin(t*19.3)*Math.sin(t*5.1 + 1.3)) * (0.6 + 0.4*Math.sin(t*61.7))); }
+  for (let k = 0; k < 2; k++) for (let i = 0; i < N; i++){ const h = Math.max(0.08, Math.min(0.96, hs[i]))*46, y = (46 - h)/2; const bar = `M${x} ${y.toFixed(1)}h2.6v${h.toFixed(1)}h-2.6z`; if (i % 2) d2 += bar; else d += bar; x += W; }
+  host.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 ${x} 46" preserveAspectRatio="none"><path d="${d}" fill="#3FB8EE"/><path d="${d2}" fill="#9E80F2"/></svg>`);
+})();
+/* each pop-up comes alive while it's open: the title types itself, the timecode runs */
+let fxTimers = [];
+const pad2 = n => String(n).padStart(2, '0');
+function stopFx(){ fxTimers.forEach(t => clearInterval(t)); fxTimers = []; }
+function startFx(key){
+  stopFx();
+  const art = articles.find(a => a.dataset.svc === key);
+  if (!art) return;
+  art.querySelectorAll('[data-tc]').forEach(el => {
+    const t0 = performance.now();
+    const show = () => { const f = Math.floor((performance.now() - t0)/1000*24); el.textContent = `01:${pad2(Math.floor(f/1440)%60)}:${pad2(Math.floor(f/24)%60)}:${pad2(f%24)}`; };
+    show(); if (!RM) fxTimers.push(setInterval(show, 42));
+  });
+  art.querySelectorAll('[data-bpm]').forEach(el => {
+    const base = parseFloat(el.dataset.bpm);
+    if (!RM) fxTimers.push(setInterval(() => { el.textContent = (base + (Math.random() - .5)*0.4).toFixed(1); }, 900));
+  });
+  const h = art.querySelector('h3[data-type]');
+  if (h){
+    const full = h.dataset.type, caret = '<span class="caret" aria-hidden="true"></span>';
+    h.setAttribute('aria-label', full);
+    if (RM){ h.textContent = full; h.insertAdjacentHTML('beforeend', caret); }
+    else {
+      let n = 0; h.textContent = ''; h.insertAdjacentHTML('beforeend', caret);
+      const t = setInterval(() => { n++; h.textContent = full.slice(0, n); h.insertAdjacentHTML('beforeend', caret); if (n >= full.length) clearInterval(t); }, 75);
+      fxTimers.push(t);
+    }
+  }
+}
+function openSvc(key, focus, eyebrow){
+  if (!PANELS.includes(key)) return;
+  selected = key; demo = null;
+  panel.hidden = false;
+  panel.dataset.svc = key;
+  panel.scrollTop = 0;
+  panel.dataset.side = key === 'production' || key === 'chair' ? 'left' : 'right';
+  articles.forEach(a => {
+    a.hidden = a.dataset.svc !== key;
+    const eb = a.querySelector('.eyebrow');
+    if (eb && eb.dataset.default) eb.textContent = (a.dataset.svc === key && eyebrow) ? eyebrow : eb.dataset.default;
+  });
+  panel.setAttribute('aria-labelledby', 'svcTitle-' + key);
+  const files = document.getElementById('svcFiles'), start = document.getElementById('svcStart');
+  if (files) files.href = 'work.html#' + key;
+  if (start) start.href = 'contact.html?service=' + key;
+  spots.forEach(b => b.setAttribute('aria-expanded', String(b.dataset.svc === key)));
+  picks.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.svc === key)));
+  if (focus !== false){ const h = document.getElementById('svcTitle-' + key); if (h) h.focus({ preventScroll: true }); }
+  startFx(key);
+  document.dispatchEvent(new CustomEvent('departurz:panel', { detail: { open: true, side: panel.dataset.side } }));
+  kick();
+}
+function closeSvc(returnFocus){
+  if (!selected) return;
+  selected = null; panel.hidden = true;
+  stopFx();
+  document.dispatchEvent(new CustomEvent('departurz:panel', { detail: { open: false } }));
+  spots.forEach(b => b.setAttribute('aria-expanded', 'false'));
+  picks.forEach(b => b.setAttribute('aria-pressed', 'false'));
+  if (returnFocus && opener && document.body.contains(opener)) opener.focus({ preventScroll: true });
+  kick();
+}
+spots.forEach(b => {
+  const g = b.dataset.group;
+  b.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse'){ hovered = g; kick(); } });
+  b.addEventListener('pointerleave', () => { if (hovered === g) hovered = null; kick(); });
+  b.addEventListener('focus', () => { hovered = g; kick(); });
+  b.addEventListener('blur', () => { if (hovered === g) hovered = null; kick(); });
+  b.addEventListener('click', () => {
+    const k = b.dataset.svc;
+    if (selected === k && opener === b){ closeSvc(true); return; }
+    opener = b; openSvc(k, true, b.dataset.eyebrow);
+  });
+});
+const firstGroup = { 'web-design': 'web', 'production': 'camera', 'post-production': 'edit', 'sound': 'sound' };
+picks.forEach(b => {
+  const k = b.dataset.svc;
+  b.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse'){ hovered = firstGroup[k]; kick(); } });
+  b.addEventListener('pointerleave', () => { hovered = null; kick(); });
+  b.addEventListener('click', () => { if (selected === k){ closeSvc(true); return; } opener = b; openSvc(k); });
+});
+closeBtn.addEventListener('click', () => closeSvc(true));
+document.addEventListener('departurz:assistant', e => { if (e.detail && e.detail.open) closeSvc(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && selected) closeSvc(true); });
+
+// direct links: #web-design, #production, #post-production
+function fromHash(){
+  const k = (location.hash || '').slice(1);
+  if (PANELS.includes(k)){
+    document.getElementById('studio').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
+    opener = null; openSvc(k, false);
+  }
+}
+window.addEventListener('hashchange', fromHash);
+// coming back from another page's "Back to the studio" link: land on the studio
+if (location.hash === '#studio') requestAnimationFrame(() => document.getElementById('studio').scrollIntoView({ block: 'start' }));
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+  const k = a.getAttribute('href').slice(1);
+  if (PANELS.includes(k) && location.hash === '#' + k) fromHash();
+}));
+
+// phones: start the swipeable studio centred on the desk
+function centreWrap(){ if (wrap && wrap.scrollWidth > wrap.clientWidth + 4) wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth)*0.5; }
+
+// the first time the studio comes into view, each piece of kit lights up once so people know they can click
+let shown = false;
+if ('IntersectionObserver' in window){
+  new IntersectionObserver(entries => {
+    for (const en of entries){
+      if (en.isIntersecting && !shown){
+        shown = true;
+        if (!RM){
+          const order = ['web', 'edit', 'camera', 'chair', 'sound'];
+          order.forEach((k, i) => setTimeout(() => { if (!selected && !hovered){ demo = k; kick(); } }, 500 + i*800));
+          setTimeout(() => { demo = null; kick(); }, 500 + order.length*800);
+        }
+      }
+      if (!en.isIntersecting && selected) closeSvc(false);
+    }
+  }, { threshold: [0, 0.35] }).observe(document.getElementById('studio'));
+}
+if ('ResizeObserver' in window) new ResizeObserver(size).observe(room); else window.addEventListener('resize', size);
+size(); centreWrap();
+if (img && !img.complete) img.addEventListener('load', centreWrap, { once: true });
+fromHash();
+})();
+</script>
+
+<script>
+/* ---------- the assistant: same shape as juliewenah.com's. Pops up in the studio, answers questions about DEPARTURZ ---------- */
+(function(){
+"use strict";
+const bub = document.getElementById('dzbub');
+const pan = document.getElementById('dzpan');
+const log = document.getElementById('dzlog');
+const chips = document.getElementById('dzchips');
+const form = document.getElementById('dzform');
+const input = document.getElementById('dzin');
+const send = document.getElementById('dzsend');
+const studio = document.getElementById('studio');
+const foot = document.querySelector('footer');
+if (!bub || !pan || !studio) return;
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CONTACT = 'contact.html';
+const WORK = 'work.html';
+
+/* What the assistant knows. Edit these facts to change what it says. */
+const FACTS = `DEPARTURZ is a production company based in Los Angeles and Houston, working with clients nationally.
+Founder: Nathan Olu, who goes by Nate. Tagline: "Where your story takes off." DEPARTURZ crafts departures from the ordinary: every project, from a major TV production to an independent film, gets the same care.
+Experience: television, commercial, travel, and branded content.
+Services:
+1. Web Design: websites designed and built in-house, from a one-page portfolio to a full organization site. Layouts for phones, tablets and desktop, motion and interactive moments, launch support and updates.
+2. Production: end-to-end production from concept to final delivery for films, documentaries, commercials, events, and branded content. Concept and planning, cinematography with Nate on set as DP, drone aerials by an FAA Part 107 certified pilot, event coverage, on-set sound with boom and lav mics. Full production crews are available.
+3. Post-Production: editing for films, documentaries, multi-cam long form and branded content, with color grading and sound design. Dedicated editors are available. Two revision rounds are included. Delivery through the Client Portal.
+4. Sound: music, audio and sound engineering. DJs who get booked for events, live sound for events, on-set sound with boom and lav mics, recording, mixing and mastering, and sound design for film and video. The team includes sound engineers.
+Process: 1) Consultation about vision, scope, timeline and budget, then a detailed proposal and service agreement. 2) Production, on set or receiving your footage. 3) Post: assembly, rough cut, fine cut, color, audio. 4) Delivery of final files in every format needed, through the Client Portal.
+Selected work: drone edits of Ghana, Tokyo, Houston, New York and Los Angeles; event coverage for BESLA (Black Entertainment Sports and Law Association) and the Sapphire Golf Tournament in Houston; post-production on the documentary Ben Crump in Ghana (currently in the edit), the film/series Boiling Point, and an edit called NYC Mix; websites for Julie Wenah, Ginayle Moss, the Nolan Xavier Wells Foundation and the Digital Civil Rights Coalition.
+Contact: start a project on the contact page (${CONTACT}). Instagram @departurzinc, YouTube @DEPARTURZ.`;
+const RULES = `You are the assistant on the DEPARTURZ website, a production company's site. Answer the visitor's latest message using only the facts below.
+Write 1 to 3 short, friendly sentences in plain words, like a helpful person at the studio would. No lists, no markdown, no em dashes.
+Never invent prices, dates, availability, clients, gear, or anything not in the facts. For pricing, timelines or availability, say it depends on the project's scope and suggest starting a project so Nate can send a proposal.
+If the question isn't about DEPARTURZ, video, film, or websites, say briefly that you can only help with DEPARTURZ questions.
+
+FACTS:
+${FACTS}`;
+
+/* Instant answers: used for the suggested questions, and whenever AI answers aren't available. */
+const CANNED = {
+  service: ["Tell me a bit about the project and I'll point you the right way. A website is Web Design, a shoot like a film, documentary, event or commercial is Production, footage that needs editing or color is Post-Production, and DJs, live sound or mixing is Sound. Plenty of projects use more than one.", null],
+  sound: ["Yes. DEPARTURZ has DJs who get booked for events, plus sound engineers for live sound, on-set audio, and recording, mixing and mastering.", 'start'],
+  documentary: ["Yes. DEPARTURZ produces and edits films and documentaries, from planning and shooting through the edit, color and sound.", 'start'],
+  website: ["Yes. Websites are designed and built in-house, from a one-page portfolio to a full organization site, with layouts for every screen and support after launch.", 'start'],
+  process: ["It runs in four steps. A consultation about your vision, scope, timeline and budget, then production, then post with two revision rounds, and finally your files delivered through the Client Portal.", null],
+  quote: ["Every project is quoted on its own scope, so the quickest way to a number is to start a project with a few details. Nate will send you a detailed proposal.", 'start'],
+  drone: ["Yes. Aerials are flown by an FAA Part 107 certified pilot, like the New York and Ghana drone edits on the Work page.", 'work'],
+  edit: ["Yes. Post-Production covers editing from assembly to fine cut, color grading, and sound design, with two revision rounds included.", 'start'],
+  location: ["DEPARTURZ is based in Los Angeles and Houston and works with clients nationally.", null],
+  who: ["DEPARTURZ was founded by Nathan Olu, who goes by Nate. It brings production, post-production and web design under one roof, with work across television, commercial, travel and branded content.", null],
+  work: ["The Work page has drone edits from Ghana, Tokyo, Houston, New York and Los Angeles, event coverage for BESLA and Sapphire Golf, post-production on Ben Crump in Ghana, Boiling Point and NYC Mix, and the websites we've built.", 'work'],
+  contact: ["The best way is to start a project on the contact page. You can also find DEPARTURZ on Instagram at @departurzinc.", 'start'],
+  hello: ["Hi! I can help with web design, production and post-production. What are you working on?", null],
+  fallback: ["I can help with web design, production, post-production, and how a project works. Try one of the questions below, or start a project and Nate will get back to you.", 'start']
+};
+const MATCH = [
+  [/\b(price|pricing|cost|costs|budget|quote|rate|rates|how much|charge|fee)\b/, 'quote'],
+  [/\b(dj|djs|serato|music|audio|sound engineer|engineering|live sound|mixing|mastering|master|record|recording|speaker|wedding|party|event dj)\b/, 'sound'],
+  [/\b(documentar|doc\b|film|films|movie|feature|short film)/, 'documentary'],
+  [/\b(web|website|site|landing page|portfolio site|online)\b/, 'website'],
+  [/\b(drone|aerial|faa|part 107)\b/, 'drone'],
+  [/\b(edit|editing|editor|color|colour|grade|grading|sound design|mix|post)\b/, 'edit'],
+  [/\b(process|steps|how does|how do you work|timeline|revision)\b/, 'process'],
+  [/\b(where|located|location|los angeles|houston|travel|nationwide)\b/, 'location'],
+  [/\b(who|founder|nate|nathan|about|team)\b/, 'who'],
+  [/\b(work|portfolio|examples|clients|projects you)\b/, 'work'],
+  [/\b(contact|email|phone|call|book|start|hire|reach)\b/, 'contact'],
+  [/\b(service|services|which|need|help me choose|recommend)\b/, 'service'],
+  [/^(hi|hey|hello|yo|sup|good (morning|afternoon|evening))\b/, 'hello']
+];
+const canned = q => { const t = q.toLowerCase(); for (const [re, k] of MATCH) if (re.test(t)) return CANNED[k]; return CANNED.fallback; };
+
+/* ---------- answering: Claude in the preview, the site's own /api/chat once deployed, built-in answers otherwise ---------- */
+let sample = null, aiOff = false, apiOff = false, busy = false, ctl = null;
+const turns = [];
+(async () => { try { sample = window.claude && window.claude.use ? await window.claude.use('sample') : null; } catch (e) { sample = null; } })();
+
+function scrollLog(){ log.scrollTop = log.scrollHeight; }
+function addMsg(who, text){
+  const el = document.createElement('div');
+  el.className = 'dzmsg ' + who;
+  if (text === null) el.innerHTML = '<span class="dzdots" aria-label="Typing"><i></i><i></i><i></i></span>';
+  else el.textContent = text;
+  log.insertBefore(el, chips); scrollLog();
+  return el;
+}
+function addLink(el, kind){
+  if (!kind) return;
+  const a = document.createElement('a');
+  a.href = kind === 'work' ? WORK : CONTACT;
+  a.textContent = kind === 'work' ? 'See the work →' : 'Start a project →';
+  el.appendChild(document.createElement('br')); el.appendChild(a);
+}
+async function viaClaude(q, el){
+  ctl = new AbortController();
+  const { text } = await sample([{ role: 'user', content: RULES }, ...turns.slice(-8), { role: 'user', content: q }], {
+    modelTier: 'quick', cache: false, signal: ctl.signal, onText: ({ text }) => { el.textContent = text; scrollLog(); }
+  });
+  return text;
+}
+async function viaApi(q){
+  ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 25000);
+  try {
+    const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
+      body: JSON.stringify({ messages: [...turns.slice(-8), { role: 'user', content: q }] }) });
+    if (!r.ok) throw { code: 'api_' + r.status };
+    const data = await r.json();
+    if (!data || typeof data.reply !== 'string' || !data.reply.trim()) throw { code: 'api_empty' };
+    return data.reply.trim();
+  } finally { clearTimeout(t); }
+}
+async function ask(q){
+  q = String(q || '').trim(); if (!q || busy) return;
+  busy = true; send.disabled = true; input.value = '';
+  addMsg('you', q);
+  const el = addMsg('it', null);
+  const local = canned(q);
+  let text = null;
+  try {
+    if (sample && !aiOff){
+      try { text = await viaClaude(q, el); }
+      catch (e) {
+        const code = e && e.code;
+        if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) aiOff = true;
+        if (code === 'rate_limited'){ el.textContent = "I'm getting a lot of questions right now. Try again in a minute, or start a project and Nate will reply."; addLink(el, 'start'); return; }
+      }
+    } else if (!sample && !apiOff){
+      try { text = await viaApi(q); el.textContent = text; }
+      catch (e) { apiOff = true; }
+    }
+    if (text){
+      turns.push({ role: 'user', content: q }, { role: 'assistant', content: text });
+      if (/\b(start a project|proposal|quote|contact page)\b/i.test(text)) addLink(el, 'start');
+    } else {
+      await new Promise(r => setTimeout(r, RM ? 0 : 450 + Math.min(900, local[0].length*5)));
+      el.textContent = local[0]; addLink(el, local[1]);
+    }
+  } finally { busy = false; send.disabled = false; ctl = null; scrollLog(); }
+}
+form.addEventListener('submit', e => { e.preventDefault(); ask(input.value); });
+chips.addEventListener('click', e => { const b = e.target.closest('button'); if (b) ask(b.textContent); });
+
+/* ---------- popping up in the studio ---------- */
+let popped = false, inView = false, panelOpen = false, open = false;
+function render(){
+  bub.classList.toggle('on', popped && (inView || open) && !panelOpen);
+}
+function wink(){ if (RM || open) return; bub.classList.add('winking'); setTimeout(() => bub.classList.remove('winking'), 650); }
+function pop(){
+  if (popped) return;
+  popped = true; bub.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    render();
+    setTimeout(wink, 750);
+  }));
+}
+function openPan(){
+  open = true; pan.hidden = false; bub.setAttribute('aria-expanded', 'true');
+  document.dispatchEvent(new CustomEvent('departurz:assistant', { detail: { open: true } }));
+  render();
+  setTimeout(() => input.focus({ preventScroll: true }), 60);
+}
+function closePan(focusBack){
+  if (ctl) ctl.abort();
+  open = false; pan.hidden = true; bub.setAttribute('aria-expanded', 'false');
+  document.dispatchEvent(new CustomEvent('departurz:assistant', { detail: { open: false } }));
+  render();
+  if (focusBack) bub.focus({ preventScroll: true });
+}
+bub.addEventListener('click', () => open ? closePan(true) : openPan());
+bub.addEventListener('mouseenter', wink);
+document.getElementById('dzend').addEventListener('click', () => closePan(true));
+pan.addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); closePan(true); } });
+document.addEventListener('departurz:panel', e => { panelOpen = !!(e.detail && e.detail.open); if (panelOpen && open) closePan(false); render(); });
+
+let timer = 0;
+const seen = new Map();
+if ('IntersectionObserver' in window){
+  const io = new IntersectionObserver(entries => {
+    for (const en of entries){
+      seen.set(en.target, en.isIntersecting);
+      if (en.target === studio && en.intersectionRatio >= 0.35 && !popped && !timer) timer = setTimeout(pop, RM ? 600 : 3400);   // after the room's light-up
+    }
+    inView = [...seen.values()].some(Boolean);
+    render();
+  }, { threshold: [0, 0.35] });
+  io.observe(studio); if (foot) io.observe(foot);
+} else { inView = true; pop(); }
+})();
+</script>
+<script src="legal.js" defer></script>
+</body></html>

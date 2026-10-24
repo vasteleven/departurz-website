@@ -1,0 +1,82 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/pages/:page(about|contact|work)\\.html",
+      "destination": "/:page.html",
+      "permanent": true
+    },
+    {
+      "source": "/pages/services.html",
+      "destination": "/#studio",
+      "permanent": true
+    },
+    {
+      "source": "/pages/:rest*",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/p/:path*",
+      "destination": "/api/p?r=:path*"
+    },
+    {
+      "source": "/portal",
+      "destination": "/portal.html"
+    },
+    {
+      "source": "/work",
+      "destination": "/work.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact.html"
+    }
+  ],
+  "functions": {
+    "api/p.js": {
+      "maxDuration": 60
+    },
+    "api/cron.js": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 15 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/portal-app.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "same-origin"
+        }
+      ]
+    },
+    {
+      "source": "/portal.html",
+      "headers": [
+        {
+          "key": "Referrer-Policy",
+          "value": "same-origin"
+        }
+      ]
+    }
+  ]
+}

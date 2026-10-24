@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Contact DEPARTURZ</title>
+<meta name="description" content="Start a project with DEPARTURZ: web design, production, post-production and sound. We get back to you within 24 hours.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Contact as a boarding pass: you're the passenger, the service is the destination, the project is the flight plan.
+   The stub tears off when it's sent. Same paper, ink, sky and violet as the rest of the site. */
+:root{
+  --paper:#FAFAF8; --stage:#DDDCD7; --card:#F2F0EB; --ink:#0A0A0A; --mute:#6B6A66; --rule:#E3E1DC; --line:#CFCBC2; --sky:#3FB8EE; --violet:#9E80F2;
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --f-cond:"Anton",Impact,"Arial Narrow",sans-serif; --f-mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--stage);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+[hidden]{display:none!important}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:max(22px, env(safe-area-inset-left, 0px));padding-right:max(22px, env(safe-area-inset-right, 0px))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+
+/* the homepage ribbons, fixed behind the whole page */
+.ribbons{position:fixed;inset:0;z-index:-1;width:100vw;height:100vh;height:100lvh;display:block;pointer-events:none}
+main,.bar{position:relative}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
+.home{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-mark);font-weight:900;font-size:22px;letter-spacing:.06em;line-height:1}
+.home i{width:26px;height:26px;background:var(--ink);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.wm{display:block;flex:none;height:.68em;aspect-ratio:1280 / 107;background:currentColor;-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
+@media (max-width:520px){ .home .wm{height:12px} }
+.bar nav{display:flex;gap:22px;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.bar nav a{text-decoration:none;padding-bottom:3px;border-bottom:1.5px solid transparent}
+.bar nav a[aria-current="page"],.bar nav a:hover{border-color:var(--ink)}
+.bar nav{padding:8px 16px;border-radius:99px;background:var(--paper)}
+
+/* intro */
+.intro{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px 48px;padding-block:clamp(24px,5vw,60px) clamp(26px,4vw,44px)}
+.kick{margin:0 0 14px;font-size:13px;font-weight:500;letter-spacing:.2em;text-transform:uppercase}
+h1{margin:0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(66px,11.4vw,176px);line-height:.84;letter-spacing:-.01em;color:var(--ink)}
+.lede{display:inline-block;margin:18px 0 0;max-width:42ch;padding:8px 14px;border-radius:12px;background:var(--paper);font-size:16px}
+.kick{display:inline-block;padding:6px 12px;border-radius:99px;background:var(--paper)}
+.direct{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:16px 26px;min-width:min(100%,430px);padding:20px 22px;border-radius:16px;background:var(--card);font-size:14px;
+  box-shadow:0 20px 40px -24px rgba(10,10,10,.35)}
+.direct::before{content:"";position:absolute;inset:0;border-radius:inherit;background:url(work/paper.webp);background-size:240px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
+.direct > *{position:relative}
+.direct .lab,.direct .row{grid-column:1 / -1}
+.direct a{text-decoration:none}
+.addr{display:grid;gap:4px;font-style:normal;line-height:1.45}
+.addr b{font-weight:900;font-stretch:80%;font-size:22px;line-height:1.1;text-transform:uppercase}
+.addr a{width:fit-content;margin-top:4px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:2px}
+.addr a:hover{border-color:var(--violet)}
+.direct .row{display:grid;gap:10px;padding-top:14px;border-top:1.5px solid var(--line)}
+.direct .row .lab{grid-column:auto}
+/* socials: each one a little luggage tag */
+.socials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.soc{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;padding:9px 10px 9px 16px;border-radius:10px;background:var(--paper);border:1px solid var(--line);color:var(--ink);transition:transform .2s,border-color .2s,background-color .2s}
+.soc::before{content:"";position:absolute;left:6px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--line)}
+.soc b{font-weight:900;font-stretch:80%;font-size:15px;text-transform:uppercase;line-height:1.1}
+.soc span{grid-column:1;font-family:var(--f-mono);font-size:10px;letter-spacing:0;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.soc i{grid-column:2;grid-row:1 / span 2;font-style:normal;font-size:13px;color:var(--mute);transition:transform .2s,color .2s}
+a.soc:hover{transform:translateY(-2px);border-color:transparent;background:linear-gradient(100deg,#DFF3FC,#ECE6FD)}
+a.soc:hover::before{background:linear-gradient(var(--sky),var(--violet))}
+a.soc:hover i{color:var(--ink);transform:translate(2px,-2px)}
+.soc.soon{opacity:.6}
+.soc:last-child:nth-child(odd){grid-column:1 / -1}
+
+/* the boarding pass */
+.pass-wrap{padding-bottom:clamp(60px,9vw,120px);overflow-x:clip}
+.pass{--notch:18px;position:relative;display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,26%,320px);border-radius:18px;
+  filter:drop-shadow(0 30px 40px rgba(10,10,10,.12));
+  -webkit-mask:radial-gradient(circle var(--notch) at calc(100% - clamp(250px,26%,320px)) 0,#0000 98%,#000) top / 100% 51% no-repeat,
+               radial-gradient(circle var(--notch) at calc(100% - clamp(250px,26%,320px)) 100%,#0000 98%,#000) bottom / 100% 51% no-repeat;
+          mask:radial-gradient(circle var(--notch) at calc(100% - clamp(250px,26%,320px)) 0,#0000 98%,#000) top / 100% 51% no-repeat,
+               radial-gradient(circle var(--notch) at calc(100% - clamp(250px,26%,320px)) 100%,#0000 98%,#000) bottom / 100% 51% no-repeat}
+.main,.stub{background:var(--card)}
+.main::before,.stub::before{content:"";position:absolute;inset:0;border-radius:inherit;background:url(work/paper.webp);background-size:240px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
+.main{position:relative;min-width:0;border-radius:18px 0 0 18px;padding:0 clamp(18px,3vw,40px) clamp(22px,3vw,36px)}
+.band{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 calc(-1 * clamp(18px,3vw,40px)) clamp(18px,2.4vw,28px);padding:16px clamp(18px,3vw,40px);background:var(--ink);color:#F2F0EB;border-radius:18px 0 0 0}
+.band .home{font-size:20px}
+.band .home i{background:#F2F0EB}
+.band .flight{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:right;line-height:1.5}
+.band .flight b{display:block;font-weight:500;color:var(--sky)}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(16px,2.2vw,26px) clamp(16px,2.4vw,30px)}
+.f{min-width:0;grid-column:span 3}
+.f.wide{grid-column:1 / -1}
+.f.third{grid-column:span 2}
+.f input[type="text"],.f input[type="email"],.f select,.f textarea{display:block;width:100%;margin-top:6px;padding:6px 0 8px;border:0;border-bottom:1.5px solid var(--line);border-radius:0;background:transparent;
+  font-weight:900;font-stretch:80%;font-size:clamp(20px,2vw,26px);line-height:1.2;outline:none;transition:border-color .2s}
+.f select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 12px) 55%,calc(100% - 6px) 55%;background-size:6px 6px;background-repeat:no-repeat;padding-right:24px}
+.f textarea{min-height:120px;resize:vertical;font-weight:500;font-stretch:100%;font-size:17px;line-height:1.5}
+.f input::placeholder,.f textarea::placeholder{color:#A9A59C;font-weight:500}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--ink)}
+.f input:user-invalid,.f textarea:user-invalid{border-color:#D2493C}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip span{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid var(--ink);border-radius:99px;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:background-color .2s,color .2s}
+.chip span::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor}
+.chip input:checked + span{background:var(--ink);color:#F2F0EB}
+.chip input:checked + span::before{background:linear-gradient(135deg,var(--sky),var(--violet));border-color:transparent}
+.chip input:focus-visible + span{outline:2px solid var(--violet);outline-offset:3px}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* the stub */
+.stub{position:relative;display:flex;flex-direction:column;gap:18px;padding:clamp(20px,2.4vw,30px);border-left:2px dashed var(--line);border-radius:0 18px 18px 0}
+.stub .bp{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.route{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}
+.route .c{font-family:var(--f-cond);font-size:clamp(38px,3.6vw,52px);line-height:.9;text-transform:uppercase}
+.route .c small{display:block;margin-bottom:6px;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--mute)}
+.route .c:last-child{text-align:right;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.route .c:last-child small{color:var(--mute);-webkit-text-fill-color:var(--mute)}
+.route svg{width:34px;height:34px;margin-bottom:6px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding-block:14px;border-block:1.5px solid var(--line)}
+.specs b{display:block;font-weight:900;font-stretch:80%;font-size:20px;line-height:1.15}
+.stub .bars{display:block;width:100%;height:46px;margin-top:auto}
+.send{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px 20px;border:0;border-radius:999px;background:var(--ink);color:#F2F0EB;cursor:pointer;
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:transform .2s,background-color .2s}
+.send:hover{transform:translateY(-2px);background:#26262A}
+.send[disabled]{opacity:.6;cursor:progress}
+.fine{margin:0;font-size:12px;line-height:1.45;color:var(--mute)}
+.err{margin:0;font-size:13px;color:#B23A2F}
+
+/* sent: the stub tears off and a stamp lands */
+.pass.sent .stub{animation:tear 1s cubic-bezier(.5,0,.2,1) forwards}
+@keyframes tear{0%{transform:none}30%{transform:rotate(-2deg) translateY(4px)}100%{transform:rotate(7deg) translate(14px,40px);opacity:.0}}
+.stamp{position:absolute;z-index:3;right:clamp(290px,31%,370px);top:76%;display:grid;place-items:center;gap:2px;width:220px;padding:18px 16px;border:3px solid currentColor;border-radius:12px;color:#5E46C8;
+  font-family:var(--f-cond);text-transform:uppercase;text-align:center;line-height:.95;transform:translateY(-50%) rotate(-9deg) scale(2.2);opacity:0;pointer-events:none;mix-blend-mode:multiply}
+.stamp b{font-size:46px;font-weight:400}
+.stamp span{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em}
+.pass.sent .stamp{animation:stamp .5s .55s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes stamp{to{opacity:.9;transform:translateY(-50%) rotate(-9deg) scale(1)}}
+.done{width:fit-content;margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:12px 18px;border-radius:14px;background:var(--paper);font-size:15px}
+.done a{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+
+footer{position:relative;background:var(--paper);border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 30px}
+.foot nav{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.foot nav a{text-decoration:none;padding-block:6px}
+.foot nav a:hover{color:var(--violet)}
+.legal{margin:0;font-size:12px;color:var(--mute)}
+
+@media (max-width:860px){
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .direct{min-width:0}
+  .pass{grid-template-columns:minmax(0,1fr);
+    -webkit-mask:radial-gradient(circle var(--notch) at 0 var(--cut,70%),#0000 98%,#000) left / 51% 100% no-repeat,radial-gradient(circle var(--notch) at 100% var(--cut,70%),#0000 98%,#000) right / 51% 100% no-repeat;
+            mask:radial-gradient(circle var(--notch) at 0 var(--cut,70%),#0000 98%,#000) left / 51% 100% no-repeat,radial-gradient(circle var(--notch) at 100% var(--cut,70%),#0000 98%,#000) right / 51% 100% no-repeat}
+  .band{border-radius:18px 18px 0 0}
+  .stub{border-left:0;border-top:2px dashed var(--line);border-radius:0 0 18px 18px}
+  .main{border-radius:18px 18px 0 0}
+  .stamp{right:50%;top:60%;transform:translate(50%,-50%) rotate(-9deg) scale(2.2)}
+  @keyframes stamp{to{opacity:.9;transform:translate(50%,-50%) rotate(-9deg) scale(1)}}
+}
+@media (max-width:620px){
+  .bar nav{display:none}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .f,.f.third{grid-column:1 / -1}
+  .band .flight{display:none}
+  .direct{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion: reduce){
+  .pass.sent .stub,.pass.sent .stamp{animation:none}
+  .pass.sent .stamp{opacity:.9;transform:translateY(-50%) rotate(-9deg)}
+  .send{transition:none}
+}
+</style>
+</head>
+<body>
+<canvas class="ribbons" id="ribbons" aria-hidden="true"></canvas>
+
+<header class="wrap bar">
+  <a class="home" href="./" aria-label="DEPARTURZ home"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+  <nav aria-label="Main"><a href="./#studio">Back to the studio</a></nav>
+</header>
+
+<main>
+  <section class="intro wrap" aria-labelledby="contactTitle">
+    <div>
+      <p class="kick">DEPARTURZ / Contact</p>
+      <h1 id="contactTitle">Where to next?</h1>
+      <p class="lede">Tell us about your project. We'll get back to you within 24 hours.</p>
+    </div>
+    <div class="direct">
+      <span class="lab">The studios</span>
+      <address class="addr">
+        <b>Los Angeles</b>
+        <span>3311 La Cienega Blvd.<br>Los Angeles, CA 90016</span>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=3311+La+Cienega+Blvd%2C+Los+Angeles%2C+CA+90016" target="_blank" rel="noopener">Directions ↗</a>
+      </address>
+      <address class="addr">
+        <b>Houston</b>
+        <span>2000 Crawford St.<br>Houston, TX 77002</span>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=2000+Crawford+St%2C+Houston%2C+TX+77002" target="_blank" rel="noopener">Directions ↗</a>
+      </address>
+      <div class="row">
+        <span class="lab">Follow along</span>
+        <div class="socials" id="socials"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pass-wrap wrap" aria-labelledby="passTitle">
+    <h2 class="sr" id="passTitle">Start a project</h2>
+    <form class="pass" id="pass" novalidate>
+      <div class="main">
+        <div class="band">
+          <span class="home" aria-hidden="true"><i></i><span class="wm">DEPARTURZ</span></span>
+          <span class="flight" aria-hidden="true"><b>Boarding pass</b>Flight DPZ 001</span>
+        </div>
+        <div class="grid">
+          <label class="f"><span class="lab">Passenger</span><input type="text" name="name" autocomplete="name" placeholder="Your name" required></label>
+          <label class="f"><span class="lab">Email</span><input type="email" name="email" autocomplete="email" placeholder="you@email.com" required></label>
+          <fieldset class="f wide" style="border:0;margin:0;padding:0">
+            <legend class="lab">Destination · pick any</legend>
+            <div class="chips">
+              <label class="chip"><input type="checkbox" name="service" value="Web Design"><span>Web Design</span></label>
+              <label class="chip"><input type="checkbox" name="service" value="Production"><span>Production</span></label>
+              <label class="chip"><input type="checkbox" name="service" value="Post-Production"><span>Post-Production</span></label>
+              <label class="chip"><input type="checkbox" name="service" value="Sound"><span>Sound</span></label>
+              <label class="chip"><input type="checkbox" name="service" value="Not sure yet"><span>Not sure yet</span></label>
+            </div>
+          </fieldset>
+          <label class="f third"><span class="lab">Departure</span>
+            <select name="when"><option value="">When?</option><option>As soon as possible</option><option>This month</option><option>In 1 to 3 months</option><option>Just planning</option></select></label>
+          <label class="f third"><span class="lab">Budget · optional</span>
+            <select name="budget"><option value="">Pick a range</option><option>Under $2,500</option><option>$2,500 to $10,000</option><option>$10,000 and up</option><option>Not sure yet</option></select></label>
+          <label class="f third"><span class="lab">Company · optional</span><input type="text" name="company" autocomplete="organization" placeholder="Who it's for"></label>
+          <label class="f wide"><span class="lab">Flight plan</span><textarea name="message" rows="4" placeholder="What's the story? Dates, places, links, anything that helps." required></textarea></label>
+          <label class="trap" aria-hidden="true">Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+      </div>
+      <div class="stub">
+        <div class="bp"><span>Boarding</span><span>Now</span></div>
+        <div class="route" aria-hidden="true">
+          <span class="c"><small>From</small>Idea</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l7-2 4-8 2 1-2 7 5 1 2-2 1 1-2 4-17-2z"/></svg>
+          <span class="c"><small>To</small>Live</span>
+        </div>
+        <div class="specs">
+          <span><span class="lab">Gate</span><b>LA / HTX</b></span>
+          <span><span class="lab">Seat</span><b>1A</b></span>
+          <span><span class="lab">Class</span><b>First</b></span>
+          <span><span class="lab">Reply</span><b>In 24 hrs</b></span>
+        </div>
+        <svg class="bars" viewBox="0 0 160 46" preserveAspectRatio="none" aria-hidden="true" id="bars"></svg>
+        <p class="err" id="err" role="alert" hidden></p>
+        <button class="send" type="submit" id="send"><span>Book my departure</span><span aria-hidden="true">→</span></button>
+        <p class="fine">We only use your details to reply to you.</p>
+      </div>
+      <div class="stamp" aria-hidden="true"><span>DEPARTURZ</span><b>Boarded</b><span id="stampDate"></span></div>
+    </form>
+    <div class="done" id="done" role="status" hidden></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="home" href="./#studio"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+    <nav aria-label="Footer">
+      <a href="./#studio">Back to the studio</a>
+      <a href="#terms" data-legal="terms">Terms of Use</a>
+      <a href="#privacy" data-legal="privacy">Privacy</a>
+    </nav>
+    <p class="legal">© 2026 DEPARTURZ · Los Angeles · Houston</p>
+  </div>
+</footer>
+
+<script>
+/* Social accounts. Add a handle and it becomes a link; until then it shows as "coming soon". */
+const SOCIALS = [
+  { name: 'Instagram', handle: '@departurzinc', url: 'https://www.instagram.com/departurzinc' },
+  { name: 'YouTube',   handle: '@DEPARTURZ',    url: 'https://www.youtube.com/@DEPARTURZ' },
+  { name: 'TikTok',    handle: '@departurzinc', url: 'https://www.tiktok.com/@departurzinc' },
+  { name: 'LinkedIn',  handle: 'DEPARTURZ',     url: 'https://www.linkedin.com/company/departurz/' },
+  { name: 'Facebook',  handle: 'Departurz Studio', url: 'https://www.facebook.com/people/Departurz-Studio/61595630318182/' }
+];
+(function(){
+  const box = document.getElementById('socials'); if (!box) return;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  box.innerHTML = SOCIALS.map(x => x.url
+    ? `<a class="soc" href="${esc(x.url)}" target="_blank" rel="noopener"><b>${esc(x.name)}</b><span>${esc(x.handle)}</span><i aria-hidden="true">↗</i></a>`
+    : `<span class="soc soon"><b>${esc(x.name)}</b><span>Coming soon</span></span>`).join('');
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  const TO = 'wecreate@departurz.com';
+  const form = document.getElementById('pass'), err = document.getElementById('err'), send = document.getElementById('send'), done = document.getElementById('done');
+
+  // the stub's barcode
+  (function(){
+    let x = 0, s = 7, out = '';
+    const r = () => (s = (s*9301 + 49297) % 233280)/233280;
+    while (x < 158){ const w = [1, 1, 1.5, 2, 3][Math.floor(r()*5)]; out += '<rect x="' + x.toFixed(1) + '" width="' + w + '" height="46"/>'; x += w + [1, 1.5, 2][Math.floor(r()*3)]; }
+    document.getElementById('bars').innerHTML = out;
+  })();
+
+  // on phones the stub sits under the form: line the ticket notches up with the perforation
+  const stub = form.querySelector('.stub');
+  function notch(){ form.style.setProperty('--cut', (stub.offsetTop/form.offsetHeight*100).toFixed(2) + '%'); }
+  notch(); window.addEventListener('resize', notch);
+  if ('ResizeObserver' in window) new ResizeObserver(notch).observe(form);
+
+  // arriving from a service pop-up (contact.html?service=production) ticks that destination
+  const MAP = { 'web-design': 'Web Design', 'production': 'Production', 'post-production': 'Post-Production', 'sound': 'Sound' };
+  const pre = new URLSearchParams(location.search).get('service') || (location.hash || '').slice(1);
+  if (MAP[pre]){ const box = form.querySelector('input[name="service"][value="' + MAP[pre] + '"]'); if (box) box.checked = true; }
+  // picking "Not sure yet" clears the others, and the other way round
+  form.querySelectorAll('input[name="service"]').forEach(b => b.addEventListener('change', () => {
+    if (!b.checked) return;
+    form.querySelectorAll('input[name="service"]').forEach(o => { if (o !== b && (b.value === 'Not sure yet' || o.value === 'Not sure yet')) o.checked = false; });
+  }));
+
+  function payload(){
+    const fd = new FormData(form);
+    return {
+      name: (fd.get('name') || '').trim(), email: (fd.get('email') || '').trim(), company: (fd.get('company') || '').trim(),
+      services: fd.getAll('service'), when: fd.get('when') || '', budget: fd.get('budget') || '',
+      message: (fd.get('message') || '').trim(), website: fd.get('website') || ''
+    };
+  }
+  function mailto(p){
+    const lines = ['Name: ' + p.name, 'Email: ' + p.email];
+    if (p.company) lines.push('Company: ' + p.company);
+    if (p.services.length) lines.push('Service: ' + p.services.join(', '));
+    if (p.when) lines.push('Timing: ' + p.when);
+    if (p.budget) lines.push('Budget: ' + p.budget);
+    lines.push('', p.message);
+    return 'mailto:' + TO + '?subject=' + encodeURIComponent('New project: ' + p.name) + '&body=' + encodeURIComponent(lines.join('\n'));
+  }
+  function landed(how){
+    const d = new Date();
+    document.getElementById('stampDate').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+    form.classList.add('sent');
+    form.querySelectorAll('input,select,textarea,button').forEach(el => el.disabled = true);
+    done.hidden = false;
+    done.innerHTML = how === 'sent'
+      ? '<span>You\'re booked. We\'ll be in touch within 24 hours.</span><a href="work.html">See the work →</a>'
+      : '<span>Your email app should open with everything filled in. Just hit send. If nothing opens, message us on <a href="https://www.instagram.com/departurzinc">Instagram</a>.</span>';
+    done.focus && done.setAttribute('tabindex', '-1'); done.focus({ preventScroll: true });
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    err.hidden = true;
+    const p = payload();
+    const miss = [];
+    if (!p.name) miss.push('your name');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) miss.push('a valid email');
+    if (!p.message) miss.push('a few words about the project');
+    if (miss.length){
+      err.textContent = 'Almost there. Add ' + miss.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.';
+      err.hidden = false;
+      const q = n => form.querySelector('[name="' + n + '"]');
+      const first = !p.name ? q('name') : (miss.includes('a valid email') ? q('email') : q('message'));
+      first.focus(); return;
+    }
+    if (p.website) { landed('sent'); return; }               // a bot filled the hidden field
+    send.disabled = true; send.firstElementChild.textContent = 'Boarding…';
+    let ok = false;
+    try {
+      const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
+      const j = r.ok ? await r.json().catch(() => null) : null;
+      ok = !!(j && j.ok);
+    } catch (e2) { ok = false; }
+    if (ok) landed('sent');
+    else { landed('mail'); location.href = mailto(p); }      // no server here: hand it to their email app instead
+  });
+})();
+
+/* the homepage's flowing ribbons (the same shader), filling the page and parting around the cursor */
+(function(){
+  const cv = document.getElementById('ribbons');
+  if (!cv) return;
+  const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let gl = null;
+  try { gl = cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false }); } catch (e) {}
+  if (!gl){ cv.style.display = 'none'; return; }
+  const vs = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+  const fs = `
+precision highp float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform float uReveal;
+uniform vec3 uMouse;      // xy in the same units as uv, z = how much the cursor counts
+vec3 permute(vec3 x){ return mod(((x*34.0) + 1.0)*x, 289.0); }
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
+  i = mod(i, 289.0);
+  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0*fract(p*C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314*(a0*a0 + h*h);
+  vec3 g; g.x = a0.x*x0.x + h.x*x0.y; g.yz = a0.yz*x12.xz + h.yz*x12.yw;
+  return 130.0*dot(m, g);
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy/uRes.y;
+  vec2 ctr = vec2(0.5*uRes.x/uRes.y, 0.5);
+  float t = uTime;
+  // the cursor pushes the ribbons aside
+  vec2 d = uv - uMouse.xy; float md = length(d);
+  vec2 push = d*uMouse.z*0.9*exp(-md*md*9.0);
+  vec2 p = (uv - push)*2.6;
+  vec2 q = vec2(snoise(p*0.55 + vec2(0.0, 0.07*t)), snoise(p*0.55 + vec2(5.2, -0.05*t)));
+  float n = snoise(p + 1.25*q + vec2(0.03*t, -0.02*t));
+  float w = 0.21 + 0.07*snoise(p*0.45 + vec2(9.1, 0.02*t));
+  float aa = 3.2*2.6/uRes.y;
+  float ribbon = smoothstep(w + aa, w - aa, abs(n));
+  // the site's colours: the smiley's grey stage, ribbons lit like its glow, blue from above and violet below
+  vec3 stageGrey = vec3(0.867, 0.863, 0.843);
+  vec3 sky    = vec3(0.247, 0.722, 0.933);
+  vec3 violet = vec3(0.620, 0.502, 0.949);
+  float k = smoothstep(0.85, 0.15, gl_FragCoord.y/uRes.y + 0.12*q.x);
+  vec3 ink = mix(sky, violet, k);
+  vec3 col = mix(stageGrey, ink, ribbon);
+  // it opens out from the middle, where the sunglasses were
+  float r = uReveal*1.35*length(ctr) + 0.05*snoise(uv*5.0 + 0.1*t);
+  float shown = smoothstep(r, r - 0.08, length(uv - ctr));
+  gl_FragColor = vec4(mix(stageGrey, col, shown), 1.0);
+}`;
+  function sh(type, src){ const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
+  let prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { cv.style.display = 'none'; return; }
+  gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = n => gl.getUniformLocation(prog, n);
+  const uRes = U('uRes'), uTime = U('uTime'), uReveal = U('uReveal'), uMouse = U('uMouse');
+  let bw = 0, bh = 0;
+  function size(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+    const w = Math.round(cv.clientWidth*dpr), h = Math.round(cv.clientHeight*dpr);
+    if (w !== bw || h !== bh){ bw = cv.width = w; bh = cv.height = h; gl.viewport(0, 0, w, h); }
+  }
+  const m = { x: 0, y: 0, on: 0, target: 0 };
+  window.addEventListener('pointermove', e => {
+    const h = cv.clientHeight || innerHeight;
+    m.x = e.clientX/h; m.y = (h - e.clientY)/h; m.target = e.pointerType === 'mouse' ? 1 : 0;
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { m.target = 0; });
+  const t0 = performance.now(); let last = t0, raf = 0;
+  function frame(now){
+    raf = 0;
+    const dt = Math.min(0.05, (now - last)/1000); last = now;
+    m.on += (m.target - m.on)*(1 - Math.exp(-dt*4));
+    size();
+    const reveal = RM ? 1 : Math.min(1, (now - t0)/1600);
+    gl.uniform2f(uRes, bw, bh);
+    gl.uniform1f(uTime, RM ? 0 : (now - t0)/1000);
+    gl.uniform1f(uReveal, 1 - Math.pow(1 - reveal, 3));
+    gl.uniform3f(uMouse, m.x, m.y, RM ? 0 : m.on);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!RM && !document.hidden) raf = requestAnimationFrame(frame);
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !raf && !RM){ last = performance.now(); raf = requestAnimationFrame(frame); } });
+  window.addEventListener('resize', () => { if (RM) requestAnimationFrame(frame); });
+  raf = requestAnimationFrame(frame);
+})();
+</script>
+<script>
+/* every page opens at its top. Inside some previews (like the claude.ai viewer) the last page's scroll position could carry over. */
+(function(){
+  if (location.hash) return;
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+  const top = () => { window.scrollTo(0, 0); try { document.documentElement.scrollIntoView({ block: 'start' }); } catch (e) {} };
+  top(); window.addEventListener('load', top, { once: true });
+})();
+</script>
+<script src="legal.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DEPARTURZ Portal</title>
+<meta name="description" content="The DEPARTURZ client and crew portal.">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* One app, two doors. Clients get their project as a flight (boarding pass, check-in, fare);
+   the crew get a lounge (comms, call sheet, cargo, payroll). Paper, ink, sky and violet, loud condensed type. */
+:root{
+  --paper:#FAFAF8; --card:#FFFFFF; --stone:#F1EFEA; --line:#E3E1DC; --line2:#D2CFC7; --ink:#0A0A0A; --ink2:#1A1A1D; --mute:#6B6A66;
+  --sky:#3FB8EE; --skyink:#1C7FB0; --violet:#9E80F2; --vink:#6B4FD8; --sun:#F7C21B; --ok:#1F9D6B; --warn:#D9822B; --bad:#D2493C;
+  --grad:linear-gradient(100deg,var(--sky) 6%,var(--violet) 92%);
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-cond:"Anton",Impact,"Arial Narrow",sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --side:252px; --r:18px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+.mute{color:var(--mute)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.side{position:sticky;top:0;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:18px;padding:22px 16px;background:var(--ink);color:#F2F0EB;overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px;text-decoration:none;font-family:var(--f-mark);font-weight:900;font-size:22px;letter-spacing:.05em;line-height:1}
+.brand i{width:26px;height:26px;background:#F2F0EB;-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.wm{display:block;flex:none;height:.68em;aspect-ratio:1280 / 107;background:currentColor;-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
+.door{display:inline-flex;align-self:flex-start;margin:-6px 8px 0;padding:4px 10px;border-radius:99px;background:var(--grad);color:var(--ink);font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+.nav{display:grid;gap:2px}
+.nav a{position:relative;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;text-decoration:none;color:#BEBCB6;font-size:14.5px;font-weight:500;transition:background-color .15s,color .15s}
+.nav a svg{width:19px;height:19px;flex:none}
+.nav a:hover{background:#1C1C20;color:#fff}
+.nav a[aria-current="page"]{background:#F2F0EB;color:var(--ink)}
+.nav a .ct{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--violet);color:var(--ink);font-size:11px;font-weight:700;display:grid;place-items:center}
+.nav a[aria-current="page"] .ct{background:var(--ink);color:#fff}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:#17171A}
+.av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--grad);color:var(--ink);font-weight:800;font-size:13px;letter-spacing:.02em}
+.av.lg{width:84px;height:84px;font-size:28px}
+.av.sm{width:30px;height:30px;font-size:11px}
+.th .av,.me .av{display:grid;place-items:center;color:var(--ink);font-weight:800;white-space:normal;overflow:visible}
+.th .av{font-size:11px}.me .av{font-size:13px}
+.me b{display:block;font-size:13.5px;line-height:1.2}
+.me span{font-size:12px;color:#9C9A94}
+.me a{margin-left:auto;font-size:11px;color:#9C9A94;text-decoration:none}
+.me a:hover{color:#fff}
+.main{min-width:0;padding:clamp(18px,3vw,36px) clamp(16px,3.4vw,44px) 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(18px,3vw,30px)}
+.hello .mono{display:block;color:var(--mute);margin-bottom:4px}
+.hello h1{margin:0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(34px,4.6vw,58px);line-height:.9;letter-spacing:-.01em}
+.top-act{display:flex;align-items:center;gap:10px}
+.icon-btn{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:var(--card)}
+.icon-btn svg{width:19px;height:19px}
+.icon-btn .dot{position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--violet);border:2px solid var(--card)}
+.preview{display:flex;align-items:center;gap:10px;margin:0 0 18px;padding:10px 14px;border-radius:12px;background:#EEF7FC;border:1px solid #CBE7F6;font-size:13px}
+.preview b{font-weight:600}
+.preview a{margin-left:auto;font-weight:600;color:var(--skyink);text-decoration:none;white-space:nowrap}
+.tabbar{display:none}
+.top-av{display:none;width:44px;height:44px;text-decoration:none}
+
+/* ---------- building blocks ---------- */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-main{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(16px,2vw,22px);min-width:0}
+.card.ink{background:var(--ink);color:#F2F0EB;border-color:var(--ink)}
+.card.stone{background:var(--stone);border-color:var(--stone)}
+.card h2,.card h3{margin:0}
+.c-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.c-head h2{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(24px,2.4vw,30px);line-height:.95}
+.c-head a,.c-head button.lnk{font-size:13px;font-weight:600;color:var(--skyink);text-decoration:none;background:none;border:0;padding:0}
+.big{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;line-height:.88}
+.kpi{display:grid;gap:4px}
+.kpi .big{font-size:clamp(34px,3.6vw,48px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:99px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;transition:transform .15s,background-color .15s}
+.btn:hover{transform:translateY(-1px);background:#26262A}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn.light{background:#F2F0EB;color:var(--ink);border-color:#F2F0EB}
+.btn.sm{height:36px;padding:0 14px;font-size:13px}
+.btn.grad-b{background:var(--grad);border:0;color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.ok{background:#E6F5EE;color:var(--ok)}
+.chip.due{background:#FFF3E2;color:var(--warn)}
+.chip.bad{background:#FCEBE9;color:var(--bad)}
+.chip.now{background:#EFEAFE;color:var(--vink)}
+.chip.info{background:#E8F6FD;color:var(--skyink)}
+.chip.off{background:var(--stone);color:var(--mute)}
+.field{display:grid;gap:6px;font-size:13px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);font-weight:400;font-size:14.5px;outline:none}
+.field textarea{min-height:90px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(158,128,242,.18)}
+.toast{position:fixed;left:50%;bottom:24px;z-index:80;transform:translate(-50%,20px);max-width:min(560px,calc(100vw - 32px));padding:12px 18px;border-radius:14px;background:var(--ink);color:#fff;font-size:14px;box-shadow:0 18px 40px -18px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.empty{padding:22px;border:1.5px dashed var(--line2);border-radius:14px;text-align:center;color:var(--mute);font-size:14px}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .grow{flex:1;min-width:0}
+.row .t{font-weight:600;line-height:1.3}
+.row .s{font-size:13px;color:var(--mute)}
+.ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--stone)}
+.ico svg{width:19px;height:19px}
+
+/* ---------- the boarding pass ---------- */
+.pass{--notch:16px;display:grid;grid-template-columns:minmax(0,1fr) 230px;border-radius:22px;background:var(--ink);color:#F2F0EB;overflow:hidden;
+  -webkit-mask:radial-gradient(circle var(--notch) at calc(100% - 230px) 0,#0000 98%,#000) top / 100% 51% no-repeat,radial-gradient(circle var(--notch) at calc(100% - 230px) 100%,#0000 98%,#000) bottom / 100% 51% no-repeat;
+          mask:radial-gradient(circle var(--notch) at calc(100% - 230px) 0,#0000 98%,#000) top / 100% 51% no-repeat,radial-gradient(circle var(--notch) at calc(100% - 230px) 100%,#0000 98%,#000) bottom / 100% 51% no-repeat}
+.pass-main{padding:clamp(18px,2.4vw,28px);display:grid;gap:18px;min-width:0}
+.pass-top{display:flex;justify-content:space-between;gap:12px;color:#9C9A94}
+.pass-top b{color:var(--sky);font-weight:500}
+.status{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(46px,6.6vw,96px);line-height:.85;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pass-title{margin:0;font-size:clamp(17px,1.6vw,21px);font-weight:600}
+.flight{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px}
+.flight .end{font-family:var(--f-cond);font-size:24px;text-transform:uppercase;line-height:1}
+.flight .end small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;color:#9C9A94;margin-bottom:4px}
+.track{position:relative;height:2px;background:repeating-linear-gradient(90deg,#4A4A50 0 6px,transparent 6px 11px)}
+.track i{position:absolute;left:0;top:0;height:2px;background:var(--grad);border-radius:2px}
+.track svg{position:absolute;top:50%;width:26px;height:26px;transform:translate(-50%,-50%) rotate(90deg);color:#fff;filter:drop-shadow(0 0 8px rgba(63,184,238,.7))}
+.pass-stub{padding:clamp(18px,2.4vw,26px);border-left:2px dashed #3A3A40;display:grid;align-content:space-between;gap:14px}
+.stub-row{display:grid;gap:3px}
+.stub-row b{font-family:var(--f-cond);font-weight:400;font-size:26px;line-height:1;text-transform:uppercase}
+.stub-row b.s{font-family:var(--f);font-weight:700;font-size:16px;text-transform:none}
+.bars{display:block;width:100%;height:40px;fill:#F2F0EB}
+
+/* ---------- timeline ---------- */
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl li{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px;padding:0 0 22px}
+.tl li:last-child{padding-bottom:0}
+.tl .dot{position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:2px solid var(--line2)}
+.tl .done .dot{background:var(--ink);border-color:var(--ink);color:#fff}
+.tl .now .dot{background:var(--grad);border:0;box-shadow:0 0 0 6px rgba(158,128,242,.18)}
+.tl .dot svg{width:15px;height:15px}
+.tl .h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.tl .h b{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:22px;line-height:1}
+.tl .next .h b{color:#A9A59C}
+.tl p{margin:4px 0 0;font-size:14px;color:#3A3A37}
+.review{margin-top:12px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:center;padding:12px;border-radius:14px;background:var(--stone)}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:10px;background:linear-gradient(135deg,#202024,#3A3348);overflow:hidden;display:grid;place-items:center;color:#fff}
+.thumb svg{width:30px;height:30px;opacity:.9}
+.review .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+/* ---------- check-in: what we need ---------- */
+.needs{display:grid;gap:12px}
+.need{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.need .ico{width:44px;height:44px;border-radius:14px}
+.need.received{background:#FBFCFA}
+.need.received .t{color:var(--mute);text-decoration:line-through;text-decoration-color:#B9B6AE}
+.need .t{font-weight:700}
+.need .s{font-size:13px;color:var(--mute)}
+.need-body{grid-column:1 / -1;display:grid;gap:10px}
+.drop{position:relative;display:grid;place-items:center;gap:6px;padding:26px 16px;border:2px dashed var(--line2);border-radius:16px;background:var(--paper);text-align:center;transition:border-color .2s,background-color .2s}
+.drop.over{border-color:var(--violet);background:#F6F2FF}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop b{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:22px;line-height:1}
+.drop small{font-size:12.5px;color:var(--mute)}
+.files-q{display:grid;gap:8px}
+.fq{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--stone);font-size:13px}
+.fq .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fq .bar2{grid-column:1 / -1;height:4px;border-radius:4px;background:#DDDAD2;overflow:hidden}
+.fq .bar2 i{display:block;height:100%;background:var(--grad);width:0;transition:width .3s}
+.bag-ct{display:flex;gap:10px;flex-wrap:wrap}
+.bag-ct .card{flex:1 1 140px;padding:14px 16px}
+
+/* ---------- calendar ---------- */
+.cal-wrap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.cal-head h2{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(28px,3vw,38px);line-height:.9}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--card);display:grid;place-items:center}
+.cal-nav svg{width:16px;height:16px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .dow{padding:4px 0;text-align:center;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--mute)}
+.day{position:relative;min-height:84px;padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--card);text-align:left;display:flex;flex-direction:column;gap:4px;transition:border-color .15s}
+.day:hover{border-color:var(--ink)}
+.day.out{background:transparent;border-color:transparent;color:#B9B6AE}
+.day.today .n{background:var(--ink);color:#fff}
+.day.sel{border-color:var(--violet);box-shadow:0 0 0 2px var(--violet) inset}
+.day .n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:700}
+.ev{display:block;width:100%;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:600;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev.due{background:#FFF0DB;color:#9A5414}
+.ev.shoot,.ev.event{background:#E8F6FD;color:var(--skyink)}
+.ev.review,.ev.delivery{background:#EFEAFE;color:var(--vink)}
+.ev.note{background:var(--stone);color:#4A4A45}
+.ev.book{background:var(--ink);color:#fff}
+.ev.task{background:#FFF0DB;color:#9A5414}
+.ev.done{background:#E6F5EE;color:var(--ok);text-decoration:line-through}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;font-size:12px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px}
+.seg{display:inline-flex;padding:4px;border-radius:99px;background:var(--stone);gap:2px}
+.seg button{height:34px;padding:0 14px;border:0;border-radius:99px;background:transparent;font-size:13px;font-weight:600;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* ---------- payments ---------- */
+.fare{display:grid;grid-template-columns:auto 1fr;gap:6px 22px;align-items:end}
+.fare .big{font-size:clamp(56px,6.4vw,88px)}
+.methods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.method{display:grid;gap:4px;padding:14px;border:1.5px solid var(--line);border-radius:16px;background:var(--card);text-align:left;transition:border-color .15s,transform .15s}
+.method:hover{border-color:var(--ink);transform:translateY(-1px)}
+.method[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.method .mk{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.method .mk i{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;color:#fff;font-style:normal;font-size:12px;font-weight:800}
+.method small{font-size:12px;color:var(--mute)}
+.inv{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 16px;align-items:center}
+
+/* ---------- messages / comms ---------- */
+.chat{display:grid;grid-template-columns:300px minmax(0,1fr);height:calc(100dvh - 170px);min-height:520px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}
+.chat.single{grid-template-columns:minmax(0,1fr)}
+.threads{border-right:1px solid var(--line);overflow:auto;background:var(--paper)}
+.threads h3{margin:0;padding:14px 16px 6px;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.th{display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;border:0;background:transparent;text-align:left}
+.th:hover{background:var(--stone)}
+.th[aria-current="true"]{background:#EFEAFE}
+.th .grow{flex:1;min-width:0}
+.th b{display:block;font-size:14px}
+.th span{display:block;font-size:12.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.th .hash{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--ink);color:#fff;font-weight:800}
+.th .un{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--violet);color:var(--ink);font-size:11px;font-weight:800;display:grid;place-items:center}
+.convo{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0}
+.convo-h{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.convo-h b{display:block}
+.convo-h span{font-size:12.5px;color:var(--mute)}
+.back{display:none;border:0;background:none;padding:6px}
+.msgs{overflow:auto;padding:18px 16px;display:flex;flex-direction:column;gap:10px;background:
+  radial-gradient(circle at 20% 10%,rgba(63,184,238,.06),transparent 40%),radial-gradient(circle at 90% 80%,rgba(158,128,242,.07),transparent 40%),var(--paper)}
+.daytag{align-self:center;padding:4px 12px;border-radius:99px;background:var(--stone);font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.m{display:flex;gap:8px;max-width:78%}
+.m .av{margin-top:auto}
+.m.mine{align-self:flex-end;flex-direction:row-reverse}
+.bub{padding:9px 13px 7px;border-radius:16px 16px 16px 4px;background:var(--card);border:1px solid var(--line);font-size:14.5px;line-height:1.45;word-wrap:break-word;min-width:0}
+.m.mine .bub{border-radius:16px 16px 4px 16px;background:var(--ink);color:#F2F0EB;border-color:var(--ink)}
+.bub .who{display:block;font-size:12px;font-weight:700;color:var(--vink);margin-bottom:2px}
+.bub .when{display:block;margin-top:3px;font-size:10.5px;color:var(--mute);text-align:right}
+.m.mine .bub .when{color:#9C9A94}
+.att{display:flex;align-items:center;gap:8px;margin:4px 0;padding:8px 10px;border-radius:10px;background:rgba(128,128,128,.12);font-size:13px}
+.att svg{width:16px;height:16px;flex:none}
+.compose{display:flex;align-items:flex-end;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--card)}
+.compose textarea{flex:1;min-height:44px;max-height:140px;padding:11px 14px;border:1px solid var(--line2);border-radius:22px;resize:none;outline:none;font-size:14.5px;background:var(--paper)}
+.compose .round{flex:none;width:44px;height:44px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--stone)}
+.compose .round.send{background:var(--grad)}
+.compose svg{width:19px;height:19px}
+
+/* ---------- tasks / crew ---------- */
+.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.task .chk{width:26px;height:26px;border-radius:8px;border:2px solid var(--line2);background:var(--card);display:grid;place-items:center}
+.task.done .chk{background:var(--ink);border-color:var(--ink);color:#fff}
+.task.done .t{text-decoration:line-through;color:var(--mute)}
+.task .chk svg{width:14px;height:14px}
+.cd{text-align:right}
+.cd b{display:block;font-family:var(--f-cond);font-weight:400;font-size:24px;line-height:1;text-transform:uppercase}
+.cd b.bad{color:var(--bad)} .cd b.warn{color:var(--warn)}
+.clocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.clock{padding:12px 14px;border-radius:14px;background:var(--stone)}
+.clock b{display:block;font-family:var(--f-cond);font-weight:400;font-size:30px;line-height:1}
+.clock span{font-size:12px;color:var(--mute)}
+.clock.night{background:var(--ink2);color:#F2F0EB}
+.clock.night span{color:#9C9A94}
+.kudos{padding:18px;border-radius:var(--r);background:var(--ink);color:#F2F0EB;position:relative;overflow:hidden}
+.kudos::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:var(--grad);opacity:.35;filter:blur(10px)}
+.kudos p{position:relative;margin:8px 0 0;font-size:16px;line-height:1.5}
+.kudos .mono{color:var(--sky)}
+.bars-chart{display:flex;align-items:flex-end;gap:8px;height:120px}
+.bars-chart div{flex:1;display:grid;gap:6px;justify-items:center;font-size:11px;color:var(--mute)}
+.bars-chart i{display:block;width:100%;border-radius:8px 8px 4px 4px;background:var(--grad)}
+
+/* ---------- profile ---------- */
+.profile-hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:20px;align-items:center}
+.profile-hero h2{margin:0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(32px,4vw,48px);line-height:.92}
+.socials{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.soc{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px}
+.soc i{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;font-style:normal;font-weight:800;font-size:12px}
+.soc input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:14px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.switch:last-child{border-bottom:0}
+.switch input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:28px;border-radius:99px;background:var(--line2);position:relative;cursor:pointer;transition:background-color .2s}
+.switch input::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch input:checked{background:var(--ink)}
+.switch input:checked::after{transform:translateX(20px)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.tagchip{padding:6px 12px;border-radius:99px;background:var(--stone);font-size:13px;font-weight:600}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(10,10,10,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.sheet{width:min(520px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.sheet h3{margin:0 0 6px;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:30px;line-height:.95}
+.sheet .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.sheet.wide{width:min(900px,100%)}
+/* confirmation number and documents */
+.conf-row b{font-family:var(--f-mono);font-weight:500;font-size:17px;letter-spacing:.06em;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.conf{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.conf-code{display:block;margin-top:8px;font-family:var(--f-mono);font-weight:500;font-size:clamp(34px,5.4vw,66px);letter-spacing:.06em;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.conf p{margin:12px 0 0;color:#BEBCB6;max-width:58ch;font-size:14px}
+.conf-act{display:flex;gap:8px;flex-wrap:wrap}
+.conf-act .btn.ghost{color:#fff;border-color:#fff}
+.sec{margin:26px 0 12px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}
+.doc{position:relative;display:grid;grid-template-columns:84px minmax(0,1fr);border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.doc::before,.doc::after{content:"";position:absolute;left:75px;width:18px;height:18px;border-radius:50%;background:var(--paper);border:1px solid var(--line)}
+.doc::before{top:-10px;clip-path:inset(50% 0 0 0)}.doc::after{bottom:-10px;clip-path:inset(0 0 50% 0)}
+.doc.sign{border-color:var(--violet);box-shadow:0 0 0 3px rgba(158,128,242,.16)}
+.doc-stub{display:grid;justify-items:center;align-content:center;gap:10px;padding:16px 6px;border-radius:17px 0 0 17px;background:var(--ink);color:#fff;border-right:2px dashed #45454C}
+.doc-stub .ico{background:rgba(255,255,255,.1);color:#fff}
+.doc-stub b{font-family:var(--f-cond);font-weight:400;font-size:30px;line-height:1}
+.doc.sign .doc-stub b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.doc-body{padding:14px 16px 16px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.doc-top{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+.doc-top .mono{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-title{font-size:17px;line-height:1.25}
+.doc-body p{margin:0;font-size:13.5px;color:#3A3A37}
+.doc-meta{font-size:12.5px}
+.doc-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.recs .row{text-decoration:none}
+.recs .s.mono{font-size:10px}
+.recs b.amt{font-weight:800;white-space:nowrap}
+.check{display:flex;gap:10px;align-items:flex-start;margin:14px 0;font-size:14.5px;line-height:1.4;cursor:pointer}
+.check input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--ink)}
+.player{margin-top:12px;aspect-ratio:16/9;background:#0A0A0A;border-radius:14px;display:grid;place-items:center;color:#9C9A94;font-size:14px;overflow:hidden}
+.player iframe{width:100%;height:100%;border:0}
+button.att{border:0;cursor:pointer;color:inherit;font:inherit;text-align:left;width:100%}
+button.att:hover{background:rgba(128,128,128,.22)}
+.compose .round.rec{background:var(--bad);color:#fff;animation:recpulse 1.2s ease-in-out infinite}
+@keyframes recpulse{50%{box-shadow:0 0 0 6px rgba(210,73,60,.2)}}
+.chat-q{padding:0 12px}
+.chat-q:empty{display:none}
+.boot{display:grid;place-items:center;min-height:60vh;text-align:center}
+.boot b{display:block;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(40px,7vw,84px);line-height:.9;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.boot span{display:block;margin-top:10px;color:var(--mute);font-size:14px}
+.viewas{display:flex;align-items:center;gap:10px;margin:0 0 18px;padding:10px 14px;border-radius:12px;background:#FFF3E2;border:1px solid #F5D9B0;font-size:13px}
+.pick{display:flex;gap:10px;align-items:center;margin:-4px 0 14px;font-size:13px}
+.pick select{min-height:36px;border:1px solid var(--line2);border-radius:99px;padding:0 12px;background:var(--card);font-size:13px}
+.ph-btn{position:relative;border:0;padding:0;cursor:pointer;overflow:visible}
+.ph-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.ph-btn i{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;border:2px solid var(--card)}
+.tagchip button{border:0;background:none;cursor:pointer;margin-left:4px;color:var(--mute);font-size:14px;line-height:1;padding:0}
+.paylist{display:grid;gap:8px;margin:12px 0}
+.paylist label{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.paylist label b{margin-left:auto}
+.handle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0;padding:14px 16px;border-radius:14px;background:var(--stone);font-size:17px;font-weight:800;word-break:break-all}
+.qr{width:150px;height:150px;border-radius:14px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center}
+
+/* ---------- phones: bottom tab bar like an app ---------- */
+@media (max-width:980px){
+  .g-main,.cal-wrap{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .main{padding:16px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:var(--ink);border-radius:20px 20px 0 0}
+  .tabbar a{display:grid;justify-items:center;gap:3px;padding:6px 2px;border-radius:12px;text-decoration:none;color:#9C9A94;font-size:10.5px;font-weight:600;position:relative}
+  .tabbar a svg{width:22px;height:22px}
+  .tabbar a[aria-current="page"]{color:#fff}
+  .tabbar a[aria-current="page"]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:3px;background:var(--grad)}
+  .tabbar .ct{position:absolute;top:2px;right:calc(50% - 20px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--violet);color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+  .g2,.g3{grid-template-columns:minmax(0,1fr)}
+  .pass{grid-template-columns:minmax(0,1fr);-webkit-mask:none;mask:none}
+  .pass-stub{border-left:0;border-top:2px dashed #3A3A40;grid-template-columns:1fr 1fr;align-items:end}
+  .pass-stub .bars{grid-column:1 / -1}
+  .chat{grid-template-columns:minmax(0,1fr);height:calc(100dvh - 190px)}
+  .chat .threads{border-right:0}
+  .chat.open .threads{display:none}
+  .chat:not(.open) .convo{display:none}
+  .chat.single .convo{display:grid}
+  .back{display:grid}
+  .day{min-height:58px;padding:5px}
+  .day .ev{font-size:0;height:6px;padding:0;border-radius:3px}
+  .profile-hero{grid-template-columns:auto minmax(0,1fr)}
+  .profile-hero .btn{grid-column:1 / -1}
+  .review{grid-template-columns:minmax(0,1fr)}
+  .top .btn{display:none}
+  .top-av{display:grid}
+  .need{grid-template-columns:44px minmax(0,1fr)}
+  .need-act{grid-column:2;justify-content:space-between}
+  .hello h1{font-size:34px}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="side" aria-label="Portal">
+    <a class="brand" href="./" aria-label="DEPARTURZ home"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+    <span class="door" id="door"></span>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="me" id="me"></div>
+  </aside>
+  <main class="main" id="main" tabindex="-1"></main>
+  <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== settings you fill in ===================== */
+// These fill in by themselves when the page runs on the DEPARTURZ site with the portal API behind it.
+// Anywhere else (like a preview link) the portal shows sample data and nothing is saved or sent.
+const CONFIG = {
+  live: false, side: null,
+  notify: 'wecreate@departurz.com',
+  drive: 'departurzedits@gmail.com',
+  pay: { stripe: true, cashapp: true, paypal: 'preview', square: true, zelle: '', cashtag: '' }
+};
+
+/* ===================== helpers ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const D = n => { const d = new Date(TODAY); d.setDate(d.getDate() + n); return iso(d); };      // a date n days from today
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const fmt = (s, o) => s ? parse(s).toLocaleDateString('en-US', o || { month: 'short', day: 'numeric' }) : 'Date TBD';
+const daysTo = s => s ? Math.round((parse(s) - TODAY)/86400000) : 9999;
+const rel = s => { if (!s) return 'Date TBD'; const n = daysTo(s); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 0 ? 'In ' + n + ' days' : Math.abs(n) + ' days ago'; };
+const money = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0 });
+const mb = b => b > 1e9 ? (b/1e9).toFixed(1) + ' GB' : b > 1e6 ? (b/1e6).toFixed(0) + ' MB' : Math.max(1, Math.round(b/1e3)) + ' KB';
+function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 3200); }
+function modal(html, wide){ $('#sheet').classList.toggle('wide', !!wide); $('#sheet').innerHTML = html; $('#modal').hidden = false; const f = $('#sheet').querySelector('button,input,select,textarea,a'); if (f) f.focus(); }
+function closeModal(){ $('#modal').hidden = true; $('#sheet').innerHTML = ''; }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+const initials = n => String(n || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+
+/* icons */
+const I = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  route: '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/>',
+  bag: '<rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 12h16"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  card: '<rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  box: '<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/>',
+  list: '<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  cash: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+  bell: '<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/>',
+  play: '<path d="M7 4v16l13-8z" fill="currentColor" stroke="none"/>',
+  check: '<path d="M5 12l5 5L20 7"/>',
+  plane: '<path d="M2 16l20-6-20-6 3 6-3 6z" fill="currentColor" stroke="none"/>',
+  up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+  clip: '<path d="M21 11l-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  left: '<path d="M15 18l-6-6 6-6"/>', right: '<path d="M9 18l6-6-6-6"/>',
+  film: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  doc: '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h6"/>',
+  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  pin: '<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  list2: '<path d="M8 6h13M8 12h13M8 18h13M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>',
+  dl: '<path d="M12 4v12M6 11l6 6 6-6M4 20h16"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  heart: '<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>'
+};
+const ic = (k, extra) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"' + (extra || '') + '>' + I[k] + '</svg>';
+const KIND = { files: 'img', photos: 'img', video: 'film', copy: 'pen', script: 'doc', shotlist: 'list2', audio: 'music', songs: 'music', location: 'pin', blueprint: 'pin', doc: 'doc', other: 'clip' };
+
+/* ===================== sample data (replaced by the live API) ===================== */
+const DATA = {
+  client: {
+    me: { name: 'Jordan Rivera', company: 'Lumen Coffee Co.', role: 'Head of Brand', email: 'jordan@lumencoffee.example', city: 'Los Angeles, CA',
+      bio: 'We roast in the Arts District and pour in three cafés across LA. Bold flavor, quiet mornings.',
+      socials: { Instagram: '@lumencoffee', TikTok: '@lumencoffee', YouTube: '', LinkedIn: 'lumen-coffee-co', X: '', Website: 'lumencoffee.example' },
+      prefs: { updates: true, thanks: true, offers: true } },
+    project: { code: 'DPZ-0142', title: 'Lumen Coffee brand film', service: 'Production + Post-Production', status: 'In the edit', progress: .62, lead: 'Nate', seat: '1A' },
+    milestones: [
+      { label: 'Booked', date: D(-35), state: 'done', note: 'Deposit received. Welcome aboard.' },
+      { label: 'Pre-production', date: D(-24), state: 'done', note: 'Shot list and locations locked. Call sheet sent.' },
+      { label: 'Shoot day', date: D(-12), state: 'done', note: 'Wrapped at the Arts District roastery. 2 cameras, drone, 41 setups.' },
+      { label: 'Edit + color', date: D(0), state: 'now', note: 'Assembly cut done. Color grade and sound design this week.' },
+      { label: 'Your review', date: D(7), state: 'next', note: 'First cut lands here. Two rounds of notes included.' },
+      { label: 'Final delivery', date: D(15), state: 'next', note: '4K master plus three social cutdowns, delivered to your Drive folder.' }
+    ],
+    review: { title: 'Teaser 15s, draft v1', date: D(-2), length: '0:15' },
+    needs: [
+      { id: 'n1', kind: 'files', label: 'Logo files', detail: 'SVG or PNG, light and dark versions', due: D(-6), status: 'received' },
+      { id: 'n2', kind: 'songs', label: 'Song list', detail: 'Up to 3 tracks you love, or your licensed music', due: D(-1), status: 'open', text: true },
+      { id: 'n3', kind: 'copy', label: 'On-screen copy', detail: 'Tagline, lower thirds and the end card line', due: D(3), status: 'open', text: true },
+      { id: 'n4', kind: 'script', label: 'Voiceover script', detail: 'Final approved version (Doc, PDF or paste it here)', due: D(5), status: 'open' },
+      { id: 'n5', kind: 'photos', label: 'Product photos', detail: 'High-res bags and cups for the end card', due: D(9), status: 'open' },
+      { id: 'n6', kind: 'blueprint', label: 'Launch venue floor plan', detail: 'Blueprint or a phone photo, plus where power is', due: D(12), status: 'open' }
+    ],
+    deliverables: [
+      { name: 'Teaser 15s, draft v1.mp4', size: 214e6, date: D(-2), kind: 'film', tag: 'Review' },
+      { name: 'Stills, selects (48).zip', size: 1.2e9, date: D(-9), kind: 'img', tag: 'Final' }
+
+    ],
+    events: [
+      { date: D(-12), type: 'shoot', title: 'Shoot day' },
+      { date: D(7), type: 'review', title: 'First cut ready' },
+      { date: D(15), type: 'delivery', title: 'Final delivery' },
+      { date: D(22), type: 'event', title: 'Café launch party' },
+      { date: D(2), type: 'note', title: 'New bag design arrives' }
+    ],
+    invoices: [
+      { no: 'DPZ-0142-P1', label: 'Deposit (50%)', amount: 3250, status: 'paid', date: D(-35), via: 'Apple Pay' },
+      { no: 'DPZ-0142-P2', label: 'Balance (50%)', amount: 3250, status: 'due', due: D(15) },
+      { no: 'DPZ-0142-P3', label: 'Add-on: 3 social cutdowns', amount: 600, status: 'due', due: D(15) }
+    ],
+    documents: [
+      { ref: 'DPZ-0142-D1', title: 'Service agreement', kind: 'contract', date: D(-37), status: 'signed', acceptedAt: D(-36), acceptedBy: 'Jordan Rivera', note: '' },
+      { ref: 'DPZ-0142-D2', title: 'Proposal and budget', kind: 'proposal', date: D(-38), status: 'info', note: '' },
+      { ref: 'DPZ-0142-D3', title: 'Call sheet, shoot day', kind: 'call sheet', date: D(-14), status: 'info', note: 'Arts District roastery, 7am call.' },
+      { ref: 'DPZ-0142-D4', title: 'Location release, roastery', kind: 'release', date: D(-1), status: 'to sign', note: 'Covers filming inside the Arts District roastery.' },
+      { ref: 'DPZ-0142-D5', title: 'Domain setup guide', kind: 'guide', date: D(-2), status: 'info', note: 'Step by step: point lumencoffee.com at your new site.' }
+    ],
+    thread: [
+      { from: 'Nate', at: D(-2) + 'T16:20', text: 'Teaser v1 is up in your timeline. Color is temp, music is a placeholder until your song list comes in.' },
+      { from: 'me', at: D(-2) + 'T18:02', text: 'This is so good. Can the cup pour land a beat later?' },
+      { from: 'Nate', at: D(-1) + 'T09:41', text: 'Yes, easy. I will do it in the color pass. Send the song list when you can and we will cut to it.' }
+    ]
+  },
+  team: {
+    me: { name: 'Amara Okafor', role: 'Editor', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 'Crew since 2025',
+      bio: 'Story-first editor. Documentaries, brand films and music videos. Premiere and Resolve.',
+      skills: ['Premiere Pro', 'DaVinci Resolve', 'Story editing', 'Subtitles', 'Social cutdowns'],
+      socials: { Instagram: '@amara.cuts', Vimeo: 'amaracuts', LinkedIn: 'amara-okafor', Website: '' },
+      payout: { method: 'Wise', detail: 'NGN account ending 4410' } },
+    crew: [
+      { name: 'Nate', role: 'Director', city: 'Los Angeles', tz: 'America/Los_Angeles' },
+      { name: 'Kofi Mensah', role: 'Colorist', city: 'Accra', tz: 'Africa/Accra' },
+      { name: 'Hana Sato', role: 'Drone + camera', city: 'Tokyo', tz: 'Asia/Tokyo' },
+      { name: 'Diego Ruiz', role: 'Sound engineer', city: 'Houston', tz: 'America/Chicago' },
+      { name: 'Ines Duarte', role: 'Motion design', city: 'Lisbon', tz: 'Europe/Lisbon' }
+    ],
+    channels: [
+      { id: 'general', name: 'general', kind: 'channel', unread: 0, msgs: [
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T17:05', text: 'Big week. Lumen first cut goes out on the ' + fmt(D(7)) + '. Ghana doc color starts Monday.' },
+        { from: 'Hana Sato', tz: 'Asia/Tokyo', at: D(0) + 'T02:10', text: 'Tokyo aerials are uploaded to Cargo, 4K60 log. 38 clips.' } ] },
+      { id: 'lumen', name: 'lumen-coffee', kind: 'channel', unread: 3, msgs: [
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T19:30', text: 'Client wants the cup pour to land a beat later. Can you take that in v2?' },
+        { from: 'me', tz: 'Africa/Lagos', at: D(0) + 'T07:12', text: 'On it. I will also tighten the opener by about 12 frames.' },
+        { from: 'Kofi Mensah', tz: 'Africa/Accra', at: D(0) + 'T07:40', text: 'Send me the XML when you lock and I will start the grade.', file: 'LUT_lumen_warm_v2.cube' },
+        { from: 'Diego Ruiz', tz: 'America/Chicago', at: D(0) + 'T08:15', text: 'Room tone from the roastery is in Cargo too.' } ] },
+      { id: 'ghana', name: 'ghana-doc', kind: 'channel', unread: 1, msgs: [
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-2) + 'T21:00', text: 'Reel 2 interview selects are in. Cut the market scene to under 3 minutes.' } ] },
+      { id: 'dm-nate', name: 'Nate', kind: 'dm', unread: 1, msgs: [
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T22:48', text: 'Thank you for the late night on the teaser. The client loved it.' } ] },
+      { id: 'dm-kofi', name: 'Kofi Mensah', kind: 'dm', unread: 0, msgs: [
+        { from: 'Kofi Mensah', tz: 'Africa/Accra', at: D(-3) + 'T12:00', text: 'Do you have the camera LUT for the B cam?' },
+        { from: 'me', tz: 'Africa/Lagos', at: D(-3) + 'T13:20', text: 'Sent to Cargo, it is in Lumen / Camera / LUTs.' } ] }
+    ],
+    tasks: [
+      { id: 't1', title: 'Lumen teaser v2: pour lands later, opener -12f', project: 'Lumen Coffee', due: D(1), status: 'doing', by: 'Nate' },
+      { id: 't2', title: 'Export XML for color', project: 'Lumen Coffee', due: D(2), status: 'todo', by: 'Kofi Mensah' },
+      { id: 't3', title: 'Ghana doc: market scene under 3:00', project: 'Ghana doc', due: D(-1), status: 'todo', by: 'Nate' },
+      { id: 't4', title: 'Subtitles for interview reel 2', project: 'Ghana doc', due: D(6), status: 'todo', by: 'Nate' },
+      { id: 't5', title: 'Assembly cut, Lumen brand film', project: 'Lumen Coffee', due: D(-4), status: 'done', by: 'Nate' }
+    ],
+    files: [
+      { name: 'Tokyo_aerials_4K60_log.zip', size: 18.4e9, by: 'Hana Sato', date: D(0), kind: 'film', folder: 'Drone / Tokyo' },
+      { name: 'Roastery_room_tone.wav', size: 96e6, by: 'Diego Ruiz', date: D(0), kind: 'music', folder: 'Lumen / Sound' },
+      { name: 'LUT_lumen_warm_v2.cube', size: 1.3e6, by: 'Kofi Mensah', date: D(0), kind: 'doc', folder: 'Lumen / Color' },
+      { name: 'Teaser_v1.prproj', size: 42e6, by: 'Amara Okafor', date: D(-2), kind: 'film', folder: 'Lumen / Edit' }
+    ],
+    pay: { year: 8420, pending: 1150, next: D(8), rate: 'Day rate $350',
+      payouts: [
+        { label: 'Lumen Coffee, assembly cut (3 days)', amount: 1050, date: D(-4), status: 'paid' },
+        { label: 'Ghana doc, reel 1 (4 days)', amount: 1400, date: D(-18), status: 'paid' },
+        { label: 'Lumen teaser + v2', amount: 700, date: D(8), status: 'pending' },
+        { label: 'Ghana doc, market scene', amount: 450, date: D(8), status: 'pending' } ],
+      months: [['May', 900], ['Jun', 1350], ['Jul', 1800], ['Aug', 1250], ['Sep', 1650], ['Oct', 1470]] },
+    kudos: [
+      { from: 'Nate', date: D(-1), text: 'Thank you for the late night on the teaser. The client said it gave them chills. That is all you.' },
+      { from: 'Nate', date: D(-20), text: 'Reel 1 of the Ghana doc is the best first assembly I have seen. Proud to have you on the crew.' }
+    ]
+  }
+};
+const clientEvents = () => C_events().concat(DATA.client.needs.filter(n => n.status !== 'received').map(n => ({ date: n.due, type: 'due', title: n.label + ' due', note: n.detail })));
+const C_events = () => DATA.client.events;
+const STATE = { calMonth: null, calSel: null, calFilter: 'all', thread: null, pay: null, viewAs: '', project: '' };
+const lastText = c => { const m = c.msgs[c.msgs.length - 1]; return m ? (m.text || (m.file ? 'Sent a file: ' + m.file : '')) : 'No messages yet'; };
+
+/* ===================== routing ===================== */
+const NAV = {
+  client: [
+    ['overview', 'Overview', 'home'], ['timeline', 'Timeline', 'route'], ['checkin', 'Check-in', 'bag'], ['calendar', 'Calendar', 'cal'],
+    ['docs', 'Documents', 'doc'], ['fare', 'Payments', 'card'], ['messages', 'Messages', 'chat'], ['profile', 'Profile', 'user']
+  ],
+  team: [
+    ['lounge', 'Lounge', 'home'], ['comms', 'Comms', 'chat'], ['callsheet', 'Deadlines', 'cal'], ['cargo', 'Files', 'box'],
+    ['payroll', 'Payroll', 'cash'], ['crewcard', 'Crew card', 'user']
+  ]
+};
+const TABS = { client: ['overview', 'checkin', 'calendar', 'fare', 'messages'], team: ['lounge', 'comms', 'callsheet', 'cargo', 'payroll'] };
+function route(){
+  const h = (location.hash || '').replace(/^#\/?/, '').split('/');
+  const side = CONFIG.live ? CONFIG.side : h[0] === 'team' ? 'team' : 'client';
+  const page = h[1] || NAV[side][0][0];
+  return { side, page: NAV[side].some(n => n[0] === page) ? page : NAV[side][0][0] };
+}
+function badge(side, key){
+  if (side === 'client' && key === 'checkin') return DATA.client.needs.filter(n => n.status !== 'received').length;
+  if (side === 'client' && key === 'docs') return (DATA.client.documents || []).filter(d => d.status === 'to sign').length;
+  if (side === 'client' && key === 'messages') return CONFIG.live ? (C.unread || 0) : 1;
+  if (side === 'team' && key === 'comms') return DATA.team.channels.reduce((a, c) => a + c.unread, 0);
+  if (side === 'team' && key === 'callsheet') return DATA.team.tasks.filter(t => t.status !== 'done' && daysTo(t.due) <= 2).length;
+  return 0;
+}
+function shell(r){
+  const me = DATA[r.side].me;
+  $('#door').textContent = r.side === 'team' ? 'Crew lounge' : 'Client portal';
+  $('#nav').innerHTML = NAV[r.side].map(([k, l, i]) => { const b = badge(r.side, k);
+    return `<a href="#/${r.side}/${k}" ${k === r.page ? 'aria-current="page"' : ''}>${ic(i)}<span>${l}</span>${b ? `<span class="ct">${b}</span>` : ''}</a>`; }).join('');
+  $('#tabbar').innerHTML = TABS[r.side].map(k => { const [, l, i] = NAV[r.side].find(n => n[0] === k); const b = badge(r.side, k);
+    return `<a href="#/${r.side}/${k}" ${k === r.page ? 'aria-current="page"' : ''}>${ic(i)}<span>${l}</span>${b ? `<span class="ct">${b}</span>` : ''}</a>`; }).join('');
+  $('#me').innerHTML = `<span class="av">${initials(me.name)}</span><span><b>${esc(me.name)}</b><span>${esc(r.side === 'team' ? me.role : me.company)}</span></span><a href="portal.html" data-act="signout">Sign out</a>`;
+}
+function hello(title, sub, act){
+  const h = new Date().getHours(); const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  return `${STATE.viewAs ? `<div class="viewas">${ic('user', ' width="18" height="18"')}<span><b>Admin view of ${esc(STATE.viewAs)}.</b> This is what they see. Buttons here won't act for them.</span></div>` : ''}${CONFIG.live ? '' : `<div class="preview">${ic('bell', ' width="18" height="18"')}<span><b>Preview with sample data.</b> Nothing here is saved or sent yet.</span><a href="#/${route().side === 'team' ? 'client' : 'team'}">${route().side === 'team' ? 'See the client side →' : 'See the crew side →'}</a></div>`}
+  <div class="top"><div class="hello"><span class="mono">${esc(sub || part)}</span><h1>${title}</h1></div><div class="top-act">${act || ''}<button class="icon-btn" type="button" aria-label="Notifications" data-act="notes">${ic('bell')}<span class="dot"></span></button><a class="av top-av" href="#/${route().side}/${route().side === 'team' ? 'crewcard' : 'profile'}" aria-label="Your profile">${initials(DATA[route().side].me.name)}</a></div></div>`;
+}
+
+/* ===================== client pages ===================== */
+let C = DATA.client;
+function passCard(){
+  const p = C.project, pct = Math.round(p.progress*100);
+  const next = C.milestones.find(m => m.state === 'next');
+  let bars = '', x = 0, s = 11; const r = () => (s = (s*9301 + 49297) % 233280)/233280;
+  while (x < 196){ const w = [1, 1, 1.5, 2, 3][Math.floor(r()*5)]; bars += `<rect x="${x.toFixed(1)}" width="${w}" height="40"/>`; x += w + [1, 1.5, 2][Math.floor(r()*3)]; }
+  return `<section class="pass" aria-label="Your project" data-go="#/client/timeline" style="cursor:pointer">
+    <div class="pass-main">
+      <div class="pass-top mono"><span><b>Boarding pass</b> · Confirmation ${esc(p.code)}</span><span>${esc(p.service)}</span></div>
+      <div><div class="status">${esc(p.status)}.</div><p class="pass-title">${esc(p.title)}</p></div>
+      <div class="flight">
+        <span class="end"><small>From</small>Idea</span>
+        <span class="track" role="img" aria-label="${pct}% of the way there"><i style="width:${pct}%"></i><svg viewBox="0 0 24 24" style="left:${pct}%">${I.plane}</svg></span>
+        <span class="end" style="text-align:right"><small>To</small>Premiere</span>
+      </div>
+    </div>
+    <div class="pass-stub">
+      <div class="stub-row"><span class="mono" style="color:#9C9A94">Next stop</span><b>${esc(next ? next.label : 'Landed')}</b></div>
+      <div class="stub-row"><span class="mono" style="color:#9C9A94">Date</span><b class="s">${next ? fmt(next.date, { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + rel(next.date) : '-'}</b></div>
+      <div class="stub-row conf-row"><span class="mono" style="color:#9C9A94">Confirmation</span><b>${esc(p.code)}</b></div>
+      <div class="stub-row"><span class="mono" style="color:#9C9A94">Director</span><b class="s">${esc(p.lead)}</b></div>
+      <svg class="bars" viewBox="0 0 196 40" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>
+    </div>
+  </section>`;
+}
+function needChip(n){
+  if (n.status === 'received') return '<span class="chip ok">Received</span>';
+  const d = daysTo(n.due);
+  return d < 0 ? `<span class="chip bad">Overdue ${Math.abs(d)}d</span>` : d <= 3 ? `<span class="chip due">Due ${rel(n.due).toLowerCase()}</span>` : `<span class="chip off">Due ${fmt(n.due)}</span>`;
+}
+function pageNoProject(){
+  return hello(`Welcome aboard${C.me.name ? ', ' + esc(C.me.name.split(' ')[0]) : ''}`) + `<section class="card ink" style="overflow:hidden"><span class="mono" style="color:var(--sky)">Gate opens soon</span>
+    <div class="big grad" style="font-size:clamp(40px,6vw,84px);margin-top:6px">Your first project is being set up.</div>
+    <p style="margin:10px 0 0;color:#BEBCB6;max-width:56ch">As soon as it's booked, your timeline, files, payments and messages land here. In the meantime, pick dates on the calendar or fill in your profile so we can tag you.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px"><a class="btn light" href="#/client/calendar">Book a date</a><a class="btn ghost" style="color:#fff;border-color:#fff" href="#/client/profile">Your profile</a></div></section>`;
+}
+function projectPick(){
+  if (!CONFIG.live || !C.projects || C.projects.length < 2) return '';
+  return `<label class="pick"><span class="mono mute">Project</span><select id="projPick">${C.projects.map(p => `<option value="${esc(p.code)}" ${C.project && p.code === C.project.code ? 'selected' : ''}>${esc(p.code)} · ${esc(p.title)}${p.status ? ' · ' + esc(p.status) : ''}</option>`).join('')}</select></label>`;
+}
+function pageOverview(){
+  const open = C.needs.filter(n => n.status !== 'received');
+  const late = open.filter(n => daysTo(n.due) < 0).length;
+  const dueInv = C.invoices.filter(i => i.status === 'due'), due = dueInv.reduce((a, i) => a + i.amount, 0);
+  const nextDue = dueInv.map(i => i.due).filter(Boolean).sort()[0];
+  const upcoming = clientEvents().filter(e => daysTo(e.date) >= 0).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 4);
+  return hello(`Welcome aboard${C.me.name ? ', ' + esc(C.me.name.split(' ')[0]) : ''}`, null, `<a class="btn" href="#/client/checkin">${ic('up', ' width="17" height="17"')}Send us files</a>`) + projectPick() + passCard() + `
+  <div class="grid g3" style="margin-top:16px">
+    <a class="card" href="#/client/checkin" style="text-decoration:none"><div class="kpi"><span class="mono mute">Check-in</span><span class="big">${open.length} item${open.length === 1 ? '' : 's'}</span><span class="mute" style="font-size:13px">we need from you${late ? ` · <b style="color:var(--bad)">${late} overdue</b>` : ''}</span></div></a>
+    <a class="card" href="#/client/fare" style="text-decoration:none"><div class="kpi"><span class="mono mute">Balance</span><span class="big">${money(due)}</span><span class="mute" style="font-size:13px">${due ? 'due ' + fmt(nextDue) : C.invoices.some(i => i.status === 'sent') ? 'confirming your payment' : 'all paid up'}</span></div></a>
+    <a class="card ink" href="#/client/timeline" style="text-decoration:none"><div class="kpi"><span class="mono" style="color:var(--sky)">Ready for you</span><span class="big">${C.review ? (/approved/i.test(C.review.state) ? 'Approved' : '1 draft') : 'Soon'}</span><span style="font-size:13px;color:#9C9A94">${C.review ? esc(C.review.title) : 'Drafts show up here for your notes'}</span></div></a>
+  </div>
+  <div class="grid g-main" style="margin-top:16px">
+    <section class="card"><div class="c-head"><h2>Coming up</h2><a href="#/client/calendar">Calendar →</a></div>
+      ${upcoming.length ? '' : '<div class="empty">Nothing on the calendar yet.</div>'}<ul class="list">${upcoming.map(e => `<li class="row"><span class="ico">${ic(e.type === 'due' ? 'bag' : e.type === 'review' ? 'film' : e.type === 'delivery' ? 'dl' : 'cal')}</span><span class="grow"><span class="t">${esc(e.title)}</span><br><span class="s">${fmt(e.date, { weekday: 'long', month: 'short', day: 'numeric' })}</span></span><span class="chip ${e.type === 'due' ? 'due' : e.type === 'review' || e.type === 'delivery' ? 'now' : 'info'}">${rel(e.date)}</span></li>`).join('')}</ul></section>
+    <section class="card"><div class="c-head"><h2>Messages</h2><a href="#/client/messages">Open →</a></div>
+      ${C.thread.length ? '' : '<div class="empty">No messages yet. Say hi any time.</div>'}${C.thread.slice(-2).map(m => `<div class="row" style="align-items:flex-start"><span class="av sm">${m.from === 'me' ? initials(C.me.name) : initials(m.from)}</span><span class="grow"><span class="t">${m.from === 'me' ? 'You' : esc(m.from)}</span><br><span class="s" style="color:#3A3A37">${esc(m.text || (m.file ? 'Sent a file: ' + m.file : ''))}</span></span></div>`).join('')}</section>
+  </div>
+  ${recordsCard()}`;
+}
+/* documents and payments share the project's confirmation number */
+const KINDNAME = { contract: 'Contract', proposal: 'Proposal', guide: 'Guide', brief: 'Brief', 'call sheet': 'Call sheet', 'shot list': 'Shot list', release: 'Release', invoice: 'Invoice', other: 'Document' };
+const docIco = k => ({ contract: 'pen', release: 'pen', guide: 'list2', 'shot list': 'list2', 'call sheet': 'cal', invoice: 'card' })[k] || 'doc';
+const isNew = d => d.date && daysTo(d.date) >= -7 && d.status === 'info';
+const docChip = d => d.status === 'to sign' ? '<span class="chip due">Sign</span>' : d.status === 'signed' ? '<span class="chip ok">Signed</span>' : isNew(d) ? '<span class="chip now">New</span>' : '';
+const payChip = i => i.status === 'paid' ? '<span class="chip ok">Paid</span>' : i.status === 'sent' ? '<span class="chip info">Confirming</span>' : '<span class="chip due">Due</span>';
+function recordsCard(){
+  const recs = (C.documents || []).map(d => ({ date: d.date, ico: docIco(d.kind), t: d.title, ref: d.ref, sub: KINDNAME[d.kind] || 'Document', chip: docChip(d), go: '#/client/docs' }))
+    .concat(C.invoices.map(i => ({ date: i.status === 'paid' ? i.date : i.due, ico: 'card', t: i.label, ref: i.no, sub: money(i.amount), chip: payChip(i), go: '#/client/fare' })))
+    .sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 6);
+  return `<section class="card" style="margin-top:16px"><div class="c-head"><h2>Filed under ${esc(C.project.code)}</h2><a href="#/client/docs">All documents →</a></div>
+    <p class="mute" style="margin:-4px 0 10px;font-size:13.5px">Every document and payment for this project carries your confirmation number.</p>
+    ${recs.length ? `<ul class="list recs">${recs.map(x => `<li><a class="row" href="${x.go}"><span class="ico">${ic(x.ico)}</span><span class="grow"><span class="t">${esc(x.t)}</span><br><span class="s mono">${esc(x.ref)} · ${esc(x.sub)}</span></span>${x.chip}</a></li>`).join('')}</ul>` : '<div class="empty">Contracts, guides and invoices show up here.</div>'}</section>`;
+}
+function docCard(d){
+  const short = String(d.ref).replace(String(C.project.code) + '-', '');
+  return `<article class="doc${d.status === 'to sign' ? ' sign' : ''}">
+    <div class="doc-stub"><span class="ico">${ic(docIco(d.kind))}</span><b>${esc(short)}</b></div>
+    <div class="doc-body"><div class="doc-top"><span class="mono mute">${esc(d.ref)}</span>${docChip(d)}</div>
+      <b class="doc-title">${esc(d.title)}</b>${d.note ? `<p>${esc(d.note)}</p>` : ''}
+      <span class="doc-meta mute">${esc(KINDNAME[d.kind] || 'Document')} · ${d.status === 'signed' ? 'accepted' + (d.acceptedAt ? ' ' + fmt(d.acceptedAt, { month: 'short', day: 'numeric', year: 'numeric' }) : '') : 'added ' + fmt(d.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+      <div class="doc-acts"><button class="btn sm${d.status === 'to sign' ? ' ghost' : ''}" type="button" data-act="doc-view" data-ref="${esc(d.ref)}">View</button>${d.status === 'to sign' ? `<button class="btn sm" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button>` : ''}</div>
+    </div></article>`;
+}
+function pageDocs(){
+  const p = C.project, docs = C.documents || [];
+  const sign = docs.filter(d => d.status === 'to sign'), rest = docs.filter(d => d.status !== 'to sign').slice().reverse();
+  return hello('Documents', 'Filed under your confirmation') + `
+  <section class="card ink conf"><div><span class="mono" style="color:var(--sky)">Confirmation</span><span class="conf-code">${esc(p.code)}</span>
+    <p>Every document, invoice and receipt for ${esc(p.title)} carries this number. Put it in the memo when you pay, and in the subject line when you email us.</p></div>
+    <div class="conf-act"><button class="btn light sm" type="button" data-act="copy-conf">Copy number</button><a class="btn ghost sm" href="#/client/fare">Payments</a></div></section>
+  ${sign.length ? `<h3 class="sec">Needs your signature</h3><div class="docs">${sign.map(docCard).join('')}</div>` : ''}
+  <h3 class="sec">${sign.length ? 'Everything else' : 'All documents'}</h3>
+  ${rest.length ? `<div class="docs">${rest.map(docCard).join('')}</div>` : `<div class="empty">${docs.length ? 'Nothing else yet.' : 'Contracts, guides and proposals land here, each numbered under your confirmation.'}</div>`}
+  <h3 class="sec">Payments under ${esc(p.code)}</h3>
+  <section class="card">${C.invoices.length ? `<ul class="list recs">${C.invoices.map(i => `<li><a class="row" href="#/client/fare"><span class="ico">${ic('card')}</span><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) : 'Due ' + fmt(i.due)}</span></span><b class="amt">${money(i.amount)}</b>${payChip(i)}</a></li>`).join('')}</ul>` : '<div class="empty">Invoices show up here.</div>'}</section>`;
+}
+function findDoc(ref){ return (C.documents || []).find(d => d.ref === ref); }
+async function docView(ref, newTab){
+  const d = findDoc(ref); if (!d) return;
+  if (!CONFIG.live){ modal(`<h3 id="sheetTitle">${esc(d.title)}</h3><p class="mono mute" style="margin:0">${esc(d.ref)} · ${esc(KINDNAME[d.kind] || 'Document')}</p><div class="player" style="background:var(--stone);color:var(--mute)">In the live portal, the document opens right here.</div><div class="acts"><button class="btn" type="button" data-close>Close</button></div>`, true); return; }
+  if (d.url && !d.fileId){ window.open(d.url, '_blank', 'noopener'); return; }
+  if (newTab) return LIVE.dl({ dataset: { id: d.fileId } });
+  modal(`<h3 id="sheetTitle">${esc(d.title)}</h3><p class="mono mute" style="margin:0">${esc(d.ref)} · ${esc(KINDNAME[d.kind] || 'Document')}</p><div class="player" id="player" style="aspect-ratio:4/5;max-height:70vh;background:var(--stone);color:var(--mute)">Opening…</div><div class="acts" id="docActs">${d.status === 'to sign' ? `<button class="btn" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button>` : ''}<button class="btn ghost" type="button" data-close>Close</button></div>`, true);
+  try { const j = await api('file?id=' + encodeURIComponent(d.fileId)); const pl = $('#player'); if (pl) pl.innerHTML = `<iframe src="${esc(j.preview)}" title="${esc(d.title)}"></iframe>`; const a = $('#docActs'); if (a) a.insertAdjacentHTML('afterbegin', `<a class="btn ghost" href="${esc(j.view)}" target="_blank" rel="noopener">Open or download</a>`); }
+  catch (e) { const pl = $('#player'); if (pl) pl.textContent = e.message; }
+}
+function docAccept(ref){
+  const d = findDoc(ref); if (!d) return;
+  modal(`<h3 id="sheetTitle">Review and accept</h3><p class="mono mute" style="margin:0 0 12px">${esc(d.ref)} · ${esc(d.title)}</p>
+    <button class="btn ghost sm" type="button" data-act="doc-open" data-ref="${esc(d.ref)}">${ic('doc', ' width="15" height="15"')}Open the document</button>
+    <label class="check"><input type="checkbox" id="agree"><span>I've read <b>${esc(d.title)}</b> and agree to its terms.</span></label>
+    <label class="field">Type your full name<input id="signName" autocomplete="name" value="${esc(C.me.name || '')}"></label>
+    <p class="mute" style="font-size:12.5px;margin:10px 0 0">We record your name, email and the time, and email you a copy. It's filed under <b style="white-space:nowrap">${esc(C.project.code)}</b>.</p>
+    <div class="acts"><button class="btn" type="button" data-act="doc-accept-go" data-ref="${esc(d.ref)}">Accept</button><button class="btn ghost" type="button" data-close>Not yet</button></div>`);
+}
+async function docAcceptGo(b){
+  const d = findDoc(b.dataset.ref); if (!d) return;
+  const name = ($('#signName').value || '').trim(), agree = $('#agree').checked;
+  if (!agree || name.length < 3) return toast('Tick the box and type your full name to accept.');
+  if (STATE.viewAs) return toast('This is a view-only copy of their portal.');
+  if (!CONFIG.live){ d.status = 'signed'; d.acceptedAt = iso(TODAY); closeModal(); toast('Accepted (preview).'); render(true); return; }
+  busy(b, true, 'Saving…');
+  try { const j = await api('docs/accept', { ref: d.ref, name, agree, project: C.project.code }); d.status = 'signed'; d.acceptedAt = j.acceptedAt; closeModal(); toast('Accepted. A copy is on its way to your inbox.'); render(true); }
+  catch (e) { busy(b, false); toast(e.message); }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act;
+  if (a === 'doc-view') docView(b.dataset.ref);
+  else if (a === 'doc-open') docView(b.dataset.ref, true);
+  else if (a === 'doc-accept') docAccept(b.dataset.ref);
+  else if (a === 'doc-accept-go') docAcceptGo(b);
+  else if (a === 'copy-conf'){ const c = C.project ? C.project.code : ''; (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => toast('Copied ' + c + '.'), () => toast(c)); }
+});
+function pageTimeline(){
+  return hello('Flight path', 'Where your project stands') + `<div class="grid g-main"><section class="card">${C.milestones.length ? '' : '<div class="empty">Your timeline shows up here once the project is booked.</div>'}<ol class="tl">
+  ${C.milestones.map(m => `<li class="${m.state}"><span class="dot">${m.state === 'done' ? ic('check') : m.state === 'now' ? ic('plane', ' style="color:#0A0A0A;transform:rotate(-30deg)"') : ''}</span>
+    <div><div class="h"><b>${esc(m.label)}</b><span class="mono mute">${fmt(m.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>${m.state === 'now' ? '<span class="chip now">You are here</span>' : m.state === 'done' ? '<span class="chip ok">Done</span>' : ''}</div>
+    <p>${esc(m.note)}</p>
+    ${m.state === 'now' && C.review ? `<div class="review"><div class="thumb">${ic('play')}</div><div><span class="mono mute">Ready for your notes</span><div style="font-weight:700;margin-top:2px">${esc(C.review.title)}</div><span class="s mute" style="font-size:13px">Posted ${rel(C.review.date).toLowerCase()}${C.review.length ? ' · ' + esc(C.review.length) : ''}${C.review.state ? ' · ' + esc(C.review.state) : ''}</span>
+      <div class="acts"><button class="btn sm" type="button" data-act="watch">${ic('play', ' width="14" height="14"')}Watch</button><button class="btn sm ghost" type="button" data-act="notes-draft">Request changes</button><button class="btn sm ghost" type="button" data-act="approve">Approve</button></div></div></div>` : ''}
+    </div></li>`).join('')}
+  </ol></section>
+  <aside class="grid" style="align-content:start">
+    <section class="card ink"><span class="mono" style="color:var(--sky)">Progress</span><div class="big grad" style="font-size:72px;margin-top:6px">${Math.round(C.project.progress*100)}%</div><p style="margin:6px 0 0;color:#BEBCB6;font-size:14px">${C.milestones.filter(m => m.state === 'done').length} of ${C.milestones.length} stops done. Two rounds of notes are included at review.</p></section>
+    <section class="card"><div class="c-head"><h2>From us</h2></div>${C.deliverables.length ? '' : '<div class="empty">Cuts and finished files land here.</div>'}<ul class="list">${C.deliverables.map(f => `<li class="row"><span class="ico">${ic(f.kind)}</span><span class="grow"><span class="t" style="word-break:break-word">${esc(f.name)}</span><br><span class="s">${mb(f.size)} · ${fmt(f.date)}</span></span><button class="icon-btn" type="button" aria-label="Download ${esc(f.name)}" data-act="dl" data-id="${esc(f.id || '')}">${ic('dl')}</button></li>`).join('')}</ul></section>
+  </aside></div>`;
+}
+function pageCheckin(){
+  const open = C.needs.filter(n => n.status !== 'received'), done = C.needs.length - open.length;
+  return hello('Check-in', 'What we need from you') + `
+  <div class="bag-ct" style="margin-bottom:16px">
+    <div class="card"><span class="mono mute">To send</span><div class="big" style="font-size:40px">${open.length}</div></div>
+    <div class="card"><span class="mono mute">Received</span><div class="big" style="font-size:40px">${done}</div></div>
+    <div class="card ink" style="flex:2 1 260px"><span class="mono" style="color:var(--sky)">Big files welcome</span><div style="font-weight:700;margin-top:4px;font-size:15px">Up to 5 TB per file. Raw footage, RAW photos, WAVs.</div><div style="font-size:13px;color:#9C9A94">Uploads go straight into your project folder on our Drive and resume if your connection drops.</div></div>
+  </div>
+  <div class="needs">${C.needs.map(n => `<article class="need ${n.status}" data-need="${n.id}">
+    <span class="ico">${ic(KIND[n.kind] || 'clip')}</span>
+    <div><div class="t">${esc(n.label)}</div><div class="s">${esc(n.detail)}</div></div>
+    <div class="need-act" style="display:flex;align-items:center;gap:8px">${needChip(n)}${n.status !== 'received' ? `<button class="btn sm ghost" type="button" data-act="open-need" data-id="${n.id}" aria-expanded="false">Send</button>` : ''}</div>
+    <div class="need-body" hidden>
+      ${n.text ? `<label class="field">Type or paste it here<textarea data-text="${n.id}" placeholder="${n.kind === 'songs' ? 'Artist, song title, a link. One per line.' : 'Paste the copy here.'}"></textarea></label><div style="text-align:center;font-size:12px" class="mute">or upload a file</div>` : ''}
+      <label class="drop"><input type="file" multiple data-up="${n.id}"><span>${ic('up', ' width="26" height="26"')}</span><b>Drop files or tap to choose</b><small>Any size. Videos, photos, audio, PDFs, docs.</small></label>
+      <div class="files-q" data-q="${n.id}">${doneRows(n.id)}</div>
+      <div style="display:flex;justify-content:flex-end"><button class="btn sm" type="button" data-act="submit-need" data-id="${n.id}">Mark as sent</button></div>
+    </div>
+  </article>`).join('')}
+  <article class="need"><span class="ico">${ic('clip')}</span><div><div class="t">Something else</div><div class="s">Mood boards, references, releases, anything that helps the story</div></div><div class="need-act" style="display:flex;justify-content:flex-end"><button class="btn sm ghost" type="button" data-act="open-need" data-id="extra" aria-expanded="false">Send</button></div>
+    <div class="need-body" hidden><label class="field">What is it?<input type="text" data-label="extra" placeholder="e.g. Mood board, talent releases"></label>
+    <label class="drop"><input type="file" multiple data-up="extra"><span>${ic('up', ' width="26" height="26"')}</span><b>Drop files or tap to choose</b><small>Any size</small></label><div class="files-q" data-q="extra">${doneRows('extra')}</div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn sm" type="button" data-act="submit-need" data-id="extra">Send to DEPARTURZ</button></div></div></article>
+  </div>`;
+}
+function calendar(events, opts){
+  const m = STATE.calMonth || (STATE.calMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
+  const start = new Date(m); start.setDate(1 - ((m.getDay() + 6) % 7));     // weeks start Monday
+  const by = {}; events.forEach(e => (by[e.date] = by[e.date] || []).push(e));
+  let cells = '';
+  for (let i = 0; i < 42; i++){
+    const d = new Date(start); d.setDate(start.getDate() + i); const k = iso(d);
+    const out = d.getMonth() !== m.getMonth();
+    if (i >= 35 && out && d > new Date(m.getFullYear(), m.getMonth() + 1, 0)) break;
+    const evs = (by[k] || []).filter(e => STATE.calFilter === 'all' || e.type === STATE.calFilter || (STATE.calFilter === 'due' && e.type === 'task'));
+    cells += `<button type="button" class="day${out ? ' out' : ''}${k === iso(TODAY) ? ' today' : ''}${k === STATE.calSel ? ' sel' : ''}" data-day="${k}" aria-label="${fmt(k, { weekday: 'long', month: 'long', day: 'numeric' })}${evs.length ? ', ' + evs.length + ' items' : ''}"><span class="n">${d.getDate()}</span>${evs.slice(0, 3).map(e => `<span class="ev ${e.done ? 'done' : e.type}">${esc(e.title)}</span>`).join('')}${evs.length > 3 ? `<span class="mute" style="font-size:11px">+${evs.length - 3} more</span>` : ''}</button>`;
+  }
+  return `<section class="card"><div class="cal-head"><h2>${m.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2><div class="cal-nav"><button type="button" data-act="cal-prev" aria-label="Previous month">${ic('left')}</button><button type="button" data-act="cal-today" aria-label="This month" style="width:auto;padding:0 12px;border-radius:99px;font-size:13px;font-weight:600">Today</button><button type="button" data-act="cal-next" aria-label="Next month">${ic('right')}</button></div></div>
+    <div class="seg" role="group" aria-label="Show" style="margin-bottom:12px">${opts.filters.map(([k, l]) => `<button type="button" data-filter="${k}" aria-pressed="${STATE.calFilter === k}">${l}</button>`).join('')}</div>
+    <div class="cal">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span class="dow">${d}</span>`).join('')}${cells}</div>
+    <div class="legend">${opts.legend.map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div></section>`;
+}
+function dayPanel(events, side){
+  const k = STATE.calSel || iso(TODAY);
+  const evs = events.filter(e => e.date === k);
+  const label = fmt(k, { weekday: 'long', month: 'long', day: 'numeric' });
+  if (side === 'team') return `<section class="card"><span class="mono mute">Selected</span><h2 style="font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:30px;line-height:.95;margin:4px 0 12px">${label}</h2>
+    ${evs.length ? `<ul class="list">${evs.map(e => `<li class="row"><span class="ev ${e.done ? 'done' : e.type}" style="width:10px;height:10px;padding:0;border-radius:3px"></span><span class="grow"><span class="t">${esc(e.title)}</span>${e.sub ? `<br><span class="s">${esc(e.sub)}</span>` : ''}</span></li>`).join('')}</ul>` : '<div class="empty">Nothing due this day.</div>'}</section>`;
+  return `<section class="card"><span class="mono mute">Selected</span><h2 style="font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:30px;line-height:.95;margin:4px 0 12px">${label}</h2>
+    ${evs.length ? `<ul class="list" style="margin-bottom:14px">${evs.map(e => `<li class="row"><span class="ev ${e.type}" style="width:10px;height:10px;padding:0;border-radius:3px"></span><span class="grow"><span class="t">${esc(e.title)}</span>${e.note ? `<br><span class="s">${esc(e.note)}</span>` : ''}</span></li>`).join('')}</ul>` : '<p class="mute" style="margin:0 0 14px;font-size:14px">Nothing on this day yet.</p>'}
+    <form class="grid" id="dayForm" style="gap:12px">
+      <div class="seg" role="group" aria-label="Add"><button type="button" data-kind="book" aria-pressed="true">Book us</button><button type="button" data-kind="event" aria-pressed="false">Event day</button><button type="button" data-kind="note" aria-pressed="false">Note</button></div>
+      <label class="field" data-only="book event">What is it?<select name="what"><option>Shoot or production day</option><option>Event coverage</option><option>DJ or live sound</option><option>Website kickoff</option><option>Meeting or call</option><option>Something else</option></select></label>
+      <div class="grid g2" data-only="book event" style="gap:10px"><label class="field">Start time<input type="time" name="start" value="10:00"></label><label class="field">Hours<input type="number" name="hours" min="1" max="16" value="4"></label></div>
+      <label class="field">Notes<textarea name="note" placeholder="Location, guest count, anything we should know"></textarea></label>
+      <button class="btn" type="submit">Send request</button>
+      <p class="mute" style="margin:0;font-size:12.5px">Bookings and notes go straight to ${esc(CONFIG.notify)}. We confirm within 24 hours.</p>
+    </form></section>`;
+}
+function pageCalendar(){
+  const lg = [['#FFF0DB', 'Due from you'], ['#EFEAFE', 'Reviews and delivery'], ['#E8F6FD', 'Shoots and events'], ['#0A0A0A', 'Your bookings'], ['#F1EFEA', 'Notes']];
+  const ev = clientEvents();
+  return hello('Calendar', 'Dates, deadlines and bookings') + `<div class="cal-wrap">${calendar(ev, { filters: [['all', 'All'], ['due', 'Due from you'], ['book', 'Bookings'], ['note', 'Notes']], legend: lg })}${dayPanel(ev, 'client')}</div>`;
+}
+const METHODS = [
+  ['card', 'Card', 'Visa, Mastercard, Amex', '#0A0A0A', '▭'], ['apple', 'Apple Pay', 'On iPhone and Safari', '#0A0A0A', ''],
+  ['cashapp', 'Cash App Pay', 'Scan or tap in Cash App', '#00C244', '$'], ['paypal', 'PayPal', 'Pay with your PayPal', '#0070E0', 'P'],
+  ['venmo', 'Venmo', 'Through PayPal checkout', '#3D95CE', 'V'], ['square', 'Square', 'Square payment link', '#0A0A0A', '◼'],
+  ['zelle', 'Zelle', 'From your bank app', '#6D1ED4', 'Z']
+];
+function payMethods(){
+  if (!CONFIG.live) return METHODS;
+  const p = CONFIG.pay || {};
+  const on = { card: p.stripe, apple: p.stripe, cashapp: p.cashapp || p.cashtag, paypal: p.paypal, venmo: p.paypal, square: p.square, zelle: p.zelle };
+  return METHODS.filter(([k]) => on[k]);
+}
+function pageFare(){
+  const dueInv = C.invoices.filter(i => i.status === 'due'), due = dueInv.reduce((a, i) => a + i.amount, 0);
+  const paid = C.invoices.filter(i => i.status === 'paid').reduce((a, i) => a + i.amount, 0);
+  const nextDue = dueInv.map(i => i.due).filter(Boolean).sort()[0];
+  const methods = payMethods();
+  return hello('Payments', 'Invoices and balance') + `<div class="grid g-main">
+  <section class="card">
+    <div class="fare"><span class="big">${money(due)}</span><span class="mute" style="padding-bottom:10px">${due ? 'due ' + fmt(nextDue, { month: 'long', day: 'numeric' }) : 'nothing due right now'}<br>${money(paid)} paid so far</span></div>
+    <p class="mono mute" style="margin:10px 0 0">Confirmation <b style="color:var(--ink)">${esc(C.project.code)}</b> · put it in the memo for Zelle or Cash App</p>
+    ${due && !methods.length ? '<div class="empty" style="margin-top:18px">Online payments are being switched on. Message us and we\'ll send another way to pay.</div>' : ''}${due && methods.length ? `
+    <h3 class="mono mute" style="margin:22px 0 10px;font-weight:500">Pay with</h3>
+    <div class="methods" role="group" aria-label="Payment method">${methods.map(([k, l, s, c, g]) => `<button type="button" class="method" data-method="${k}" aria-pressed="${STATE.pay === k}"><span class="mk"><i style="background:${c}">${k === 'apple' ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8s-1.8-.8-3-.8C7 7.3 5.6 8.2 4.8 9.6c-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.6-1-2.6-3.7zM14.2 5.8c.6-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>' : g}</i>${l}</span><small>${s}</small></button>`).join('')}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px"><button class="btn grad-b" type="button" data-act="pay" style="height:52px;padding:0 26px;font-size:15px">Pay ${money(due)}</button><button class="btn ghost" type="button" data-act="pay-part">Pay one invoice</button></div>
+    <p class="mute" style="margin:12px 0 0;font-size:12.5px">Card, Apple Pay and Cash App Pay check out securely on Stripe. PayPal and Venmo open PayPal. We never see or store your card number.</p>` : ''}
+  </section>
+  <section class="card"><div class="c-head"><h2>Invoices</h2></div><ul class="list">${C.invoices.map(i => `<li class="row"><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono" style="font-size:10px">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) + (i.via ? ' · ' + esc(i.via) : '') : i.status === 'sent' ? 'Sent by ' + esc(i.via || 'you') + ', confirming' : 'Due ' + fmt(i.due)}</span></span><span style="font-weight:800">${money(i.amount)}</span>${i.status === 'paid' ? '<span class="chip ok">Paid</span>' : i.status === 'sent' ? '<span class="chip info">Confirming</span>' : '<span class="chip due">Due</span>'}</li>`).join('')}</ul>${C.invoices.length ? '' : '<div class="empty">Invoices show up here.</div>'}
+    <button class="btn sm ghost" type="button" data-act="receipts" style="margin-top:12px">${ic('dl', ' width="15" height="15"')}Download receipts</button></section>
+  </div>`;
+}
+function chatView(title, sub, msgs, opts){
+  let last = '';
+  const body = msgs.map(m => {
+    const day = iso(new Date(m.at)); let tag = '';
+    if (day !== last){ last = day; tag = `<span class="daytag">${daysTo(day) === 0 ? 'Today' : daysTo(day) === -1 ? 'Yesterday' : fmt(day, { weekday: 'short', month: 'short', day: 'numeric' })}</span>`; }
+    const mine = m.from === 'me';
+    const t = new Date(m.at), tt = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const theirs = opts.tz && m.tz && !mine ? ' · ' + new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: m.tz }).format(t) + ' ' + (opts.city(m.from) || '') : '';
+    return tag + `<div class="m${mine ? ' mine' : ''}">${mine ? '' : `<span class="av sm">${initials(m.from)}</span>`}<div class="bub">${!mine && opts.names ? `<span class="who">${esc(m.from)}</span>` : ''}${m.text ? esc(m.text) : ''}${m.file ? (m.fileId ? `<button type="button" class="att" data-act="dl" data-id="${esc(m.fileId)}">${ic(/\.(m4a|webm|wav|mp3)$/i.test(m.file) ? 'mic' : 'clip')}${esc(m.file)}</button>` : `<span class="att">${ic('clip')}${esc(m.file)}</span>`) : ''}<span class="when">${m.pending ? 'Sending…' : tt + theirs}</span></div></div>`;
+  }).join('');
+  return `<div class="convo"><div class="convo-h"><button class="back" type="button" data-act="back" aria-label="Back to chats">${ic('left', ' width="20" height="20"')}</button>${opts.avatar || ''}<span><b>${esc(title)}</b><span>${esc(sub)}</span></span></div>
+    <div class="msgs" id="msgs">${body || '<div class="empty" style="margin:auto">No messages yet. Say hello.</div>'}</div>
+    <div class="files-q chat-q" data-q="chat"></div>
+    <form class="compose" id="compose"><button class="round" type="button" data-act="attach" aria-label="Attach a file">${ic('clip')}</button><label class="sr" for="msgIn">Message</label><textarea id="msgIn" rows="1" placeholder="Message"></textarea>${opts.voice ? `<button class="round${REC ? ' rec' : ''}" type="button" data-act="voice" aria-label="${REC ? 'Stop and send' : 'Record a voice note'}">${ic('mic')}</button>` : ''}<button class="round send" type="submit" aria-label="Send">${ic('up')}</button></form></div>`;
+}
+function pageMessages(){
+  return hello('Messages', 'Talk to the crew') + `<div class="chat single">${chatView('DEPARTURZ', 'Nate and the crew · usually reply within a few hours', C.thread, { names: false, voice: true, avatar: '<span class="av">D</span>' })}</div>`;
+}
+function pageProfile(){
+  const me = C.me;
+  return hello('Profile', 'Your passenger card') + `<div class="grid g-main"><div class="grid" style="align-content:start">
+  <section class="card"><div class="profile-hero"><span class="av lg">${initials(me.name)}</span><div><span class="mono mute">${esc(me.role)} · ${esc(me.company)}</span><h2>${esc(me.name)}</h2><span class="mute" style="font-size:14px">${esc(me.city)}</span></div><button class="btn ghost sm" type="button" data-act="save">Save changes</button></div></section>
+  <section class="card"><div class="c-head"><h2>About you</h2></div><div class="grid g2" style="gap:10px;margin-bottom:10px"><label class="field">Name<input data-f="name" value="${esc(me.name)}" autocomplete="name"></label><label class="field">Company<input data-f="company" value="${esc(me.company)}" autocomplete="organization"></label><label class="field">Role<input data-f="role" value="${esc(me.role)}"></label><label class="field">City<input data-f="city" value="${esc(me.city)}"></label></div><label class="field">Bio<textarea data-f="bio" placeholder="A line or two about you or your brand">${esc(me.bio)}</textarea></label></section>
+  <section class="card"><div class="c-head"><h2>Socials</h2><span class="mute" style="font-size:13px">So we can tag you</span></div><div class="socials">${Object.entries(me.socials).map(([k, v]) => `<label class="soc"><i>${k.slice(0, 2)}</i><span class="sr">${k}</span><input data-soc="${k}" value="${esc(v)}" placeholder="${k}"></label>`).join('')}</div></section></div>
+  <div class="grid" style="align-content:start">
+  <section class="card"><div class="c-head"><h2>Emails from us</h2></div>
+    <label class="switch"><span><b style="font-size:14px">Project updates</b><br><span class="mute" style="font-size:13px">When a draft is ready or a date moves</span></span><input type="checkbox" data-pref="updates" ${me.prefs.updates ? 'checked' : ''}></label>
+    <label class="switch"><span><b style="font-size:14px">Thank-yous and wrap notes</b><br><span class="mute" style="font-size:13px">A note when your project lands</span></span><input type="checkbox" data-pref="thanks" ${me.prefs.thanks ? 'checked' : ''}></label>
+    <label class="switch"><span><b style="font-size:14px">Offers and early booking</b><br><span class="mute" style="font-size:13px">Returning-client discounts and open dates</span></span><input type="checkbox" data-pref="offers" ${me.prefs.offers ? 'checked' : ''}></label></section>
+  <section class="card stone"><span class="mono mute">Sign-in</span><p style="margin:6px 0 0;font-size:14px">You sign in with <b>${esc(me.email)}</b> using Google or a one-tap email link. No password to remember.</p></section>
+  <section class="card ink"><span class="mono" style="color:var(--sky)">Book us again</span><p style="margin:8px 0 14px;font-size:15px">Returning passengers get first pick of dates and 10% off the next project.</p><a class="btn light sm" href="#/client/calendar">Pick a date</a></section>
+  </div></div>`;
+}
+
+/* ===================== team pages ===================== */
+let T = DATA.team;
+const cityOf = n => (T.crew.find(c => c.name === n) || {}).city || '';
+function clocks(){
+  const all = [{ name: 'You', city: T.me.city.split(',')[0], tz: T.me.tz }].concat(T.crew);
+  return `<div class="clocks">${all.map(c => { const now = new Date(); const h = +new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: c.tz }).format(now) % 24;
+    const t = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: c.tz }).format(now);
+    return `<div class="clock${h < 7 || h >= 21 ? ' night' : ''}"><b>${t}</b><span>${esc(c.name)} · ${esc(c.city)}</span></div>`; }).join('')}</div>`;
+}
+function taskRow(t){
+  const d = daysTo(t.due), done = t.status === 'done';
+  const cls = done ? '' : d < 0 ? 'bad' : d <= 2 ? 'warn' : '';
+  return `<div class="task${done ? ' done' : ''}"><button class="chk" type="button" data-task="${t.id}" aria-label="${done ? 'Mark not done' : 'Mark done'}: ${esc(t.title)}">${done ? ic('check') : ''}</button>
+    <div><div class="t" style="font-weight:700">${esc(t.title)}</div><div class="s mute" style="font-size:13px">${esc(t.project)} · from ${esc(t.by)} · due ${fmt(t.due, { weekday: 'short', month: 'short', day: 'numeric' })}</div></div>
+    <div class="cd">${done ? '<span class="chip ok">Done</span>' : `<b class="${cls}">${d < 0 ? Math.abs(d) + 'd late' : d === 0 ? 'Today' : d + 'd'}</b><span class="mono mute" style="font-size:9.5px">${d < 0 ? 'Overdue' : 'Left'}</span>`}</div></div>`;
+}
+function pageLounge(){
+  const open = T.tasks.filter(t => t.status !== 'done').sort((a, b) => a.due.localeCompare(b.due));
+  return hello(`Welcome back, ${esc(T.me.name.split(' ')[0])}`, null, `<a class="btn" href="#/team/cargo">${ic('up', ' width="17" height="17"')}Upload</a>`) + `
+  <section class="card ink" style="margin-bottom:16px;overflow:hidden"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:end"><div><span class="mono" style="color:var(--sky)">Call sheet</span><div class="big grad" style="font-size:clamp(46px,6.4vw,92px);margin-top:6px">${open.length} on deck.</div><p style="margin:6px 0 0;color:#BEBCB6">${open.filter(t => daysTo(t.due) < 0).length} overdue · ${open.filter(t => daysTo(t.due) >= 0 && daysTo(t.due) <= 2).length} due in the next 2 days</p></div><a class="btn light" href="#/team/callsheet">Open deadlines</a></div></section>
+  <div class="grid g-main"><section class="card"><div class="c-head"><h2>Up next</h2><a href="#/team/callsheet">All →</a></div><div class="grid" style="gap:10px">${open.slice(0, 3).map(taskRow).join('') || '<div class="empty">Nothing on deck. Enjoy it.</div>'}</div></section>
+  <div class="grid" style="align-content:start">${T.kudos.slice(0, 1).map(k => `<section class="kudos"><span class="mono">${ic('heart', ' width="14" height="14" style="vertical-align:-2px"')} A note from ${esc(k.from)}</span><p>${esc(k.text)}</p></section>`).join('')}
+    <section class="card"><div class="c-head"><h2>Comms</h2><a href="#/team/comms">Open →</a></div><ul class="list">${T.channels.filter(c => c.unread).map(c => `<li><a class="row" href="#/team/comms" data-go-thread="${c.id}" style="text-decoration:none"><span class="ico" style="background:var(--ink);color:#fff;font-weight:800">${c.kind === 'channel' ? '#' : initials(c.name)}</span><span class="grow"><span class="t">${c.kind === 'channel' ? '#' + esc(c.name) : esc(c.name)}</span><br><span class="s" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(lastText(c))}</span></span><span class="chip now">${c.unread} new</span></a></li>`).join('')}</ul>${T.channels.some(c => c.unread) ? '' : '<div class="empty">All caught up.</div>'}</section>${adminCard()}</div></div>
+  <section class="card" style="margin-top:16px"><div class="c-head"><h2>Crew clocks</h2><span class="mute" style="font-size:13px">Dark tiles are night where they are</span></div>${clocks()}</section>`;
+}
+function pageComms(){
+  const cur = T.channels.find(c => c.id === STATE.thread) || null;
+  const item = c => `<button class="th" type="button" data-thread="${c.id}" aria-current="${!!(cur && cur.id === c.id)}">${c.kind === 'channel' ? '<span class="hash">#</span>' : `<span class="av sm">${initials(c.name)}</span>`}<span class="grow"><b>${esc(c.name)}</b><span>${esc(lastText(c))}</span></span>${c.unread ? `<span class="un">${c.unread}</span>` : ''}</button>`;
+  const grp = (title, kind) => { const l = T.channels.filter(c => c.kind === kind); return l.length ? `<h3>${title}</h3>${l.map(item).join('')}` : ''; };
+  const list = `<div class="threads">${grp('Channels', 'channel')}${grp('Clients', 'client')}${grp('Direct', 'dm')}</div>`;
+  const show = cur || defaultChannel();
+  if (!show) return hello('Comms', 'Crew chat, any time zone') + '<div class="empty">No conversations yet.</div>';
+  const sub = show.kind === 'dm' ? [(T.crew.find(c => c.name === show.name) || {}).role, cityOf(show.name)].filter(Boolean).join(' · ') : show.kind === 'client' ? (show.sub || '') + ' · the client sees this thread' : T.crew.length + 1 + ' crew · times show theirs and yours';
+  return hello('Comms', 'Crew chat, any time zone') + `<div class="chat${cur ? ' open' : ''}">${list}${chatView(show.kind === 'channel' ? '#' + show.name : show.name, sub, show.msgs, { names: show.kind !== 'dm', tz: true, city: cityOf, voice: true, avatar: show.kind === 'channel' ? '<span class="th" style="padding:0;width:auto"><span class="hash">#</span></span>' : `<span class="av">${initials(show.name)}</span>` })}</div>`;
+}
+function defaultChannel(){ return CONFIG.live ? (T.channels.find(c => c.unread) || T.channels[0]) : (T.channels[1] || T.channels[0]); }
+function teamEvents(){
+  if (CONFIG.live) return T.tasks.map(t => ({ date: t.due, type: 'task', title: t.title, sub: t.project + ' · from ' + t.by, done: t.status === 'done' })).concat(T.events || []);
+  return T.tasks.map(t => ({ date: t.due, type: 'task', title: t.title, sub: t.project + ' · from ' + t.by, done: t.status === 'done' }))
+    .concat([{ date: D(7), type: 'review', title: 'Lumen first cut to client', sub: 'Lumen Coffee' }, { date: D(15), type: 'delivery', title: 'Lumen final delivery', sub: 'Lumen Coffee' }, { date: D(10), type: 'shoot', title: 'Houston drone day', sub: 'Hana + Diego' }]);
+}
+function pageCallsheet(){
+  const lg = [['#FFF0DB', 'Your tasks'], ['#EFEAFE', 'Client dates'], ['#E8F6FD', 'Shoots'], ['#E6F5EE', 'Done']];
+  const open = T.tasks.filter(t => t.status !== 'done').sort((a, b) => a.due.localeCompare(b.due)), done = T.tasks.filter(t => t.status === 'done');
+  return hello('Deadlines', 'Your call sheet') + `<div class="grid g-main" style="margin-bottom:16px"><section class="card"><div class="c-head"><h2>Tasks</h2><span class="mute" style="font-size:13px">Reminders go out 2 days and 1 day before</span></div><div class="grid" style="gap:10px">${open.map(taskRow).join('')}${done.map(taskRow).join('') || (open.length ? '' : '<div class="empty">No deadlines right now.</div>')}</div></section>
+  ${dayPanel(teamEvents(), 'team')}</div>${calendar(teamEvents(), { filters: [['all', 'All'], ['task', 'Tasks'], ['shoot', 'Shoots']], legend: lg })}`;
+}
+function pageCargo(){
+  return hello('Files', 'Shared to the DEPARTURZ Drive') + `<div class="grid g-main"><section class="card"><div class="c-head"><h2>Upload</h2></div>
+    <label class="field" style="margin-bottom:12px">Project folder<select id="folder">${(T.folders || ['Lumen Coffee / Edit', 'Lumen Coffee / Sound', 'Lumen Coffee / Color', 'Ghana doc / Selects', 'Drone / Tokyo']).map(f => `<option${STATE.folder === f ? ' selected' : ''}>${esc(f)}</option>`).join('')}<option value="__new">New folder…</option></select></label>
+    <label class="field" id="newFolderWrap" style="margin-bottom:12px" hidden>Folder name<input id="newFolder" placeholder="e.g. Houston drone day"></label>
+    <label class="drop"><input type="file" multiple data-up="cargo"><span>${ic('up', ' width="28" height="28"')}</span><b>Drop media here</b><small>Video, audio, photos, project files. Up to 5 TB each, resumes if the connection drops.</small></label><div class="files-q" data-q="cargo" style="margin-top:10px"></div></section>
+    <section class="card ink"><span class="mono" style="color:var(--sky)">Where it goes</span><p style="margin:8px 0 0;font-size:15px;line-height:1.55">Straight into the DEPARTURZ Google Drive, in <b>Team / your project</b>. The crew sees it here the moment it lands. Big uploads keep going in the background.</p></section></div>
+  <section class="card" style="margin-top:16px"><div class="c-head"><h2>Recent</h2></div><ul class="list" id="cargoList">${cargoRows()}</ul></section>`;
+}
+function cargoRows(){
+  return T.files.map(f => `<li class="row"><span class="ico">${ic(f.kind)}</span><span class="grow"><span class="t" style="word-break:break-word">${esc(f.name)}</span><br><span class="s">${esc(f.folder)} · ${mb(f.size)} · ${esc(f.by)} · ${rel(f.date).toLowerCase()}</span></span><button class="icon-btn" type="button" data-act="dl" data-id="${esc(f.id || '')}" aria-label="Download ${esc(f.name)}">${ic('dl')}</button></li>`).join('') || '<li class="empty">Nothing uploaded yet.</li>';
+}
+function pagePayroll(){
+  const p = T.pay, max = Math.max(1, ...p.months.map(m => m[1]));
+  const own = !(CONFIG.live && T.admin) || p.payouts.length || p.rate;
+  if (!own) return hello('Payroll', 'Crew pay') + adminPay();
+  return hello('Payroll', 'What you have earned') + (CONFIG.live && T.admin ? adminPay() + '<div style="height:16px"></div>' : '') + `<div class="grid g3" style="margin-bottom:16px">
+    <div class="card ink"><span class="mono" style="color:var(--sky)">Paid this year</span><div class="big grad" style="font-size:52px;margin-top:6px">${money(p.year)}</div></div>
+    <div class="card"><span class="mono mute">Pending</span><div class="big" style="font-size:52px;margin-top:6px">${money(p.pending)}</div><span class="mute" style="font-size:13px">${p.next ? 'pays out ' + fmt(p.next, { month: 'long', day: 'numeric' }) : p.pending ? 'waiting on approval' : 'nothing pending'}</span></div>
+    <div class="card"><span class="mono mute">Payout to</span>${p.rate ? `<span class="mono mute" style="float:right">${esc(p.rate)}</span>` : ''}<div style="font-weight:800;font-size:22px;margin-top:6px">${esc(T.me.payout.method)}</div><span class="mute" style="font-size:13px">${esc(T.me.payout.detail)}</span><div style="margin-top:10px"><button class="btn sm ghost" type="button" data-act="payout-method">Change</button></div></div></div>
+  <div class="grid g-main"><section class="card"><div class="c-head"><h2>Payouts</h2><button class="btn sm" type="button" data-act="submit-invoice">Submit hours</button></div><ul class="list">${p.payouts.map(x => `<li class="row"><span class="grow"><span class="t">${esc(x.label)}</span><br><span class="s">${x.status === 'paid' ? 'Paid ' + fmt(x.date) : x.status === 'submitted' ? 'Waiting on approval' : 'Scheduled ' + fmt(x.date)}</span></span><b>${money(x.amount)}</b>${x.status === 'paid' ? '<span class="chip ok">Paid</span>' : x.status === 'submitted' ? '<span class="chip info">Submitted</span>' : '<span class="chip now">Pending</span>'}</li>`).join('') || '<li class="empty">Payouts show up here.</li>'}</ul></section>
+  <section class="card"><div class="c-head"><h2>By month</h2></div><div class="bars-chart">${p.months.map(([m, v]) => `<div><span style="font-weight:700;color:var(--ink)">${money(v)}</span><i style="height:${Math.round(v/max*80)}px"></i><span>${m}</span></div>`).join('')}</div></section></div>`;
+}
+function pageCrewcard(){
+  const me = T.me;
+  return hello('Crew card', 'How the crew and clients see you') + `<div class="grid g-main"><div class="grid" style="align-content:start">
+  <section class="card"><div class="profile-hero"><button class="av lg ph-btn" type="button" data-act="photo" aria-label="Change your photo">${me.photo ? `<img src="${esc(me.photo)}" alt="">` : initials(me.name)}<i>${ic('up', ' width="14" height="14"')}</i></button><div><span class="mono mute">${esc(me.role)} · ${esc(me.since)}</span><h2>${esc(me.name)}</h2><span class="mute" style="font-size:14px">${esc(me.city)}</span></div><button class="btn ghost sm" type="button" data-act="save">Save changes</button></div>
+    <div class="files-q" data-q="photo" style="margin-top:10px"></div></section>
+  <section class="card"><div class="c-head"><h2>Bio</h2></div><label class="field"><span class="sr">Bio</span><textarea data-f="bio">${esc(me.bio)}</textarea></label></section>
+  <section class="card"><div class="c-head"><h2>Skills</h2></div><div class="chips">${me.skills.map((s, i) => `<span class="tagchip">${esc(s)}<button type="button" data-skill="${i}" aria-label="Remove ${esc(s)}">×</button></span>`).join('')}<button class="tagchip" type="button" data-act="add-skill" style="border:1.5px dashed var(--line2);background:none">+ Add</button></div></section>
+  <section class="card"><div class="c-head"><h2>Socials</h2></div><div class="socials">${Object.entries(me.socials).map(([k, v]) => `<label class="soc"><i>${k.slice(0, 2)}</i><span class="sr">${k}</span><input data-soc="${k}" value="${esc(v)}" placeholder="${k}"></label>`).join('')}</div></section></div>
+  <div class="grid" style="align-content:start">
+  <section class="card"><div class="c-head"><h2>Time zone</h2></div><label class="field">Where you work from<select data-f="tz">${[...new Set([me.tz, 'America/Los_Angeles', 'America/Chicago', 'America/New_York', 'Europe/London', 'Europe/Lisbon', 'Africa/Lagos', 'Africa/Accra', 'Africa/Johannesburg', 'Asia/Dubai', 'Asia/Tokyo', 'Australia/Sydney'])].map(z => `<option value="${esc(z)}" ${z === me.tz ? 'selected' : ''}>${esc(z.replace(/_/g, ' '))}</option>`).join('')}</select></label><p class="mute" style="font-size:13px;margin:10px 0 0">Deadlines and reminders follow your clock.</p></section>
+  <section class="card"><div class="c-head"><h2>Thank-yous</h2></div>${T.kudos.length ? '' : '<div class="empty">Notes from the team show up here.</div>'}${T.kudos.map(k => `<div class="row" style="align-items:flex-start"><span class="av sm">${initials(k.from)}</span><span class="grow"><span class="t">${esc(k.from)}</span> <span class="mute" style="font-size:12px">${fmt(k.date)}</span><br><span style="font-size:14px">${esc(k.text)}</span></span></div>`).join('')}</section>
+  </div></div>`;
+}
+
+/* ===================== render + events ===================== */
+const PAGES = { overview: pageOverview, timeline: pageTimeline, checkin: pageCheckin, calendar: pageCalendar, docs: pageDocs, fare: pageFare, messages: pageMessages, profile: pageProfile,
+  lounge: pageLounge, comms: pageComms, callsheet: pageCallsheet, cargo: pageCargo, payroll: pagePayroll, crewcard: pageCrewcard };
+let lastKey = '';
+function render(keepScroll){
+  const r = route(); shell(r);
+  const key = r.side + '/' + r.page + '/' + (STATE.thread || '');
+  document.title = (NAV[r.side].find(n => n[0] === r.page) || [, ''])[1] + ' · DEPARTURZ Portal';
+  const draft = $('#msgIn') ? $('#msgIn').value : null, typing = document.activeElement && document.activeElement.id === 'msgIn';
+  const noProject = r.side === 'client' && !C.project && ['overview', 'timeline', 'checkin', 'docs', 'fare', 'messages'].includes(r.page);
+  $('#main').innerHTML = noProject ? pageNoProject() : PAGES[r.page]();
+  if (draft && $('#msgIn') && key === lastKey) { $('#msgIn').value = draft; if (typing) $('#msgIn').focus(); }
+  const msgs = $('#msgs'); if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  if (key !== lastKey && !keepScroll){ window.scrollTo(0, 0); }
+  lastKey = key;
+}
+window.addEventListener('hashchange', () => { STATE.calSel = null; render(); });
+
+function fakeUpload(id, files){
+  const q = document.querySelector(`[data-q="${id}"]`); if (!q) return;
+  [...files].forEach(f => {
+    const el = document.createElement('div'); el.className = 'fq';
+    el.innerHTML = `<span class="n">${esc(f.name)}</span><span class="mute">${mb(f.size)}</span><span class="bar2"><i></i></span>`;
+    q.appendChild(el);
+    const bar = el.querySelector('i'); let p = 0;
+    const t = setInterval(() => { p = Math.min(100, p + 8 + Math.random()*18); bar.style.width = p + '%'; if (p >= 100){ clearInterval(t); el.querySelector('.mute').textContent = mb(f.size) + ' · preview, not uploaded'; } }, 160);
+  });
+}
+document.addEventListener('change', e => {
+  const up = e.target.closest('input[type=file][data-up]');
+  if (up && up.files.length){ addFiles(up.dataset.up, up.files); up.value = ''; }
+  if (e.target.id === 'folder'){ const w = $('#newFolderWrap'); if (w) w.hidden = e.target.value !== '__new'; if (e.target.value !== '__new') STATE.folder = e.target.value; }
+  if (e.target.id === 'projPick'){ STATE.project = e.target.value; refresh(true); }
+  if (e.target.matches('[data-pref]') && CONFIG.live && !STATE.viewAs){
+    C.me.prefs[e.target.dataset.pref] = e.target.checked;
+    api('profile', { prefs: { [e.target.dataset.pref]: e.target.checked } }).then(() => toast('Email choices saved.'), err => toast(err.message));
+  }
+});
+['dragover', 'dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => {
+  const d = e.target.closest && e.target.closest('.drop'); if (!d) return;
+  if (ev === 'dragover'){ e.preventDefault(); d.classList.add('over'); }
+  else if (ev === 'dragleave') d.classList.remove('over');
+  else { e.preventDefault(); d.classList.remove('over'); const inp = d.querySelector('input'); if (e.dataTransfer.files.length) addFiles(inp.dataset.up, e.dataTransfer.files); }
+}));
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button, [data-act], [data-go-thread], [data-go]'); if (!b) return;
+  const r = route();
+  // calendar
+  if (b.dataset.day){ STATE.calSel = b.dataset.day; render(true); return; }
+  if (b.dataset.filter){ STATE.calFilter = b.dataset.filter; render(true); return; }
+  if (b.closest('#dayForm') && b.dataset.kind){
+    b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    b.closest('form').querySelectorAll('[data-only]').forEach(el => el.hidden = !el.dataset.only.split(' ').includes(b.dataset.kind));
+    return;
+  }
+  if (b.dataset.method){ STATE.pay = b.dataset.method; document.querySelectorAll('.method').forEach(m => m.setAttribute('aria-pressed', String(m === b))); return; }
+  if (b.dataset.thread){ STATE.thread = b.dataset.thread; const c = T.channels.find(x => x.id === b.dataset.thread); if (c){ if (c.unread && CONFIG.live) api('read', { c: c.id }).catch(() => {}); c.unread = 0; } render(true); return; }
+  if (b.dataset.skill !== undefined){ T.me.skills.splice(+b.dataset.skill, 1); render(true); if (CONFIG.live) api('profile', { skills: T.me.skills }).catch(err => toast(err.message)); return; }
+  if (b.dataset.task && CONFIG.live){ liveTask(b.dataset.task); return; }
+  if (b.dataset.task){ const t = T.tasks.find(x => x.id === b.dataset.task); if (t){ t.status = t.status === 'done' ? 'todo' : 'done'; toast(t.status === 'done' ? 'Nice. Nate gets a heads-up that it\'s done.' : 'Moved back to your list.'); render(true); } return; }
+  if (b.dataset.go){ location.hash = b.dataset.go; return; }
+  if (b.dataset.goThread){ STATE.thread = b.dataset.goThread; const c = T.channels.find(x => x.id === b.dataset.goThread); if (c){ if (c.unread && CONFIG.live) api('read', { c: c.id }).catch(() => {}); c.unread = 0; } return; }
+  const a = b.dataset.act; if (!a) return;
+  if (a === 'notes'){ showNotes(); return; }
+  if (CONFIG.live && LIVE[a]){
+    if (STATE.viewAs && !['cal-prev', 'cal-next', 'cal-today', 'back', 'open-need', 'watch', 'dl', 'receipts', 'signout'].includes(a)){ toast('This is a view-only copy of their portal.'); return; }
+    e.preventDefault(); LIVE[a](b); return;
+  }
+  if (a === 'signout') return;
+  if (a === 'cal-prev' || a === 'cal-next'){ STATE.calMonth = new Date(STATE.calMonth.getFullYear(), STATE.calMonth.getMonth() + (a === 'cal-next' ? 1 : -1), 1); render(true); }
+  else if (a === 'cal-today'){ STATE.calMonth = null; STATE.calSel = iso(TODAY); render(true); }
+  else if (a === 'open-need'){ const art = b.closest('.need'); const body = art.querySelector('.need-body'); body.hidden = !body.hidden; b.setAttribute('aria-expanded', String(!body.hidden)); b.textContent = body.hidden ? 'Send' : 'Close'; }
+  else if (a === 'submit-need'){
+    const id = b.dataset.id, n = C.needs.find(x => x.id === id);
+    const txt = document.querySelector(`[data-text="${id}"]`), q = document.querySelector(`[data-q="${id}"]`);
+    if (!(txt && txt.value.trim()) && !(q && q.children.length)){ toast('Add a file or type it in first.'); return; }
+    if (n){ n.status = 'received'; }
+    toast('Sent. We\'ve been notified at ' + CONFIG.notify + ' (preview).'); render(true);
+  }
+  else if (a === 'watch') modal(`<h3 id="sheetTitle">${esc(C.review.title)}</h3><div class="thumb" style="margin-top:12px">${ic('play')}</div><p class="mute" style="font-size:13px">In the live portal the draft streams from the project's Drive folder.</p><div class="acts"><button class="btn" type="button" data-close>Close</button></div>`);
+  else if (a === 'notes-draft') modal(`<h3 id="sheetTitle">Request changes</h3><p class="mute" style="margin:0 0 12px;font-size:14px">Add timecodes if you can, like "0:07 hold the pour longer".</p><label class="field">Your notes<textarea id="draftNotes" placeholder="0:07 hold the pour a beat longer"></textarea></label><div class="acts"><button class="btn" type="button" data-act="send-notes">Send notes</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+  else if (a === 'send-notes'){ closeModal(); toast('Notes sent to the crew (preview).'); }
+  else if (a === 'approve') modal(`<h3 id="sheetTitle">Approve this cut?</h3><p style="margin:0;font-size:15px">We'll lock it and move on to the final delivery.</p><div class="acts"><button class="btn" type="button" data-act="approved">Approve</button><button class="btn ghost" type="button" data-close>Not yet</button></div>`);
+  else if (a === 'approved'){ closeModal(); toast('Approved. Thank you!'); }
+  else if (a === 'pay' || a === 'pay-part'){
+    const due = C.invoices.filter(i => i.status === 'due').reduce((s, i) => s + i.amount, 0);
+    const m = METHODS.find(x => x[0] === STATE.pay);
+    if (!m){ toast('Pick how you\'d like to pay first.'); document.querySelector('.method').focus(); return; }
+    let how = '';
+    if (m[0] === 'zelle') how = CONFIG.zelle ? `<p style="font-size:15px">Send <b>${money(due)}</b> with Zelle to <b>${esc(CONFIG.zelle)}</b>. Put <b>${esc(C.invoices.find(i => i.status === 'due').no)}</b> in the memo.</p>` : `<p style="font-size:15px">Zelle details show here once they're added in settings.</p>`;
+    else if (m[0] === 'cashapp' && CONFIG.cashtag) how = `<p style="font-size:15px">Opens Cash App Pay, or send to <b>${esc(CONFIG.cashtag)}</b>.</p>`;
+    else how = `<p style="font-size:15px">You'll go to a secure ${m[0] === 'paypal' || m[0] === 'venmo' ? 'PayPal' : m[0] === 'square' ? 'Square' : 'Stripe'} checkout for <b>${money(due)}</b>, then come right back here with a receipt.</p>`;
+    modal(`<h3 id="sheetTitle">Pay with ${esc(m[1])}</h3>${how}<p class="mute" style="font-size:13px;margin:0">Preview: payments switch on once the payment accounts are connected.</p><div class="acts"><button class="btn" type="button" data-close>Got it</button></div>`);
+  }
+  else if (a === 'receipts' || a === 'dl') toast('Downloads come from the DEPARTURZ Drive in the live portal.');
+  else if (a === 'save') toast('Saved (preview).');
+  else if (a === 'back'){ STATE.thread = null; render(true); }
+  else if (a === 'attach') toast('Attachments upload to the Drive and post here (preview).');
+  else if (a === 'voice') toast('Voice notes record here in the live portal.');
+  else if (a === 'payout-method') modal(`<h3 id="sheetTitle">Payout method</h3><p class="mute" style="margin:0 0 12px;font-size:14px">How you'd like to be paid. Works for crew in any country.</p><div class="grid" style="gap:10px"><label class="field">Method<select><option>Wise (best for international)</option><option>PayPal</option><option>Zelle (US)</option><option>Direct deposit (US)</option></select></label><label class="field">Account email or last 4 digits<input type="text" placeholder="name@email.com"></label></div><p class="mute" style="font-size:12.5px">Full bank details are entered on the payout provider's own secure page, never here.</p><div class="acts"><button class="btn" type="button" data-close>Save</button></div>`);
+  else if (a === 'submit-invoice') modal(`<h3 id="sheetTitle">Submit hours</h3><div class="grid" style="gap:10px"><label class="field">Project<select><option>Lumen Coffee</option><option>Ghana doc</option></select></label><div class="grid g2" style="gap:10px"><label class="field">Days<input type="number" value="1" min="0" step="0.5"></label><label class="field">Extra costs<input type="number" value="0" min="0"></label></div><label class="field">What you did<textarea placeholder="Teaser v2, export for color"></textarea></label></div><div class="acts"><button class="btn" type="button" data-act="sent-hours">Submit</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+  else if (a === 'sent-hours'){ closeModal(); toast('Submitted to Nate for approval (preview).'); }
+  else if (a === 'add-skill') toast('Type a skill and press Enter (in the live portal).');
+  else if (a === 'photo') toast('In the live portal you pick a photo here for your crew card.');
+});
+document.addEventListener('submit', e => {
+  if (CONFIG.live && (e.target.id === 'compose' || e.target.id === 'dayForm')){
+    e.preventDefault();
+    if (STATE.viewAs){ toast('This is a view-only copy of their portal.'); return; }
+    if (e.target.id === 'compose'){ const t = $('#msgIn'); const v = t.value.trim(); if (v){ t.value = ''; sendMsg(v); } }
+    else addDay(e.target);
+    return;
+  }
+  if (e.target.id === 'compose'){
+    e.preventDefault(); const t = $('#msgIn'); const v = t.value.trim(); if (!v) return;
+    const now = new Date(); const at = iso(now) + 'T' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    const r = route();
+    if (r.side === 'client') C.thread.push({ from: 'me', at, text: v });
+    else { const c = T.channels.find(x => x.id === STATE.thread) || T.channels[1]; c.msgs.push({ from: 'me', tz: T.me.tz, at, text: v }); STATE.thread = c.id; }
+    render(true); const m = $('#msgIn'); if (m) m.focus();
+  }
+  if (e.target.id === 'dayForm'){
+    e.preventDefault(); const f = e.target; const kind = f.querySelector('.seg [aria-pressed="true"]').dataset.kind;
+    const k = STATE.calSel || iso(TODAY);
+    const what = kind === 'note' ? 'Note' : f.what.value;
+    C.events.push({ date: k, type: kind === 'book' ? 'book' : kind === 'event' ? 'event' : 'note', title: kind === 'note' ? (f.note.value.trim() || 'Note') : what + (kind === 'book' ? ' (requested)' : ''), note: kind === 'note' ? '' : f.note.value.trim() });
+    toast(kind === 'note' ? 'Note added to ' + fmt(k) + '.' : 'Request sent to ' + CONFIG.notify + ' (preview).');
+    render(true);
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.target.id === 'msgIn' && e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); $('#compose').requestSubmit(); }
+});
+/* ===================== live: talking to the portal API =====================
+   On the DEPARTURZ site the page asks /api/p/portal who is signed in and loads their real data.
+   Anywhere without that API (a preview link), it quietly stays on the sample data above. */
+const API = '/api/p/';
+const UP = {};                       // finished uploads, by the list they belong to
+let PENDING = 0, REC = null, ppLoad = null;
+
+async function api(path, data){
+  const opt = data === undefined
+    ? { credentials: 'same-origin', headers: { Accept: 'application/json' } }
+    : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) };
+  const r = await fetch(API + path, opt);
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401){ location.href = 'portal.html'; throw new Error('Please sign in again.'); }
+  if (!r.ok) throw new Error(j.error || 'Something went wrong. Try again in a minute.');
+  return j;
+}
+function busy(b, on, label){
+  if (!b) return;
+  if (on){ b.dataset.was = b.innerHTML; b.disabled = true; if (label) b.textContent = label; }
+  else { b.disabled = false; if (b.dataset.was) b.innerHTML = b.dataset.was; }
+}
+const projCode = () => (C.project ? C.project.code : '');
+const clientThreadId = () => (C.project ? 'client-' + String(C.project.code).replace(/[^A-Za-z0-9_-]/g, '') : '');
+const curChannel = () => T.channels.find(c => c.id === STATE.thread) || defaultChannel();
+const query = () => { const q = new URLSearchParams(); if (STATE.viewAs) q.set('as', STATE.viewAs); if (STATE.project) q.set('project', STATE.project); const s = q.toString(); return s ? '?' + s : ''; };
+function doneRows(qid){ return (UP[qid] || []).map(f => `<div class="fq"><span class="n">${esc(f.name)}</span><span class="mute">${mb(f.size)} · uploaded</span><span class="bar2"><i style="width:100%"></i></span></div>`).join(''); }
+
+function take(j){
+  CONFIG.live = true; CONFIG.side = j.side;
+  if (j.config){ CONFIG.pay = j.config.pay || CONFIG.pay; CONFIG.notify = j.config.notify || CONFIG.notify; }
+  if (j.side === 'team'){ DATA.team = j.data; T = j.data; } else { DATA.client = j.data; C = j.data; }
+}
+async function refresh(force){
+  if (!CONFIG.live) return;
+  const el = document.activeElement;
+  if (!force && (PENDING || REC || !$('#modal').hidden || (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))) return;
+  try { take(await api('portal' + query())); render(true); } catch (e) {}
+}
+
+/* ---------- uploads: straight from the browser into the Drive, in pieces, picking up where they left off ---------- */
+function putFile(url, file, onp){
+  const CH = 32 * 1024 * 1024, total = file.size;   // pieces are a multiple of 256 KB, as Google asks
+  let off = 0, tries = 0;
+  return new Promise((resolve, reject) => {
+    const req = (range, body, cb) => {
+      const x = new XMLHttpRequest(); x.open('PUT', url);
+      if (range) x.setRequestHeader('Content-Range', range);
+      if (body && x.upload) x.upload.onprogress = e => onp(Math.min(99.5, (off + e.loaded) / Math.max(1, total) * 100));
+      x.onload = () => cb(null, x); x.onerror = () => cb(new Error('network'), x);
+      x.send(body || null);
+    };
+    const finish = x => { try { resolve(JSON.parse(x.responseText)); } catch (e) { reject(new Error('Drive did not confirm the upload.')); } };
+    const retry = () => { if (++tries > 8) return reject(new Error('The connection keeps dropping. Try again on a steadier connection.')); setTimeout(resume, Math.min(30000, 1000 * 2 ** tries)); };
+    const resume = () => req(`bytes */${total}`, null, (err, x) => {      // ask how much Drive already has
+      if (err || x.status >= 500) return retry();
+      if (x.status === 200 || x.status === 201) return finish(x);
+      if (x.status === 308){ const r = x.getResponseHeader('Range'); if (r) off = +r.split('-')[1] + 1; return send(); }
+      reject(new Error('That upload expired. Please add the file again.'));
+    });
+    const send = () => {
+      if (!total) return req(null, file, (err, x) => (err ? retry() : x.status < 300 ? finish(x) : reject(new Error('Upload failed (' + x.status + ')'))));
+      const end = Math.min(off + CH, total);
+      req(`bytes ${off}-${end - 1}/${total}`, file.slice(off, end), (err, x) => {
+        if (err || x.status >= 500) return retry();
+        if (x.status === 308){ tries = 0; const r = x.getResponseHeader('Range'); off = r ? +r.split('-')[1] + 1 : end; onp(off / total * 100); return send(); }
+        if (x.status === 200 || x.status === 201) return finish(x);
+        reject(new Error('Upload failed (' + x.status + ')'));
+      });
+    };
+    send();
+  });
+}
+async function sendFile(qid, file, extra){
+  const q = document.querySelector(`[data-q="${qid}"]`);
+  const el = document.createElement('div'); el.className = 'fq';
+  el.innerHTML = `<span class="n">${esc(file.name)}</span><span class="mute">${mb(file.size)} · starting</span><span class="bar2"><i></i></span>`;
+  if (q) q.appendChild(el);
+  const bar = el.querySelector('i'), lab = el.querySelector('.mute');
+  PENDING++;
+  try {
+    const s = await api('upload/start', { name: file.name, size: file.size, type: file.type || 'application/octet-stream', ...extra });
+    const f = await putFile(s.url, file, p => { bar.style.width = p.toFixed(1) + '%'; lab.textContent = mb(file.size) + ' · ' + Math.floor(p) + '%'; });
+    const done = await api('upload/done', { ticket: s.ticket, id: f.id });
+    bar.style.width = '100%'; lab.textContent = mb(file.size) + ' · uploaded';
+    (UP[qid] = UP[qid] || []).push(done);
+    return done;
+  } catch (e) {
+    lab.textContent = 'Stopped: ' + e.message; el.style.background = '#FCEBE9';
+    throw e;
+  } finally { PENDING--; }
+}
+function addFiles(qid, files){
+  if (!CONFIG.live) return fakeUpload(qid, files);
+  if (STATE.viewAs) return toast('This is a view-only copy of their portal.');
+  let extra = {};
+  if (route().side === 'client') extra = qid === 'extra' ? { need: 'extra', label: (($('[data-label="extra"]') || {}).value || '').trim() || 'Other', project: projCode() } : { need: qid, project: projCode() };
+  else if (qid === 'cargo'){
+    const sel = $('#folder'); let folder = sel ? sel.value : 'General';
+    if (folder === '__new') folder = (($('#newFolder') || {}).value || '').trim() || 'General';
+    extra = { folder };
+  }
+  [...files].forEach(f => sendFile(qid, f, extra).then(done => {
+    if (qid !== 'cargo') return;
+    T.files.unshift({ id: done.id, name: done.name, size: done.size, kind: done.kind, by: T.me.name, date: iso(TODAY), folder: done.folder || extra.folder });
+    const l = $('#cargoList'); if (l) l.innerHTML = cargoRows();
+  }).catch(e => toast(e.message)));
+}
+function pickFile(accept){
+  return new Promise(res => { const i = document.createElement('input'); i.type = 'file'; if (accept) i.accept = accept; i.onchange = () => res(i.files[0] || null); i.click(); });
+}
+
+/* ---------- messages ---------- */
+function threadNow(){
+  if (route().side === 'client') return { id: clientThreadId(), list: C.thread };
+  const c = curChannel(); STATE.thread = c.id; return { id: c.id, list: c.msgs };
+}
+async function sendMsg(v){
+  const t = threadNow();
+  if (!t.id) return toast('Messages open once your project is booked.');
+  const tmp = { from: 'me', at: new Date().toISOString(), text: v, tz: route().side === 'team' ? T.me.tz : '', pending: true };
+  t.list.push(tmp); render(true);
+  try { const j = await api('messages', { c: t.id, text: v }); Object.assign(tmp, j.msg); delete tmp.pending; }
+  catch (e) { t.list.splice(t.list.indexOf(tmp), 1); toast(e.message); render(true); const m = $('#msgIn'); if (m) m.value = v; return; }
+  render(true); const m = $('#msgIn'); if (m) m.focus();
+}
+async function attach(file){
+  const t = threadNow();
+  if (!t.id) return toast('Messages open once your project is booked.');
+  const extra = route().side === 'client' ? { chat: true, project: projCode() } : t.id.startsWith('client-') ? { thread: t.id } : { chat: true };
+  try {
+    const f = await sendFile('chat', file, extra);
+    const j = await api('messages', { c: t.id, text: '', file: { id: f.id, name: f.name, mime: file.type } });
+    t.list.push(j.msg); UP.chat = []; render(true);
+  } catch (e) { toast(e.message); }
+}
+async function voice(btn){
+  if (REC){ REC.stop(); return; }
+  if (!navigator.mediaDevices || !window.MediaRecorder) return toast('Voice notes need a newer browser.');
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { return toast('The microphone is blocked. Allow it in your browser settings.'); }
+  const type = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+  const rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined), chunks = [];
+  rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  rec.onstop = () => {
+    stream.getTracks().forEach(t => t.stop()); REC = null; render(true);
+    const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+    if (blob.size < 2000) return toast('That was too short to send.');
+    const stamp = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).replace(':', '.');
+    attach(new File([blob], `Voice note ${stamp}.${(rec.mimeType || '').includes('mp4') ? 'm4a' : 'webm'}`, { type: blob.type }));
+  };
+  rec.start(); REC = rec; render(true); toast('Recording. Tap the mic again to send.');
+}
+async function poll(){
+  if (!CONFIG.live || document.hidden) return;
+  const r = route();
+  let id, list;
+  if (r.side === 'client' && r.page === 'messages' && C.project){ id = clientThreadId(); list = C.thread; }
+  else if (r.side === 'team' && r.page === 'comms'){ const c = curChannel(); if (!c) return; id = c.id; list = c.msgs; }
+  else return;
+  const after = list.filter(m => !m.pending && m.at).map(m => m.at).sort().pop() || '';
+  try {
+    const j = await api('messages?c=' + encodeURIComponent(id) + '&after=' + encodeURIComponent(after));
+    const fresh = j.msgs.filter(m => !list.some(x => x.id === m.id));
+    if (fresh.length){ list.push(...fresh); if (!STATE.viewAs) api('read', { c: id }).catch(() => {}); render(true); }
+  } catch (e) {}
+}
+function markClientRead(){
+  if (!CONFIG.live || STATE.viewAs || CONFIG.side !== 'client' || !C.unread || route().page !== 'messages') return;
+  C.unread = 0; api('read', { c: clientThreadId() }).catch(() => {}); render(true);
+}
+
+/* ---------- client actions ---------- */
+async function submitNeed(b){
+  const id = b.dataset.id, n = C.needs.find(x => x.id === id);
+  if (PENDING) return toast('Hang on, files are still uploading.');
+  const txt = document.querySelector(`[data-text="${id}"]`), text = txt ? txt.value.trim() : '';
+  const files = UP[id] || [];
+  if (!text && !files.length) return toast('Add a file or type it in first.');
+  const label = id === 'extra' ? (($('[data-label="extra"]') || {}).value || '').trim() : '';
+  busy(b, true, 'Sending…');
+  try {
+    await api('needs/submit', { id, text, files, label, project: projCode() });
+    if (n) n.status = 'received';
+    delete UP[id]; toast('Sent. The crew has it.'); render(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+async function addDay(f){
+  const kind = f.querySelector('.seg [aria-pressed="true"]').dataset.kind, k = STATE.calSel || iso(TODAY);
+  const b = f.querySelector('[type=submit]'); busy(b, true, 'Sending…');
+  try {
+    const j = await api('events', { date: k, kind, what: f.what.value, start: f.start.value, hours: f.hours.value, note: f.note.value.trim(), project: projCode() });
+    C.events.push(j.event);
+    toast(kind === 'note' ? 'Note added to ' + fmt(k) + '.' : 'Request sent. We confirm within 24 hours.'); render(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+async function watchCut(){
+  const rv = C.review;
+  if (!rv || !rv.fileId) return toast('The cut is still uploading. We\'ll email you the moment it\'s ready.');
+  modal(`<h3 id="sheetTitle">${esc(rv.title)}</h3><div class="player" id="player">Loading the cut…</div><div class="acts"><button class="btn" type="button" data-act="approve">Approve</button><button class="btn ghost" type="button" data-act="notes-draft">Request changes</button><button class="btn ghost" type="button" data-close>Close</button></div>`, true);
+  try { const j = await api('file?id=' + encodeURIComponent(rv.fileId)); const pl = $('#player'); if (pl) pl.innerHTML = `<iframe src="${esc(j.preview)}" title="${esc(rv.title)}" allow="autoplay; fullscreen" allowfullscreen></iframe>`; }
+  catch (e) { const pl = $('#player'); if (pl) pl.textContent = e.message; }
+}
+async function reviewCut(b, action){
+  const notes = action === 'notes' ? (($('#draftNotes') || {}).value || '').trim() : '';
+  if (action === 'notes' && !notes) return toast('Add your notes first.');
+  busy(b, true, 'Sending…');
+  try {
+    await api('review', { action, notes, project: projCode() });
+    if (C.review) C.review.state = action === 'approve' ? 'Approved' : 'Notes sent';
+    closeModal(); toast(action === 'approve' ? 'Approved. Thank you!' : 'Notes sent to the crew.'); refresh(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+async function openFile(id){
+  if (!id) return toast('That file is still on its way to the Drive.');
+  const w = window.open('about:blank', '_blank');
+  try { const j = await api('file?id=' + encodeURIComponent(id)); if (w) w.location.href = j.view; else location.href = j.view; }
+  catch (e) { if (w) w.close(); toast(e.message); }
+}
+async function saveProfile(b){
+  const main = $('#main'), side = route().side, me = DATA[side].me, data = { socials: {} };
+  main.querySelectorAll('[data-f]').forEach(i => { data[i.dataset.f] = i.value.trim(); });
+  main.querySelectorAll('[data-soc]').forEach(i => { data.socials[i.dataset.soc] = i.value.trim(); });
+  if (side === 'client'){ data.prefs = {}; main.querySelectorAll('[data-pref]').forEach(i => { data.prefs[i.dataset.pref] = i.checked; }); }
+  else data.skills = me.skills;
+  busy(b, true, 'Saving…');
+  try {
+    await api('profile', data);
+    ['name', 'company', 'role', 'city', 'bio', 'tz'].forEach(k => { if (data[k] !== undefined) me[k] = data[k]; });
+    Object.assign(me.socials, data.socials); if (data.prefs) Object.assign(me.prefs, data.prefs);
+    toast('Saved.'); render(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+
+/* ---------- payments ---------- */
+async function startPay(invoices){
+  const m = STATE.pay;
+  const list = C.invoices.filter(i => i.status === 'due' && (!invoices || invoices.includes(i.no)));
+  const total = list.reduce((a, i) => a + i.amount, 0), nos = list.map(i => i.no);
+  if (!list.length) return toast('Nothing is due right now.');
+  if (!m){ toast('Pick how you\'d like to pay first.'); const f = document.querySelector('.method'); if (f) f.focus(); return; }
+  const P = CONFIG.pay, body = { invoices: nos, project: projCode() };
+  try {
+    if (m === 'card' || m === 'apple' || (m === 'cashapp' && P.cashapp)){ toast('Opening secure checkout…'); const j = await api('pay/stripe', { ...body, method: m === 'cashapp' ? 'cashapp' : 'card' }); location.href = j.url; }
+    else if (m === 'square'){ toast('Opening Square…'); const j = await api('pay/square', body); location.href = j.url; }
+    else if (m === 'paypal' || m === 'venmo') paypalModal(m, nos, total);
+    else manualModal(m, nos, total);
+  } catch (e) { toast(e.message); }
+}
+function pickInvoice(){
+  const due = C.invoices.filter(i => i.status === 'due');
+  if (!due.length) return toast('Nothing is due right now.');
+  if (!STATE.pay) return toast('Pick how you\'d like to pay first.');
+  modal(`<h3 id="sheetTitle">Pay one invoice</h3><div class="paylist">${due.map((i, k) => `<label><input type="radio" name="inv" value="${esc(i.no)}" ${k ? '' : 'checked'}><span><span style="font-weight:700">${esc(i.label)}</span><br><span class="mono mute" style="font-size:10px">${esc(i.no)} · due ${fmt(i.due)}</span></span><b>${money(i.amount)}</b></label>`).join('')}</div><div class="acts"><button class="btn" type="button" data-act="pay-go">Continue</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+function loadPayPal(){
+  if (window.paypal) return Promise.resolve(window.paypal);
+  return ppLoad || (ppLoad = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(CONFIG.pay.paypal) + '&currency=USD&intent=capture&components=buttons&enable-funding=venmo';
+    s.onload = () => res(window.paypal); s.onerror = () => { ppLoad = null; rej(new Error('PayPal did not load. Check your connection.')); };
+    document.head.appendChild(s);
+  }));
+}
+async function paypalModal(m, nos, total){
+  const name = m === 'venmo' ? 'Venmo' : 'PayPal';
+  modal(`<h3 id="sheetTitle">Pay ${money(total)} with ${name}</h3><p class="mute" style="margin:0 0 14px;font-size:14px">A secure ${name} window opens to finish up, then you land right back here.</p><div id="ppBtns" style="min-height:50px">Loading…</div><div class="acts"><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+  try {
+    const pp = await loadPayPal(), box = $('#ppBtns'); if (!box) return;
+    box.textContent = '';
+    const btn = pp.Buttons({
+      fundingSource: m === 'venmo' ? pp.FUNDING.VENMO : pp.FUNDING.PAYPAL, style: { shape: 'pill', height: 48 },
+      createOrder: () => api('pay/paypal/create', { invoices: nos, project: projCode() }).then(j => j.id),
+      onApprove: d => api('pay/paypal/capture', { id: d.orderID }).then(j => { closeModal(); toast(j.paid ? 'Paid. Thank you! Your receipt is on its way.' : 'PayPal didn\'t finish that payment.'); refresh(true); }, e => toast(e.message)),
+      onError: () => toast('PayPal hit a snag. Try again, or pick another way to pay.')
+    });
+    if (!btn.isEligible()){ box.innerHTML = `<p style="font-size:14px;margin:0">${m === 'venmo' ? 'Venmo shows up on phones in the US. On this device, pick PayPal instead.' : 'PayPal isn\'t available on this device.'}</p>`; return; }
+    btn.render('#ppBtns');
+  } catch (e) { const box = $('#ppBtns'); if (box) box.textContent = e.message; }
+}
+function manualModal(m, nos, total){
+  const P = CONFIG.pay, zelle = m === 'zelle', handle = zelle ? P.zelle : P.cashtag;
+  const link = !zelle && P.cashtag ? 'https://cash.app/' + encodeURIComponent('$' + P.cashtag.replace(/^\$/, '')) + '/' + total.toFixed(2) : '';
+  modal(`<h3 id="sheetTitle">Pay with ${zelle ? 'Zelle' : 'Cash App'}</h3><p style="margin:0;font-size:15px">Send <b>${money(total)}</b> ${zelle ? 'from your bank app' : 'in Cash App'} to:</p>
+    <div class="handle"><span>${esc(handle)}</span><button class="btn sm ghost" type="button" data-copy="${esc(handle)}">Copy</button></div>
+    <p style="margin:0;font-size:14px">Put <b>${esc(nos.join(', '))}</b> in the memo so we can match it.</p>${link ? `<p style="margin:12px 0 0"><a class="btn sm ghost" href="${esc(link)}" target="_blank" rel="noopener">Open Cash App</a></p>` : ''}
+    <div class="acts"><button class="btn" type="button" data-act="paid-manual" data-m="${m}" data-nos="${esc(nos.join(','))}">I sent it</button><button class="btn ghost" type="button" data-close>Not yet</button></div>`);
+}
+async function manualSent(b){
+  const nos = b.dataset.nos.split(',');
+  busy(b, true, 'Telling the crew…');
+  try {
+    await api('pay/manual', { method: b.dataset.m, invoices: nos, project: projCode() });
+    C.invoices.forEach(i => { if (nos.includes(i.no)){ i.status = 'sent'; i.via = b.dataset.m === 'zelle' ? 'Zelle' : 'Cash App'; } });
+    closeModal(); toast('Thanks! We\'ll confirm as soon as it lands.'); render(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+
+/* ---------- crew actions ---------- */
+async function liveTask(id){
+  const t = T.tasks.find(x => x.id === id); if (!t) return;
+  if (STATE.viewAs) return toast('This is a view-only copy.');
+  const prev = t.status; t.status = prev === 'done' ? 'todo' : 'done'; render(true);
+  try { const j = await api('tasks/toggle', { id }); t.status = j.status; toast(j.status === 'done' ? 'Nice. Nate gets a heads-up that it\'s done.' : 'Moved back to your list.'); }
+  catch (e) { t.status = prev; toast(e.message); }
+  render(true);
+}
+function payoutModal(){
+  const me = T.me, methods = ['Wise', 'PayPal', 'Zelle', 'Direct deposit', 'Other'];
+  modal(`<h3 id="sheetTitle">Payout method</h3><p class="mute" style="margin:0 0 12px;font-size:14px">How you'd like to be paid. Works for crew in any country.</p>
+    <div class="grid" style="gap:10px"><label class="field">Method<select id="pm">${methods.map(x => `<option ${me.payout.method === x ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
+    <label class="field">Account email, or the last 4 digits<input id="pd" type="text" value="${esc(/^Add how/.test(me.payout.detail) ? '' : me.payout.detail)}" placeholder="name@email.com"></label></div>
+    <p class="mute" style="font-size:12.5px">Full bank details go on the payout provider's own secure page, never here.</p>
+    <div class="acts"><button class="btn" type="button" data-act="save-payout">Save</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+async function savePayout(b){
+  const method = $('#pm').value, detail = $('#pd').value.trim();
+  busy(b, true, 'Saving…');
+  try { await api('payout-method', { method, detail }); T.me.payout = { method, detail }; closeModal(); toast('Payout method saved.'); render(true); }
+  catch (e) { busy(b, false); toast(e.message); }
+}
+function hoursModal(){
+  const projects = (T.folders || []).filter(f => !['General', 'Drone footage', 'Music and sound'].includes(f)).concat(['Other']);
+  modal(`<h3 id="sheetTitle">Submit hours</h3><div class="grid" style="gap:10px"><label class="field">Project<select id="hp">${projects.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>
+    <div class="grid g2" style="gap:10px"><label class="field">Days<input id="hd" type="number" value="1" min="0" step="0.5"></label><label class="field">Extra costs ($)<input id="hx" type="number" value="0" min="0"></label></div>
+    <label class="field">What you did<textarea id="hn" placeholder="Teaser v2, export for color"></textarea></label></div>
+    <p class="mute" style="font-size:12.5px">${T.pay.rate ? esc(T.pay.rate) + '. ' : ''}Nate approves it, then it's scheduled to pay out.</p>
+    <div class="acts"><button class="btn" type="button" data-act="sent-hours">Submit</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+async function sendHours(b){
+  const v = { project: $('#hp').value, days: +$('#hd').value || 0, extra: +$('#hx').value || 0, note: $('#hn').value.trim() };
+  busy(b, true, 'Submitting…');
+  try {
+    const j = await api('hours', v);
+    T.pay.payouts.unshift({ id: j.id, label: [v.project, v.note].filter(Boolean).join(': '), amount: j.amount, date: '', status: 'submitted' });
+    T.pay.pending += j.amount; closeModal(); toast('Submitted to Nate for approval.'); render(true);
+  } catch (e) { busy(b, false); toast(e.message); }
+}
+function skillModal(){
+  modal(`<h3 id="sheetTitle">Add a skill</h3><label class="field">Skill<input id="skillIn" placeholder="e.g. After Effects" maxlength="40"></label><div class="acts"><button class="btn" type="button" data-act="save-skill">Add</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+async function saveSkill(){
+  const v = ($('#skillIn').value || '').trim(); if (!v) return;
+  T.me.skills.push(v); closeModal(); render(true);
+  try { await api('profile', { skills: T.me.skills }); toast('Added to your crew card.'); } catch (e) { toast(e.message); }
+}
+
+/* ---------- admin (crew members marked admin on the Team tab) ---------- */
+function adminCard(){
+  if (!CONFIG.live || !T.admin) return '';
+  const A = T.admin;
+  return `<section class="card"><div class="c-head"><h2>Admin</h2><span class="mute" style="font-size:13px">Only admins see this</span></div>
+    ${A.clients.length ? `<label class="field">See a client's portal<select id="asClient">${A.clients.map(c => `<option value="${esc(c.email)}">${esc(c.code)} · ${esc(c.title)}</option>`).join('')}</select></label>` : ''}
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">${A.clients.length ? '<button class="btn sm" type="button" data-act="view-as">Open client view</button>' : ''}<button class="btn sm ghost" type="button" data-act="kudos">Send a thank-you</button><a class="btn sm ghost" href="#/team/payroll">Crew pay${A.approvals.length ? ' · ' + A.approvals.length : ''}</a></div></section>`;
+}
+function adminPay(){
+  if (!CONFIG.live || !T.admin) return '';
+  const A = T.admin;
+  const row = (p, act, label) => `<li class="row"><span class="grow"><span class="t">${esc(p.who)}: ${esc(p.label)}</span><br><span class="s">${p.note && !p.label.includes(p.note) ? esc(p.note) + ' · ' : ''}${p.date ? 'Scheduled ' + fmt(p.date) : 'Waiting on you'}</span></span><b>${money(p.amount)}</b><button class="btn sm${act === 'mark-paid' ? ' ghost' : ''}" type="button" data-act="${act}" data-id="${esc(p.id)}">${label}</button></li>`;
+  return `<section class="card"><div class="c-head"><h2>Crew pay</h2><span class="mute" style="font-size:13px">Approve hours, then mark them paid once the money is sent</span></div>${A.approvals.length || A.scheduled.length ? `<ul class="list">${A.approvals.map(p => row(p, 'approve-pay', 'Approve')).join('')}${A.scheduled.map(p => row(p, 'mark-paid', 'Mark paid')).join('')}</ul>` : '<div class="empty">Nothing waiting. Hours show up here when the crew submits them.</div>'}</section>`;
+}
+async function adminDo(b, path, msg){
+  busy(b, true, '…');
+  try { await api(path, { id: b.dataset.id }); toast(msg); refresh(true); } catch (e) { busy(b, false); toast(e.message); }
+}
+function kudosModal(){
+  modal(`<h3 id="sheetTitle">Send a thank-you</h3><div class="grid" style="gap:10px"><label class="field">To<select id="kto">${T.admin.crew.map(c => `<option value="${esc(c.key)}">${esc(c.name)}</option>`).join('')}</select></label><label class="field">Your note<textarea id="ktx" placeholder="What they did, and why it mattered"></textarea></label></div><p class="mute" style="font-size:12.5px">It's emailed to them and saved on their crew card.</p><div class="acts"><button class="btn" type="button" data-act="send-kudos">Send</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+async function sendKudos(b){
+  const text = $('#ktx').value.trim(); if (!text) return toast('Write the note first.');
+  busy(b, true, 'Sending…');
+  try { await api('admin/kudos', { to: $('#kto').value, text }); closeModal(); toast('Sent. It\'s in their inbox and on their crew card.'); }
+  catch (e) { busy(b, false); toast(e.message); }
+}
+
+/* ---------- the bell ---------- */
+function showNotes(){
+  const r = route(), items = [];
+  if (r.side === 'client' && C.project){
+    C.needs.filter(n => n.status !== 'received' && daysTo(n.due) <= 3).forEach(n => items.push([daysTo(n.due) < 0 ? 'bad' : 'due', n.label + (daysTo(n.due) < 0 ? ' is overdue' : ' is due ' + rel(n.due).toLowerCase()), '#/client/checkin']));
+    if (C.review && !/approved/i.test(C.review.state || '')) items.push(['now', C.review.title + ' is ready for your notes', '#/client/timeline']);
+    (C.documents || []).filter(d => d.status === 'to sign').forEach(d => items.push(['due', d.title + ' needs your signature', '#/client/docs']));
+    if (r.page !== 'messages' && (CONFIG.live ? C.unread : 0)) items.push(['info', C.unread + ' new message' + (C.unread === 1 ? '' : 's'), '#/client/messages']);
+    const due = C.invoices.filter(i => i.status === 'due' && daysTo(i.due) <= 7);
+    if (due.length) items.push(['due', money(due.reduce((a, i) => a + i.amount, 0)) + ' due ' + rel(due[0].due).toLowerCase(), '#/client/fare']);
+  } else if (r.side === 'team'){
+    T.tasks.filter(t => t.status !== 'done' && daysTo(t.due) <= 2).forEach(t => items.push([daysTo(t.due) < 0 ? 'bad' : 'due', t.title + (daysTo(t.due) < 0 ? ' is overdue' : ' is due ' + rel(t.due).toLowerCase()), '#/team/callsheet']));
+    T.channels.filter(c => c.unread).forEach(c => items.push(['info', c.unread + ' new in ' + (c.kind === 'channel' ? '#' : '') + c.name, '#/team/comms']));
+    if (T.admin && T.admin.approvals.length) items.push(['now', T.admin.approvals.length + ' crew payout' + (T.admin.approvals.length === 1 ? '' : 's') + ' to approve', '#/team/payroll']);
+  }
+  const label = { bad: 'Late', due: 'Soon', now: 'Ready', info: 'New' };
+  modal(`<h3 id="sheetTitle">Updates</h3>${items.length ? `<ul class="list">${items.map(([k, t, h]) => `<li><a class="row" href="${h}" data-close style="text-decoration:none"><span class="chip ${k}" style="flex:none">${label[k]}</span><span class="grow t">${esc(t)}</span></a></li>`).join('')}</ul>` : '<p class="mute" style="margin:0">You\'re all caught up.</p>'}<div class="acts"><button class="btn ghost" type="button" data-close>Close</button></div>`);
+}
+
+const LIVE = {
+  'submit-need': submitNeed,
+  watch: watchCut,
+  'send-notes': b => reviewCut(b, 'notes'),
+  approved: b => reviewCut(b, 'approve'),
+  pay: () => startPay(),
+  'pay-part': pickInvoice,
+  'pay-go': () => { const v = ($('#sheet input[name=inv]:checked') || {}).value; if (!v) return toast('Pick an invoice.'); closeModal(); startPay([v]); },
+  'paid-manual': manualSent,
+  receipts: () => { window.open(API + 'receipt' + (projCode() ? '?project=' + encodeURIComponent(projCode()) : ''), '_blank'); },
+  dl: b => openFile(b.dataset.id),
+  save: saveProfile,
+  signout: () => { api('auth/logout', {}).catch(() => {}).then(() => { location.href = 'portal.html'; }); },
+  attach: () => { pickFile().then(f => { if (f) attach(f); }); },
+  voice: voice,
+  'payout-method': payoutModal, 'save-payout': savePayout,
+  'submit-invoice': hoursModal, 'sent-hours': sendHours,
+  'add-skill': skillModal, 'save-skill': saveSkill,
+  photo: () => { pickFile('image/*').then(async f => {
+    if (!f) return;
+    if (f.size > 4e6) return toast('Pick a photo under 4 MB.');
+    try { const done = await sendFile('photo', f, { folder: 'Profile photos' }); await api('profile', { photo: done.id }); toast('Photo saved.'); refresh(true); }
+    catch (e) { toast(e.message); }
+  }); },
+  'approve-pay': b => adminDo(b, 'admin/payout/approve', 'Approved. They\'ve been emailed the payout date.'),
+  'mark-paid': b => adminDo(b, 'admin/payout/paid', 'Marked paid. They\'ve been emailed.'),
+  kudos: kudosModal, 'send-kudos': sendKudos,
+  'view-as': () => { const v = ($('#asClient') || {}).value; if (v) window.open('portal-app.html?as=' + encodeURIComponent(v) + '#/client/overview', '_blank'); }
+};
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]'); if (!c) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(c.dataset.copy) : Promise.reject()).then(() => toast('Copied.'), () => toast(c.dataset.copy));
+});
+document.addEventListener('keydown', e => { if (e.target.id === 'skillIn' && e.key === 'Enter'){ e.preventDefault(); saveSkill(); } });
+window.addEventListener('hashchange', () => { markClientRead(); });
+
+async function boot(){
+  const qs = new URLSearchParams(location.search);
+  STATE.viewAs = qs.get('as') || ''; STATE.project = qs.get('project') || '';
+  if (qs.has('preview')){ STATE.viewAs = ''; return render(); }
+  $('#main').innerHTML = '<div class="boot"><div><b>Boarding</b><span>Getting your portal ready…</span></div></div>';
+  let r;
+  try { r = await fetch(API + 'portal' + query(), { credentials: 'same-origin', headers: { Accept: 'application/json' } }); }
+  catch (e) { STATE.viewAs = ''; return render(); }
+  const isJson = (r.headers.get('content-type') || '').includes('application/json');
+  if (r.status === 401 && isJson){ location.replace('portal.html'); return; }
+  if (r.status === 503 && isJson){ location.replace('portal.html'); return; }   // the real site, before its accounts are connected
+  if (!r.ok && isJson){
+    $('#main').innerHTML = '<div class="boot"><div><b>We couldn\'t load your portal</b><span>Refresh in a minute. If it keeps happening, <a href="contact.html">let us know</a>.</span></div></div>';
+    return;
+  }
+  if (!r.ok || !isJson){ STATE.viewAs = ''; return render(); }        // no portal API here, so this is a preview
+  take(await r.json());
+  const want = '#/' + CONFIG.side + '/';
+  if (!location.hash.startsWith(want)) history.replaceState(null, '', location.pathname + location.search + want + NAV[CONFIG.side][0][0]);
+  render();
+  const paid = qs.get('paid');                                           // back from a checkout page
+  if (paid){
+    history.replaceState(null, '', location.pathname + (STATE.viewAs ? '?as=' + encodeURIComponent(STATE.viewAs) : '') + location.hash);
+    const check = paid === 'stripe' ? api('pay/stripe/check?session=' + encodeURIComponent(qs.get('session') || '')) : paid === 'square' ? api('pay/square/check', {}) : null;
+    if (check) check.then(j => { toast(j.paid ? 'Payment received. Thank you! Your receipt is on its way.' : 'Your payment is processing. We\'ll email your receipt.'); refresh(true); }, e => toast(e.message));
+  }
+  markClientRead();
+  setInterval(poll, 8000);
+  setInterval(() => refresh(), 180000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  window.addEventListener('beforeunload', e => { if (PENDING){ e.preventDefault(); e.returnValue = ''; } });
+}
+
+boot();
+})();
+</script>
+</body>
+</html>

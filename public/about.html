@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>About DEPARTURZ</title>
+<meta name="description" content="DEPARTURZ is a storytelling studio in Los Angeles and Houston, founded by Nathan Olu: web design, production, post-production and sound under one roof.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<style>
+/* Minimal: a white page, black type, one letter cube, a poster, and small hand-made title marks.
+   Type does the work: a loud condensed headline, a quieter line you read next, fine body copy, a bold aside. */
+:root{
+  --paper:#FAFAF8;
+  --ink:#0A0A0A;
+  --mute:#6B6A66;
+  --rule:#E3E1DC;
+  --sky:#3FB8EE;
+  --violet:#9E80F2;
+  --sun:#F7C21B;
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--violet);outline-offset:4px}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:max(22px, env(safe-area-inset-left, 0px));padding-right:max(22px, env(safe-area-inset-right, 0px))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kick{margin:0;font-size:13px;font-weight:500;letter-spacing:.2em;text-transform:uppercase}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
+.home{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-mark);font-weight:900;font-size:22px;letter-spacing:.06em;line-height:1}
+.home i{width:26px;height:26px;background:var(--ink);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.wm{display:block;flex:none;height:.68em;aspect-ratio:1280 / 107;background:currentColor;-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
+@media (max-width:520px){ .home .wm{height:12px} }
+.top-nav{display:flex;gap:22px;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.top-nav a{text-decoration:none;padding-bottom:3px;border-bottom:1.5px solid transparent}
+.top-nav a[aria-current="page"],.top-nav a:hover{border-color:var(--ink)}
+@media (max-width:620px){ .top-nav{gap:14px;font-size:11px;letter-spacing:.12em} }
+.bar .go-link{font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:3px}
+.bar .go-link:hover{border-color:var(--violet)}
+
+/* the top: meta line */
+.top{padding-top:clamp(10px,2vw,24px)}
+.meta{display:flex;justify-content:space-between;gap:20px;font-size:13px;line-height:1.45;font-weight:600;text-transform:lowercase}
+.meta h1,.meta p{margin:0;font:inherit}
+.meta p{text-align:right}
+.meta span{font-weight:400;color:var(--mute)}
+
+/* 1. the opening: the story on the left, the letter cube with Nate beside it on the right.
+   Reading order, on purpose: kicker, headline, the next line, the aside, the fine print, then the closer. */
+.open{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:center;gap:clamp(24px,4vw,56px);padding-block:clamp(34px,5vw,70px) clamp(50px,7vw,96px)}
+.mega{margin:.12em 0 0;width:fit-content;background:linear-gradient(100deg,var(--sky) 8%,var(--violet) 88%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(70px,10.4vw,160px);line-height:.84;letter-spacing:-.012em}
+.next{margin:clamp(16px,2vw,24px) 0 0;font-weight:400;text-transform:uppercase;letter-spacing:.06em;font-size:clamp(17px,1.8vw,25px);line-height:1.2}
+.pair{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(20px,3.4vw,44px);align-items:start;margin-top:clamp(20px,2.6vw,30px)}
+.fine{margin:0;max-width:46ch;font-size:15px;line-height:1.62;font-weight:400}
+.pull{margin:0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(24px,2.3vw,32px);line-height:.96}
+.then{margin:clamp(34px,5vw,64px) 0 0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(38px,4.4vw,64px);line-height:.9}
+.stage{position:relative;width:100%;aspect-ratio:1 / 1.06}
+.cube3d{position:absolute;right:-4%;top:0;width:92%;aspect-ratio:1}
+.cube3d img,.cube3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cube3d canvas{opacity:0;transition:opacity .4s}
+.cube3d.live canvas{opacity:1}
+.cube3d.live img{visibility:hidden}
+.stage .nate{position:absolute;left:0;bottom:0;height:62%;aspect-ratio:540 / 1120;margin:0;z-index:2}
+.stage .nate img,.stage .nate canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+.stage .nate canvas{opacity:0;transition:opacity .25s}
+.stage .nate.live canvas{opacity:1}
+.stage .nate.live img{visibility:hidden}
+.stage .nate video{position:absolute;inset:0;z-index:-1;width:100%;height:100%;opacity:.002;pointer-events:none}
+
+/* 2. the founder: the Directors poster beside his story */
+.founder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule)}
+.poster{position:relative;width:100%}
+.poster img{position:relative;z-index:1;display:block;width:100%;height:auto}
+.sun{position:absolute;z-index:0;left:37.28%;top:29.28%;width:25.77%;aspect-ratio:1;border-radius:50%;background:var(--sun)}
+.js .poster .sun{transform:scale(.2);opacity:0;transition:transform 1.1s cubic-bezier(.2,.8,.2,1) .25s,opacity .5s ease-out .25s}
+.js .poster.in .sun{transform:none;opacity:1}
+.bio{display:grid;gap:clamp(14px,1.8vw,22px);align-content:center}
+.bio-name{margin:0;font-weight:500;text-transform:uppercase;letter-spacing:.36em;margin-right:-.36em;font-size:clamp(30px,4vw,58px);line-height:1}
+.roles{margin:0;text-transform:uppercase;letter-spacing:.2em;font-size:12px;line-height:1.8;color:var(--mute)}
+.bio .pull{margin-top:6px}
+
+/* 2b. the crew: no profiles, just the promise. Nate on the giant hand, pointing at every role he calls in. */
+.crew{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule)}
+.crew-title{margin:.1em 0 0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(54px,7.2vw,112px);line-height:.86}
+.crew-title span{background:linear-gradient(100deg,var(--sky) 8%,var(--violet) 88%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.crew .fine{margin-top:clamp(16px,2vw,24px)}
+.roster{list-style:none;margin:clamp(22px,3vw,36px) 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(18px,3vw,40px)}
+.roster li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:2px 12px;padding-block:13px;border-top:1px solid var(--rule)}
+.roster .n{grid-row:span 2;font-size:12px;font-weight:500;letter-spacing:.16em;color:var(--mute)}
+.roster b{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(22px,2.2vw,30px);line-height:.95;width:fit-content}
+.roster small{font-size:13px;color:var(--mute)}
+.roster li:hover b{color:transparent;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text}
+.handshot{position:relative;margin:0}
+.handshot::before{content:"";position:absolute;left:23%;top:11%;width:44%;aspect-ratio:1;border-radius:50%;background:linear-gradient(140deg,var(--sky),var(--violet))}
+.handshot img{position:relative;display:block;width:100%;height:auto}
+.js .handshot::before{transform:scale(.2);opacity:0;transition:transform 1.1s cubic-bezier(.2,.8,.2,1) .25s,opacity .5s ease-out .25s}
+.js .handshot.in::before{transform:none;opacity:1}
+@media (max-width:760px){ .crew{grid-template-columns:minmax(0,1fr)} .roster{grid-template-columns:minmax(0,1fr)} }
+
+/* 3. what we do */
+.svc{display:grid;justify-items:center;gap:clamp(26px,3.6vw,46px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule);text-align:center}
+/* the cube in the middle, two services either side of it */
+.svc-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;gap:clamp(22px,4vw,64px);width:100%}
+.svc-grid .cube{align-self:center}
+.cube{display:block;height:auto;width:clamp(170px,18vw,250px)}
+.list{list-style:none;margin:0;padding:0;display:grid;grid-template-rows:1fr 1fr}
+.list li{display:grid}
+.list li{border-bottom:1px solid var(--rule)}
+.list li:first-child{border-top:1px solid var(--rule)}
+.list a{display:grid;align-content:center;gap:8px;padding-block:clamp(18px,2.4vw,28px);text-decoration:none}
+.side-l a{justify-items:end;text-align:right}
+.side-r a{justify-items:start;text-align:left}
+.list .n{font-size:12px;font-weight:500;letter-spacing:.16em;color:var(--mute)}
+.list .name{font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(28px,3.4vw,48px);line-height:.92;transition:color .2s}
+.list .desc{font-size:14.5px;line-height:1.5;color:var(--mute);max-width:36ch}
+.list a:hover .name{color:transparent;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text}
+.based{margin:0;max-width:52ch;font-size:14.5px;color:var(--mute)}
+
+/* 4. the close: a bunch of balloons in the site colours, with the way in under them */
+.bunch-sec{position:relative;height:clamp(560px,92vh,880px);overflow:hidden;border-top:1px solid var(--rule);
+  background:radial-gradient(120% 90% at 50% 40%,#FFFFFF 0%,#F4F5FA 55%,#ECEEF5 100%)}
+.bunch{position:absolute;inset:0;touch-action:pan-y}
+.bunch img,.bunch canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bunch img{object-fit:cover}
+.bunch canvas{opacity:0;transition:opacity .5s}
+.bunch.live canvas{opacity:1}
+.bunch.live img{visibility:hidden}
+.ring{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border:1.5px solid rgba(10,10,10,.55);border-radius:50%;pointer-events:none;opacity:0;transition:opacity .2s}
+.ring::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:var(--ink)}
+.bunch.hover{cursor:none}
+.bunch.hover .ring{opacity:1}
+.b-ui{position:absolute;inset:0;pointer-events:none;max-width:1320px;margin:0 auto;padding:clamp(22px,3vw,40px) max(22px, env(safe-area-inset-right, 0px)) clamp(22px,3vw,36px) max(22px, env(safe-area-inset-left, 0px))}
+.b-ui a{pointer-events:auto}
+.b-tl,.b-bl{position:absolute;margin:0;font-size:13px;line-height:1.45;color:var(--mute)}
+.b-tl b,.b-bl b{color:var(--ink);font-weight:600}
+.b-tl{left:inherit;top:clamp(22px,3vw,40px)}
+.b-bl{left:inherit;bottom:clamp(22px,3vw,36px)}
+.b-tl,.b-bl{left:max(22px, env(safe-area-inset-left, 0px))}
+.b-side{position:absolute;right:max(22px, env(safe-area-inset-right, 0px));top:clamp(22px,3vw,40px);margin:0;writing-mode:vertical-rl;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+.b-big{position:absolute;top:50%;transform:translateY(-50%);margin:0;font-family:"Anton",Impact,"Arial Narrow",sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(64px,9.5vw,148px);line-height:.9;letter-spacing:.005em}
+.b-left{left:max(22px, env(safe-area-inset-left, 0px))}
+.b-right{right:max(22px, env(safe-area-inset-right, 0px));display:flex;align-items:center;gap:.14em}
+.b-right i{display:block;width:.62em;height:.06em;background:var(--ink)}
+.b-cta{position:absolute;left:50%;bottom:clamp(22px,3vw,36px);transform:translateX(-50%)}
+.b-cta:hover{transform:translate(-50%,-2px)}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:17px 26px;border-radius:999px;background:var(--ink);color:var(--paper);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;transition:transform .2s,background-color .2s}
+.btn:hover{background:#26262A}
+
+footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 30px}
+.foot nav{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.foot nav a{text-decoration:none;padding-block:6px}
+.foot nav a:hover{color:var(--violet)}
+.legal{margin:0;font-size:12px;color:var(--mute)}
+
+/* things settle in as they arrive */
+.js .rise{opacity:0;transform:translateY(18px);transition:opacity .8s ease-out,transform .9s cubic-bezier(.2,.7,.2,1)}
+.js .rise.in{opacity:1;transform:none}
+
+@media (max-width:860px){
+  .open,.founder{grid-template-columns:minmax(0,1fr)}
+  .stage{width:min(100%,520px);margin-inline:auto}
+  .svc-grid{grid-template-columns:minmax(0,1fr);justify-items:center;gap:0}
+  .svc-grid .cube{order:-1;width:min(200px,52vw);margin-bottom:22px}
+  .svc-grid .list{width:100%}
+  .side-l a,.side-r a{justify-items:center;text-align:center}
+  .side-r li:first-child{border-top:0}
+}
+@media (max-width:620px){
+  .pair{grid-template-columns:minmax(0,1fr)}
+  .open .pull{order:-1}
+  .bunch-sec{height:min(108vh,760px)}
+  .b-big{top:auto;bottom:96px;transform:none;font-size:clamp(56px,17vw,88px)}
+  .b-bl{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .js .rise{opacity:1;transform:none;transition:none}
+  .btn{transition:none}
+  .js .poster .sun{transform:none;opacity:1;transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap bar">
+  <a class="home" href="./" aria-label="DEPARTURZ home"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+  <nav class="top-nav" aria-label="Main"><a href="./#studio">Back to the studio</a></nav>
+</header>
+
+<main>
+  <div class="wrap top">
+    <div class="meta">
+      <h1 id="aboutTitle">departurz / about<br><span>the storytelling studio</span></h1>
+      <p>los angeles + houston<br><span>founded by nathan olu</span></p>
+    </div>
+  </div>
+
+  <section class="open wrap" aria-labelledby="readTitle">
+    <div class="read">
+      <p class="kick rise">Start here</p>
+      <h2 class="mega rise" id="readTitle">We tell<br>stories.</h2>
+      <p class="next rise">From the first idea to the final file.</p>
+      <div class="pair rise">
+        <p class="fine">DEPARTURZ began with one belief: every project deserves the same level of care, whether it's a major TV production or an independent film. Web design, production, post-production and sound all live under one roof, so your story stays in the same hands the whole way through. We've worked across television, commercials, travel and branded content, from Los Angeles to Houston and wherever the story goes next.</p>
+        <p class="pull">Same care.<br>Every budget.<br>Every time.</p>
+      </div>
+      <p class="then rise">Then we take off.</p>
+    </div>
+    <div class="stage rise" id="stage">
+      <div class="cube3d" id="cube3d">
+        <img class="still" src="about/cube-1200.webp" srcset="about/cube-700.webp 700w, about/cube-1200.webp 1200w" sizes="(max-width:760px) 88vw, 640px"
+             width="1200" height="1200" alt="A black and white puzzle cube with a letter on every square. Each face spells NATHAN OLU: N A T, H A N, O L U.">
+        <canvas aria-hidden="true"></canvas>
+      </div>
+      <figure class="nate" id="nate">
+        <img src="founder/walk-poster.webp" srcset="founder/walk-poster-672.webp 324w, founder/walk-poster.webp 540w" sizes="(max-width:760px) 160px, 240px"
+             width="540" height="1120" alt="Nate as a 3D character, head to toe in a black tuxedo and dark sunglasses, walking with a cinema camera and taking a phone call.">
+        <canvas aria-hidden="true"></canvas>
+        <video muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"></video>
+      </figure>
+    </div>
+  </section>
+
+  <section class="founder wrap" aria-labelledby="founderTitle">
+    <div class="poster rise">
+      <span class="sun" aria-hidden="true"></span>
+      <img src="about/directors-1400.webp" srcset="about/directors-900.webp 900w, about/directors-1400.webp 1400w" sizes="(max-width:760px) 94vw, 760px"
+           width="1400" height="1756" alt="Nate three times in director's chairs under a boom mic: shouting into a megaphone, holding a DEPARTURZ clapperboard, and reading a script.">
+    </div>
+    <div class="bio">
+      <p class="kick rise">Meet the founder</p>
+      <h2 class="bio-name rise" id="founderTitle">Nathan Olu</h2>
+      <p class="roles rise">Founder · Director · Cinematographer · Drone pilot · DJ</p>
+      <p class="pull rise">Lights. Camera.<br>Nate.</p>
+      <p class="fine rise">Nathan Olu, Nate to most people, is the director behind DEPARTURZ and usually the one holding the camera. He brings a decade of live events and DJing, from House of Blues to KBXX 97.9 The Box in Houston, and he's an FAA-certified drone pilot, so the aerials stay in-house too.</p>
+    </div>
+  </section>
+
+  <section class="crew wrap" id="crew" aria-labelledby="crewTitle">
+    <div class="crew-copy">
+      <p class="kick rise">The crew</p>
+      <h2 class="crew-title rise" id="crewTitle">One call.<br><span>A whole crew.</span></h2>
+      <p class="fine rise">Nate leads every project and brings in trusted industry pros for every role it needs, so you get a full crew with one call and the same standard on every set.</p>
+      <ul class="roster rise">
+        <li><span class="n">01</span><b>Directors</b><small>Story, vision and the set</small></li>
+        <li><span class="n">02</span><b>Editors</b><small>Plus VFX artists and colorists</small></li>
+        <li><span class="n">03</span><b>Photographers</b><small>Stills, portraits and behind the scenes</small></li>
+        <li><span class="n">04</span><b>Gaffers &amp; Grips</b><small>Light, rigging and camera support</small></li>
+        <li><span class="n">05</span><b>Web Designers</b><small>Sites designed and built in-house</small></li>
+        <li><span class="n">06</span><b>Sound Engineers</b><small>On set, live and in the mix</small></li>
+      </ul>
+    </div>
+    <figure class="handshot rise">
+      <img src="about/founder-hand-900.webp" srcset="about/founder-hand-600.webp 600w, about/founder-hand-900.webp 900w" sizes="(max-width:760px) 94vw, 560px"
+           width="900" height="1129" alt="Nate in a black three-piece suit and leather gloves, sitting on a giant black leather glove that points at the crew list." loading="lazy" decoding="async">
+    </figure>
+  </section>
+
+  <section class="svc wrap" aria-labelledby="svcTitle">
+    <h2 class="kick rise" id="svcTitle">What we do</h2>
+    <div class="svc-grid">
+      <ol class="list side-l rise">
+        <li><a href="work.html#web-design"><span class="n">01</span><span class="name">Web Design</span><span class="desc">Websites designed and built in-house, from a one-page portfolio to a full organization site.</span></a></li>
+        <li><a href="work.html#production"><span class="n">02</span><span class="name">Production</span><span class="desc">Films, documentaries, commercials, events and branded content, from concept to final delivery.</span></a></li>
+      </ol>
+      <svg class="mark cube rise" viewBox="0 0 300 322" role="img" aria-label="Shoot it. Cut it. Ship it.">
+        <g fill="#0A0A0A" font-family="Anton, Impact, 'Arial Narrow', sans-serif" font-weight="400">
+          <g transform="matrix(0.8667,-0.5,0.8667,0.5,20,86)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">SHOOT</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
+          <g transform="matrix(0.8667,0.5,0,1,20,86)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">CUT</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
+          <g transform="matrix(0.8667,-0.5,0,1,150,161)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">SHIP</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
+        </g>
+      </svg>
+      <ol class="list side-r rise" start="3">
+        <li><a href="work.html#post-production"><span class="n">03</span><span class="name">Post-Production</span><span class="desc">Editing, color grading and sound design, with two revision rounds included.</span></a></li>
+        <li><a href="work.html#sound"><span class="n">04</span><span class="name">Sound</span><span class="desc">DJs for events, live sound, and recording, mixing and mastering by sound engineers.</span></a></li>
+      </ol>
+    </div>
+    <p class="based rise">Based in Los Angeles and Houston, with full production crews and dedicated editors for clients anywhere.</p>
+  </section>
+
+  <section class="bunch-sec" aria-labelledby="endTitle">
+    <div class="bunch" id="bunch">
+      <img class="still" src="about/balloons-1600.webp" srcset="about/balloons-900.webp 900w, about/balloons-1600.webp 1600w" sizes="100vw"
+           width="1600" height="827" alt="A bunch of glossy sky blue and violet balloons floating together.">
+      <canvas aria-hidden="true"></canvas>
+      <span class="ring" aria-hidden="true"></span>
+    </div>
+    <div class="b-ui">
+      <p class="b-tl"><b>Where your story</b><br>takes off.</p>
+      <p class="b-side" aria-hidden="true">Move through them · Tap to pop</p>
+      <h2 class="b-big b-left" id="endTitle"><span>Let's</span><span class="sr"> go</span></h2>
+      <p class="b-big b-right" aria-hidden="true">Go<i></i></p>
+      <p class="b-bl"><b>Sky &amp; Violet</b><br>Balloon study</p>
+      <a class="btn b-cta" href="contact.html">Start a project <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="home" href="./#studio"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+    <nav aria-label="Footer">
+      <a href="./#studio">Back to the studio</a>
+      <a href="#terms" data-legal="terms">Terms of Use</a>
+      <a href="#privacy" data-legal="privacy">Privacy</a>
+    </nav>
+    <p class="legal">© 2026 DEPARTURZ · Los Angeles · Houston</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // things rise in as they arrive
+  if (!RM && 'IntersectionObserver' in window){
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
+    document.querySelectorAll('.rise').forEach(el => io.observe(el));
+  }
+
+  /* Nate walking: a side-by-side video (colour | alpha) drawn with transparency, so he walks on the page itself */
+  (function(){
+    const box = document.getElementById('nate');
+    if (!box || RM) return;
+    const vid = box.querySelector('video'), cv = box.querySelector('canvas');
+    const gl = cv.getContext && (cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false }) || cv.getContext('experimental-webgl'));
+    if (!gl) return;
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}'));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, 'precision mediump float;varying vec2 v;uniform sampler2D t;void main(){float x=clamp(v.x,.002,.998)*.5;vec3 c=texture2D(t,vec2(x,v.y)).rgb;float a=texture2D(t,vec2(x+.5,v.y)).g;gl_FragColor=vec4(min(c,vec3(a)),a);}'));
+    gl.linkProgram(prog); gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    function size(){
+      const d = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = Math.round(box.clientWidth*d); cv.height = Math.round(box.clientHeight*d);
+      gl.viewport(0, 0, cv.width, cv.height);
+    }
+    size(); window.addEventListener('resize', size);
+    vid.src = box.clientHeight*(window.devicePixelRatio || 1) > 700 ? 'founder/walk-1120.mp4' : 'founder/walk-672.mp4';
+    let raf = 0, seen = false, ok = true;
+    function paint(){
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+        gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (!box.classList.contains('live')) box.classList.add('live');
+      } catch (e) { ok = false; box.classList.remove('live'); }
+    }
+    // draw each new video frame exactly once (no half-decoded or repeated uploads)
+    const rvfc = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+    function onFrame(){ if (ok && vid.readyState >= 2) paint(); if (ok) vid.requestVideoFrameCallback(onFrame); }
+    function draw(){
+      raf = 0;
+      if (vid.readyState >= 2) paint();
+      if (!vid.paused && ok) raf = requestAnimationFrame(draw);
+    }
+    if (rvfc) vid.requestVideoFrameCallback(onFrame);
+    else vid.addEventListener('playing', () => { if (!raf) raf = requestAnimationFrame(draw); });
+    vid.addEventListener('error', () => { ok = false; box.classList.remove('live'); });
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting && ok){ if (!seen){ seen = true; vid.preload = 'auto'; } const p = vid.play(); if (p && p.catch) p.catch(() => {}); }
+      else if (!e.isIntersecting && !vid.paused) vid.pause();
+    }), { threshold: .15 }).observe(box);
+  })();
+
+})();
+</script>
+<script>
+/* The letter cube: a puzzle cube whose every face spells NATHAN OLU (NAT / HAN / OLU).
+   It scrambles itself, then solves back to the name, over and over, and leans toward the cursor. */
+(function(){
+  "use strict";
+  const host = document.getElementById('cube3d');
+  if (!host) return;
+  const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function start(){
+    const T = window.THREE;
+    if (!T) return;
+    const cv = host.querySelector('canvas');
+    let renderer;
+    try { renderer = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: !!window.__CUBE_STILL }); }
+    catch (e) { return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+    const scene = new T.Scene();
+    const camera = new T.PerspectiveCamera(24, 1, 0.1, 100);
+    camera.position.set(0, 0, 15.2);
+    const root = new T.Group(); scene.add(root);
+    const BASE = { x: 0.58, y: -0.74 };
+    root.rotation.set(BASE.x, BASE.y, 0);
+
+    // ---- tiles: rounded white squares with a black letter ----
+    const LETTERS = 'NATHANOLU';
+    const fontFamily = getComputedStyle(document.body).fontFamily;
+    const texCache = {};
+    function tex(ch){
+      if (texCache[ch]) return texCache[ch];
+      const c = document.createElement('canvas'); c.width = c.height = 256;
+      const x = c.getContext('2d');
+      x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, 256, 256);
+      x.fillStyle = '#0A0A0A'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.font = '800 178px ' + fontFamily;
+      x.fillText(ch, 128, 140);
+      const t = new T.CanvasTexture(c); t.anisotropy = 4;
+      return (texCache[ch] = t);
+    }
+    function roundedSquare(s, r){
+      const h = s/2, sh = new T.Shape();
+      sh.moveTo(-h + r, -h); sh.lineTo(h - r, -h); sh.quadraticCurveTo(h, -h, h, -h + r);
+      sh.lineTo(h, h - r); sh.quadraticCurveTo(h, h, h - r, h); sh.lineTo(-h + r, h);
+      sh.quadraticCurveTo(-h, h, -h, h - r); sh.lineTo(-h, -h + r); sh.quadraticCurveTo(-h, -h, -h + r, -h);
+      const g = new T.ShapeGeometry(sh, 6);
+      const p = g.attributes.position, uv = g.attributes.uv;
+      for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i)/s + .5, p.getY(i)/s + .5);
+      return g;
+    }
+    const tileGeo = roundedSquare(0.8, 0.14);
+    const bodyGeo = new T.BoxGeometry(0.98, 0.98, 0.98);
+    const hullGeo = new T.BoxGeometry(1.07, 1.07, 1.07);
+    const black = new T.MeshBasicMaterial({ color: 0x0A0A0A });
+    const hullMat = new T.MeshBasicMaterial({ color: 0x0A0A0A, side: T.BackSide });
+    // each face: its normal, and which way is right and up when you look at it
+    const V = (x, y, z) => new T.Vector3(x, y, z);
+    const FACES = [
+      { n: V(0,0,1),  r: V(1,0,0),  u: V(0,1,0) },
+      { n: V(1,0,0),  r: V(0,0,-1), u: V(0,1,0) },
+      { n: V(0,1,0),  r: V(1,0,0),  u: V(0,0,-1) },
+      { n: V(-1,0,0), r: V(0,0,1),  u: V(0,1,0) },
+      { n: V(0,0,-1), r: V(-1,0,0), u: V(0,1,0) },
+      { n: V(0,-1,0), r: V(1,0,0),  u: V(0,0,1) }
+    ];
+    const cubies = [];
+    for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++){
+      const g = new T.Group(); g.position.set(x, y, z);
+      g.add(new T.Mesh(bodyGeo, black), new T.Mesh(hullGeo, hullMat));
+      const p = V(x, y, z);
+      for (const f of FACES){
+        if (p.dot(f.n) !== 1) continue;
+        const col = p.dot(f.r) + 1, row = 1 - p.dot(f.u);
+        const m = new T.Mesh(tileGeo, new T.MeshBasicMaterial({ map: tex(LETTERS[row*3 + col]) }));
+        m.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(f.r, f.u, f.n));
+        m.position.copy(f.n).multiplyScalar(0.492);
+        g.add(m);
+      }
+      root.add(g); cubies.push(g);
+    }
+
+    // ---- turning a layer ----
+    const AX = ['x', 'y', 'z'];
+    const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+    let turning = null;
+    function snap(c){
+      c.updateMatrix(); const e = c.matrix.elements;
+      [0,1,2,4,5,6,8,9,10].forEach(i => e[i] = Math.round(e[i]));
+      e[12] = Math.round(e[12]); e[13] = Math.round(e[13]); e[14] = Math.round(e[14]);
+      c.matrix.decompose(c.position, c.quaternion, c.scale);
+    }
+    function turn(move, dur){
+      return new Promise(res => {
+        const pivot = new T.Group(); root.add(pivot);
+        const layer = cubies.filter(c => Math.round(c.position[move.axis]) === move.layer);
+        layer.forEach(c => pivot.attach(c));
+        turning = { pivot, layer, move, t0: performance.now(), dur, res };
+      });
+    }
+    function stepTurn(now){
+      if (!turning) return;
+      const { pivot, layer, move, t0, dur, res } = turning;
+      const t = Math.min(1, (now - t0)/dur);
+      pivot.rotation[move.axis] = move.dir*Math.PI/2*ease(t);
+      if (t >= 1){
+        pivot.updateMatrixWorld();
+        layer.forEach(c => { root.attach(c); snap(c); });
+        root.remove(pivot); turning = null; res();
+      }
+    }
+    function randomMoves(n){
+      const out = []; let last = null;
+      while (out.length < n){
+        const m = { axis: AX[Math.floor(Math.random()*3)], layer: [-1, 0, 1][Math.floor(Math.random()*3)], dir: Math.random() < .5 ? 1 : -1 };
+        if (last && last.axis === m.axis && last.layer === m.layer) continue;
+        out.push(m); last = m;
+      }
+      return out;
+    }
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    async function loop(){
+      await wait(1600);
+      for (;;){
+        const moves = randomMoves(7);
+        for (const m of moves) await turn(m, 420);
+        await wait(1500);
+        for (let i = moves.length - 1; i >= 0; i--) await turn({ ...moves[i], dir: -moves[i].dir }, 360);
+        await wait(3400);
+      }
+    }
+
+    // ---- size, pointer lean, render while visible ----
+    function size(){
+      const w = host.clientWidth || 600;
+      renderer.setSize(w, w, false); camera.aspect = 1; camera.updateProjectionMatrix();
+    }
+    size(); window.addEventListener('resize', size);
+    const lean = { x: 0, y: 0, tx: 0, ty: 0 };
+    window.addEventListener('pointermove', e => {
+      lean.tx = (e.clientX/innerWidth - .5); lean.ty = (e.clientY/innerHeight - .5);
+    }, { passive: true });
+    let visible = true, raf = 0, last = performance.now();
+    function frame(now){
+      raf = 0;
+      const dt = Math.min(.05, (now - last)/1000); last = now;
+      lean.x += (lean.tx - lean.x)*(1 - Math.exp(-dt*3)); lean.y += (lean.ty - lean.y)*(1 - Math.exp(-dt*3));
+      const sway = RM ? 0 : Math.sin(now/2600)*0.06;
+      root.rotation.y = BASE.y + sway + lean.x*0.35;
+      root.rotation.x = BASE.x + lean.y*0.18;
+      stepTurn(now);
+      renderer.render(scene, camera);
+      if (!host.classList.contains('live')) host.classList.add('live');
+      if (visible) raf = requestAnimationFrame(frame);
+    }
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(es => es.forEach(e => {
+        visible = e.isIntersecting;
+        if (visible && !raf){ last = performance.now(); raf = requestAnimationFrame(frame); }
+      })).observe(host);
+    }
+    // a still for the fallback image: the solved cube with the top layer caught mid-turn
+    window.__cubeStill = () => {
+      const top = cubies.filter(c => Math.round(c.position.y) === 1);
+      const pivot = new T.Group(); root.add(pivot); top.forEach(c => pivot.attach(c));
+      pivot.rotation.y = -0.32; root.rotation.set(BASE.x, BASE.y, 0);
+      renderer.render(scene, camera); return cv.toDataURL('image/png');
+    };
+    if (window.__CUBE_STILL) return;
+    raf = requestAnimationFrame(frame);
+    if (!RM) loop();
+  }
+  const go = () => (document.fonts && document.fonts.load ? document.fonts.load('800 100px Archivo').catch(() => {}) : Promise.resolve()).then(start);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})();
+</script>
+<script>
+/* The balloon bunch: a cluster of sky and violet balloons that hang together in the middle of the section.
+   Move the cursor through them and they bump apart, then drift back. Tap one to pop it; a new one floats up. */
+(function(){
+  "use strict";
+  const host = document.getElementById('bunch');
+  if (!host) return;
+  const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STILL = !!window.__BALLOON_STILL;
+  if (RM && !STILL) return;                       // the still image stays
+
+  function start(){
+    const T = window.THREE;
+    if (!T) return;
+    const cv = host.querySelector('canvas');
+    let renderer;
+    try { renderer = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: STILL }); }
+    catch (e) { return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputEncoding = T.sRGBEncoding;
+    renderer.toneMapping = T.LinearToneMapping;
+    renderer.toneMappingExposure = 0.86;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = T.PCFSoftShadowMap;
+
+    const scene = new T.Scene();
+    const camera = new T.PerspectiveCamera(30, 1, 0.1, 200);
+
+    // ---- soft studio light: a bright softbox in a pale room, for gentle reflections ----
+    (function env(){
+      const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+      const x = c.getContext('2d');
+      const g = x.createLinearGradient(0, 0, 0, 256);
+      g.addColorStop(0, '#FFFFFF'); g.addColorStop(.5, '#E9EBF2'); g.addColorStop(1, '#C9CCD6');
+      x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+      const s = x.createRadialGradient(150, 70, 4, 150, 70, 70);
+      s.addColorStop(0, 'rgba(255,255,255,1)'); s.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = s; x.fillRect(0, 0, 512, 256);
+      const t = new T.CanvasTexture(c); t.mapping = T.EquirectangularReflectionMapping; t.encoding = T.sRGBEncoding;
+      const pm = new T.PMREMGenerator(renderer);
+      scene.environment = pm.fromEquirectangular(t).texture;
+      t.dispose(); pm.dispose();
+    })();
+    scene.add(new T.HemisphereLight(0xffffff, 0xC9CEDD, 0.5));
+    const key = new T.DirectionalLight(0xffffff, 1.35);
+    key.position.set(-6, 11, 9);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    Object.assign(key.shadow.camera, { left: -11, right: 11, top: 9, bottom: -9, near: 1, far: 40 });
+    key.shadow.bias = -0.0006; key.shadow.normalBias = 0.03; key.shadow.radius = 4;
+    scene.add(key);
+    const rim = new T.DirectionalLight(0xDCE6FF, 0.45); rim.position.set(8, -3, -6); scene.add(rim);
+
+    // ---- one balloon shape: a teardrop with a little knot ----
+    const prof = [];
+    for (let i = 0; i <= 40; i++){
+      const th = Math.PI*i/40;                                  // 0 top, PI bottom
+      const low = Math.max(0, (th - Math.PI/2)/(Math.PI/2));
+      const r = Math.sin(th)*(1 - 0.30*low*low);
+      const y = Math.cos(th)*(th < Math.PI/2 ? 1.04 : 1.22);
+      prof.push(new T.Vector2(Math.max(r, 0.0001), y));
+    }
+    prof.push(new T.Vector2(0.075, -1.24), new T.Vector2(0.11, -1.31), new T.Vector2(0.0001, -1.33));
+    const bodyGeo = new T.LatheGeometry(prof.reverse(), 48);
+    const knotGeo = new T.TorusGeometry(0.075, 0.04, 8, 16); knotGeo.rotateX(Math.PI/2); knotGeo.translate(0, -1.27, 0);
+    const PALETTE = ['#3FB8EE', '#9E80F2', '#3FB8EE', '#9E80F2', '#2FA4E0', '#8A6AEB', '#6F98EE', '#B29EF5', '#F2F1F7'];
+    const mats = PALETTE.map(hex => new T.MeshPhysicalMaterial({
+      color: new T.Color(hex).convertSRGBToLinear(), roughness: 0.34, metalness: 0,
+      clearcoat: 0.8, clearcoatRoughness: 0.2, envMapIntensity: 0.55
+    }));
+    const stringMat = new T.LineBasicMaterial({ color: 0x9AA0AE, transparent: true, opacity: 0.55 });
+
+    // seeded randomness so the bunch is the same every visit
+    let seed = 20261022;
+    const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; };
+
+    const N = 48;
+    const B = [];
+    for (let i = 0; i < N; i++){
+      const r = 0.62 + rnd()*0.36;
+      const g = new T.Group();
+      const m = mats[Math.floor(rnd()*mats.length)];
+      const body = new T.Mesh(bodyGeo, m); body.castShadow = body.receiveShadow = true;
+      const knot = new T.Mesh(knotGeo, m);
+      g.add(body, knot);
+      // a short curly string
+      const pts = []; const len = 1.1 + rnd()*0.6, ph = rnd()*6;
+      for (let k = 0; k <= 16; k++){ const u = k/16; pts.push(new T.Vector3(Math.sin(ph + u*9)*0.07*u, -1.33 - u*len, Math.cos(ph + u*9)*0.07*u)); }
+      g.add(new T.Line(new T.BufferGeometry().setFromPoints(pts), stringMat));
+      g.scale.setScalar(r);
+      scene.add(g);
+      B.push({ g, r, p: new T.Vector3(), v: new T.Vector3(), bob: rnd()*6.28, spin: (rnd() - .5)*0.5, yaw: rnd()*6.28, state: 'live', t: 0 });
+    }
+
+    // ---- layout ----
+    const C = new T.Vector3(0, 0.25, 0);         // where the bunch gathers
+    let W = 1, H = 1;
+    function size(){
+      W = host.clientWidth || 800; H = host.clientHeight || 500;
+      renderer.setSize(W, H, false);
+      camera.aspect = W/H;
+      const tan = Math.tan(T.MathUtils.degToRad(camera.fov/2));
+      const needW = camera.aspect < 0.8 ? 12.6 : 16.2, needH = 10.4;             // the bunch, with air around it
+      camera.position.set(0, 0, Math.max(needH/(2*tan), needW/(2*tan*camera.aspect)));
+      camera.lookAt(0, 0, 0); camera.updateProjectionMatrix();
+    }
+    size();
+    if ('ResizeObserver' in window) new ResizeObserver(size).observe(host); else window.addEventListener('resize', size);
+
+    function place(b, below){
+      if (below){
+        b.p.set((rnd() - .5)*12, -10 - rnd()*7, (rnd() - .5)*4);
+        b.v.set((rnd() - .5)*1.2, 3.2 + rnd()*2.4, 0);
+      } else {
+        b.p.set(C.x + (rnd() - .5)*12, C.y + (rnd() - .5)*4, (rnd() - .5)*3);
+        b.v.set(0, 0, 0);
+      }
+    }
+    B.forEach(b => place(b, !STILL));
+
+    // ---- the pointer ----
+    const ray = new T.Raycaster(), ndc = new T.Vector2(), P = new T.Vector3(), plane = new T.Plane(new T.Vector3(0, 0, 1), 0);
+    let pointerOn = false;
+    const ring = host.querySelector('.ring');
+    function toWorld(e){
+      const r = host.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left)/r.width)*2 - 1, -((e.clientY - r.top)/r.height)*2 + 1);
+      ray.setFromCamera(ndc, camera);
+      ray.ray.intersectPlane(plane, P);
+      if (ring){ ring.style.transform = `translate(${e.clientX - r.left}px,${e.clientY - r.top}px)`; }
+    }
+    host.addEventListener('pointermove', e => { if (e.pointerType === 'mouse'){ pointerOn = true; host.classList.add('hover'); } toWorld(e); });
+    host.addEventListener('pointerleave', () => { pointerOn = false; host.classList.remove('hover'); });
+    host.addEventListener('pointerdown', e => {
+      toWorld(e);
+      if (e.pointerType !== 'mouse'){ pointerOn = true; setTimeout(() => { pointerOn = false; }, 450); }
+      // tap a balloon to pop it
+      let best = null, bd = Infinity;
+      const o = ray.ray.origin, d = ray.ray.direction, tmp = new T.Vector3();
+      for (const b of B){
+        if (b.state !== 'live') continue;
+        tmp.copy(b.p).sub(o); const t = tmp.dot(d); if (t < 0) continue;
+        const dist2 = tmp.lengthSq() - t*t;
+        if (dist2 < (b.r*1.02)**2 && t < bd){ bd = t; best = b; }
+      }
+      if (best) pop(best);
+    });
+
+    // ---- popping: the balloon snaps out, bits fly, a new one floats up from below ----
+    const bits = [];
+    const bitGeo = new T.PlaneGeometry(0.16, 0.1);
+    function pop(b){
+      b.state = 'pop'; b.t = 0;
+      const mat = b.g.children[0].material;
+      for (let k = 0; k < 12; k++){
+        const m = new T.Mesh(bitGeo, mat); m.position.copy(b.p);
+        const dir = new T.Vector3(rnd() - .5, rnd() - .3, rnd() - .5).normalize();
+        m.position.addScaledVector(dir, b.r*0.9);
+        scene.add(m);
+        bits.push({ m, v: dir.multiplyScalar(5 + rnd()*5), w: new T.Vector3(rnd()*12, rnd()*12, rnd()*12), life: 0.9 });
+      }
+      host.dispatchEvent(new CustomEvent('balloon:pop'));
+    }
+
+    // ---- physics ----
+    const K = new T.Vector3(2.0, 3.9, 3.2), DAMP = 2.1, PUSH_R = 2.9, PUSH = 46;
+    const tmp = new T.Vector3(), up = new T.Vector3(0, 1, 0), q = new T.Quaternion(), e3 = new T.Euler();
+    let clock = 0;
+    function step(dt){
+      clock += dt;
+      for (const b of B){
+        if (b.state === 'pop'){
+          b.t += dt; const s = b.r*(1 + b.t*4);
+          b.g.scale.setScalar(s);
+          if (b.t > 0.06){ b.state = 'gone'; b.g.visible = false; b.t = 0; }
+          continue;
+        }
+        if (b.state === 'gone'){
+          b.t += dt;
+          if (b.t > 1.6){ b.state = 'live'; b.g.visible = true; b.g.scale.setScalar(b.r); place(b, true); }
+          continue;
+        }
+        // gather toward the middle, more firmly up and down so the bunch spreads sideways
+        tmp.copy(b.p).sub(C);
+        b.v.x -= K.x*tmp.x*dt; b.v.y -= K.y*tmp.y*dt; b.v.z -= K.z*tmp.z*dt;
+        b.v.multiplyScalar(Math.exp(-(DAMP + (b.p.y < C.y - 3 ? 0 : 0.9*Math.max(0, b.v.y)))*dt));
+        // a little float
+        b.v.y += Math.sin(clock*1.1 + b.bob)*0.35*dt;
+        b.v.x += Math.cos(clock*0.7 + b.bob)*0.18*dt;
+        // the cursor nudges them out of the way
+        if (pointerOn){
+          const dx = b.p.x - P.x, dy = b.p.y - P.y, dz = b.p.z*0.35;
+          const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if (d < PUSH_R && d > 1e-4){
+            const f = PUSH*Math.pow(1 - d/PUSH_R, 2)*dt;
+            b.v.x += dx/d*f; b.v.y += dy/d*f; b.v.z += (b.p.z >= 0 ? 1 : -1)*f*0.5;
+          }
+        }
+        b.p.addScaledVector(b.v, dt);
+      }
+      // bump into each other
+      for (let i = 0; i < N; i++){
+        const a = B[i]; if (a.state !== 'live') continue;
+        for (let j = i + 1; j < N; j++){
+          const c = B[j]; if (c.state !== 'live') continue;
+          tmp.copy(c.p).sub(a.p);
+          const rr = (a.r + c.r)*1.0, d2 = tmp.lengthSq();
+          if (d2 >= rr*rr || d2 < 1e-8) continue;
+          const d = Math.sqrt(d2), n = tmp.multiplyScalar(1/d), over = rr - d;
+          const wa = c.r/(a.r + c.r), wc = a.r/(a.r + c.r);
+          a.p.addScaledVector(n, -over*wa); c.p.addScaledVector(n, over*wc);
+          const rel = (c.v.x - a.v.x)*n.x + (c.v.y - a.v.y)*n.y + (c.v.z - a.v.z)*n.z;
+          if (rel < 0){ const imp = -1.3*rel; a.v.addScaledVector(n, -imp*wa); c.v.addScaledVector(n, imp*wc); }
+        }
+      }
+      // sway: tilt a little with their motion, turn slowly
+      for (const b of B){
+        if (b.state !== 'live') continue;
+        b.yaw += b.spin*dt;
+        e3.set(T.MathUtils.clamp(b.v.z*0.06, -.35, .35), b.yaw, T.MathUtils.clamp(-b.v.x*0.06, -.35, .35));
+        q.setFromEuler(e3); b.g.quaternion.slerp(q, 1 - Math.exp(-dt*5));
+        b.g.position.copy(b.p);
+      }
+      for (let k = bits.length - 1; k >= 0; k--){
+        const s = bits[k]; s.life -= dt;
+        s.v.y -= 9*dt; s.v.multiplyScalar(Math.exp(-1.5*dt));
+        s.m.position.addScaledVector(s.v, dt);
+        s.m.rotation.x += s.w.x*dt; s.m.rotation.y += s.w.y*dt; s.m.rotation.z += s.w.z*dt;
+        s.m.scale.setScalar(Math.max(0, s.life/0.9));
+        if (s.life <= 0){ scene.remove(s.m); bits.splice(k, 1); }
+      }
+    }
+    for (const b of B) b.g.position.copy(b.p);
+
+    // a still for the fallback image
+    if (STILL){
+      for (let i = 0; i < 1400; i++) step(1/120);
+      renderer.render(scene, camera);
+      window.__balloonStill = () => cv.toDataURL('image/png');
+      return;
+    }
+
+    let visible = false, started = false, raf = 0, last = 0;
+    function frame(now){
+      raf = 0;
+      const dt = Math.min(0.05, (now - (last || now))/1000); last = now;
+      const n = Math.max(1, Math.ceil(dt/(1/120)));
+      for (let i = 0; i < n; i++) step(dt/n);
+      renderer.render(scene, camera);
+      if (!host.classList.contains('live')) host.classList.add('live');
+      if (visible) raf = requestAnimationFrame(frame); else last = 0;
+    }
+    new IntersectionObserver(es => es.forEach(e => {
+      visible = e.isIntersecting;
+      if (visible){ started = true; if (!raf) raf = requestAnimationFrame(frame); }
+    }), { threshold: 0.12 }).observe(host);
+  }
+  const go = () => start();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})();
+</script>
+<script>
+/* every page opens at its top. Inside some previews (like the claude.ai viewer) the last page's scroll position could carry over. */
+(function(){
+  if (location.hash) return;
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+  const top = () => { window.scrollTo(0, 0); try { document.documentElement.scrollIntoView({ block: 'start' }); } catch (e) {} };
+  top(); window.addEventListener('load', top, { once: true });
+})();
+</script>
+<script src="legal.js" defer></script>
+</body>
+</html>
