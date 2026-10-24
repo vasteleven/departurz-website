@@ -12,15 +12,15 @@ Plan on about an hour the first time. Steps 1 to 4 are required. Payments (step 
 
 ---
 
-## 1. Put the site on Vercel
+## 1. Where the site lives (done)
 
-1. Install Node.js 20 or newer from nodejs.org if you don't have it.
-2. In Vercel, create a new project and upload this folder. The Work page videos make the site about 125 MB, so how you upload depends on your Vercel plan:
-   - **Free (Hobby) plan:** push this folder to a GitHub repo and import that repo in Vercel (**Add New > Project**). The Vercel CLI only uploads up to 100 MB on Hobby, so `npx vercel` would stop partway.
-   - **Pro plan:** either way works. The simplest is the Vercel CLI: open a terminal in this folder and run `npx vercel`, then follow the prompts.
-3. In the project's **Settings > Domains**, add `departurz.com` and `www.departurz.com`.
+- **Code:** the GitHub repo `vasteleven/departurz-website`. Every push to its `main` branch goes live on its own.
+- **Hosting:** the Vercel project **departurz-website** (team vasteleven's projects, Pro plan), with `departurz.com` and `www.departurz.com` attached. `departurz.com` forwards to `www.departurz.com`.
+- **Settings below** (the environment variables) go in that project: **Vercel > departurz-website > Settings > Environment Variables**. After adding or changing any, redeploy once (**Deployments > ⋯ > Redeploy**) so the site picks them up.
+- **Undo:** if a change ever goes wrong, **Deployments**, pick the last good one, **Promote to Production**.
+- You'll need Node.js 20 or newer from nodejs.org only for the two terminal steps below (`npm run google-token` and `npm run setup`), run inside a copy of the repo.
 
-The site works right away. The portal shows "Please sign in" until the steps below are done.
+The site is live. Until the steps below are done, the contact form opens the visitor's email app instead of sending on its own, and the portal tells visitors it opens with their first project.
 
 ## 2. Connect Google (Drive, Sheets and "Sign in with Google")
 
@@ -79,7 +79,7 @@ Then **Settings > Environment Variables**, add these for **Production**:
 | `CLIENTS_SHEET_ID`, `TEAM_SHEET_ID`, `CLIENTS_FOLDER_ID`, `TEAM_FOLDER_ID` | The four IDs from step 3 |
 | `RESEND_API_KEY` | From resend.com (the same account the contact form uses). The domain departurz.com must be verified there. |
 | `PORTAL_FROM` | `DEPARTURZ <portal@departurz.com>` |
-| `PORTAL_URL` | `https://departurz.com` |
+| `PORTAL_URL` | `https://www.departurz.com` (the address the site settles on) |
 | `CRON_SECRET` | Another long random string (Vercel sends it with the daily job) |
 | `NOTIFY_EMAIL` | Optional. Where bookings, uploads and messages are sent. Defaults to `wecreate@departurz.com` |
 | `ANTHROPIC_API_KEY` | Optional. Turns on the AI answers in the homepage chat bubble |
@@ -121,7 +121,7 @@ Everything is driven from the two Sheets. Dates are `YYYY-MM-DD` (the Sheets for
 
 The Payments page only shows the methods you've set up.
 
-- **Card, Apple Pay, Cash App Pay (Stripe):** add `STRIPE_SECRET_KEY`. In the Stripe Dashboard, turn on **Apple Pay** and **Cash App Pay** under Settings > Payment methods. Then **Developers > Webhooks > Add endpoint**: `https://departurz.com/api/stripe-webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, and add its signing secret as `STRIPE_WEBHOOK_SECRET`.
+- **Card, Apple Pay, Cash App Pay (Stripe):** add `STRIPE_SECRET_KEY`. In the Stripe Dashboard, turn on **Apple Pay** and **Cash App Pay** under Settings > Payment methods. Then **Developers > Webhooks > Add endpoint**: `https://www.departurz.com/api/stripe-webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, and add its signing secret as `STRIPE_WEBHOOK_SECRET`.
 - **PayPal and Venmo:** at developer.paypal.com create a **Live** REST app, add `PAYPAL_CLIENT_ID` and `PAYPAL_SECRET`. Venmo appears automatically for US clients on phones.
 - **Square:** at developer.squareup.com create an app, add the production `SQUARE_ACCESS_TOKEN` and your `SQUARE_LOCATION_ID`.
 - **Zelle:** `ZELLE_HANDLE` = the email or phone clients send to.
