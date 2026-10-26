@@ -123,7 +123,35 @@ h2{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-si
 .spot:hover .tag,.spot:focus-visible .tag,.spot[aria-expanded="true"] .tag{opacity:1;transform:translate(-50%,0)}
 .spot .tag{bottom:auto;top:calc(100% + 8px)}
 #spot-tv .tag,#spot-camera .tag,#spot-sound .tag,#spot-chair .tag{top:auto;bottom:calc(100% + 8px)}
-@media (hover:none){ .spot .tag{opacity:1;transform:translate(-50%,0);font-size:9.5px;padding:6px 9px;letter-spacing:.1em} .spot.quiet .tag{opacity:0} }
+/* phones and tablets have no hover, so every label shows as a small button pointing at its piece of kit.
+   Tapping the label or the kit opens it, and the kit lights up the way it does under a mouse. */
+@media (hover:none){
+  .spot .tag{opacity:1;transform:translate(-50%,0);pointer-events:auto;display:inline-flex;align-items:center;gap:7px;
+    font-size:10.5px;letter-spacing:.1em;min-height:32px;padding:7px 12px 7px 10px;box-shadow:0 8px 18px -8px rgba(0,0,0,.6)}
+  .spot .tag::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--sky);animation:tagPing 1.8s ease-out infinite}
+  .spot .tag::after{content:"";position:absolute;left:50%;top:-4px;width:9px;height:9px;background:var(--night);border-radius:2px;transform:translateX(-50%) rotate(45deg)}
+  #spot-tv .tag::after,#spot-camera .tag::after,#spot-sound .tag::after,#spot-chair .tag::after{top:auto;bottom:-4px}
+  .spot.quiet .tag{opacity:0;pointer-events:none}
+  .spot[aria-expanded="true"] .tag,.spot.lit .tag{background:linear-gradient(90deg,var(--sky),var(--violet));color:var(--night)}
+  .spot[aria-expanded="true"] .tag::after,.spot.lit .tag::after{background:#6F9CF0}
+  .spot[aria-expanded="true"] .tag::before,.spot.lit .tag::before{background:var(--night);animation:none}
+}
+@keyframes tagPing{0%{box-shadow:0 0 0 0 rgba(63,184,238,.75)}100%{box-shadow:0 0 0 9px rgba(63,184,238,0)}}
+@media (prefers-reduced-motion: reduce){ .spot .tag::before{animation:none} }
+/* the line under "In the studio" that says what to do, and the arrows for looking around the room on a phone */
+.studio-hint{display:none;margin:8px auto 0;max-width:34ch;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;line-height:1.5;text-transform:uppercase;color:var(--stage-mute)}
+.room-shell{position:relative}
+.pan{display:none}
+@media (hover:none){ .studio-hint{display:block} }
+@media (max-width:820px){
+  .studio-hint{display:block}
+  .pan{display:grid;place-items:center;position:absolute;z-index:3;top:50%;width:42px;height:42px;margin-top:-21px;padding:0;border:0;border-radius:50%;
+    background:rgba(10,10,10,.74);color:#F2F0EB;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .25s;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 8px 20px -8px rgba(0,0,0,.6)}
+  .pan svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .pan-l{left:max(10px, env(safe-area-inset-left, 0px))} .pan-r{right:max(10px, env(safe-area-inset-right, 0px))}
+  .pan.off{opacity:0;pointer-events:none}
+}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .svc-panel{position:fixed;z-index:40;right:max(16px, env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));
   width:min(520px, calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;color:#0E1116;background:#FFFFFF;
@@ -399,7 +427,9 @@ footer{padding-block:36px calc(36px + env(safe-area-inset-bottom, 0px));border-t
   <section class="studio" id="studio" aria-labelledby="studioTitle">
     <div class="wrap studio-head">
       <h2 id="studioTitle">In the studio</h2>
+      <p class="studio-hint" id="studioHint">Tap a label to step inside. Swipe to see the whole room.</p>
     </div>
+    <div class="room-shell">
     <div class="room-wrap" id="roomWrap">
       <div class="room" id="room">
         <img class="room-img" id="roomImg" src="studio/studio-2000.webp" srcset="studio/studio-1200.webp 1200w, studio/studio-2000.webp 2000w, studio/studio-2736.webp 2736w" sizes="(max-width: 820px) 1200px, 100vw" width="2736" height="1536" alt="The DEPARTURZ studio: an editing desk with a laptop and two monitors, a large screen on the wall, a camera on a tripod in front of a white backdrop, and a DJ and sound corner." decoding="async">
@@ -411,6 +441,9 @@ footer{padding-block:36px calc(36px + env(safe-area-inset-bottom, 0px));border-t
         <button class="spot" type="button" id="spot-sound" data-svc="sound" data-group="sound" aria-controls="svcPanel" aria-expanded="false" style="--x:19.99;--y:68.55;--w:13.01;--h:27.67"><span class="tag">Sound</span><span class="sr">Open Sound details</span></button>
         <button class="spot" type="button" id="spot-chair" data-svc="chair" data-group="chair" data-eyebrow="The director's chair" aria-controls="svcPanel" aria-expanded="false" style="--x:82.2;--y:50.4;--w:6.4;--h:19.9"><span class="tag">About · Contact</span><span class="sr">Open About and Contact</span></button>
       </div>
+    </div>
+    <button class="pan pan-l off" type="button" id="panL" aria-label="Look left in the studio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="pan pan-r" type="button" id="panR" aria-label="Look right in the studio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
     <aside class="svc-panel" id="svcPanel" role="dialog" aria-modal="false" aria-labelledby="svcTitle-web-design" hidden>
       <button class="svc-close" type="button" id="svcClose">Close</button>
@@ -1551,7 +1584,22 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
 }));
 
 // phones: start the swipeable studio centred on the desk
-function centreWrap(){ if (wrap && wrap.scrollWidth > wrap.clientWidth + 4) wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth)*0.5; }
+function centreWrap(){ if (wrap && wrap.scrollWidth > wrap.clientWidth + 4) wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth)*0.5; pans(); }
+// and the arrows at its edges show which way there's more room to see
+const panL = document.getElementById('panL'), panR = document.getElementById('panR');
+function pans(){
+  if (!wrap || !panL || !panR) return;
+  const max = wrap.scrollWidth - wrap.clientWidth;
+  panL.classList.toggle('off', max < 4 || wrap.scrollLeft < 4);
+  panR.classList.toggle('off', max < 4 || wrap.scrollLeft > max - 4);
+  const hint = document.getElementById('studioHint');
+  if (hint) hint.textContent = max < 4 ? 'Tap a label to step inside.' : 'Tap a label to step inside. Swipe to see the whole room.';
+}
+if (wrap && panL && panR){
+  wrap.addEventListener('scroll', pans, { passive: true });
+  const go = dir => wrap.scrollBy({ left: dir*wrap.clientWidth*0.7, behavior: RM ? 'auto' : 'smooth' });
+  panL.addEventListener('click', () => go(-1)); panR.addEventListener('click', () => go(1));
+}
 
 // the first time the studio comes into view, each piece of kit lights up once so people know they can click
 let shown = false;
@@ -1562,15 +1610,16 @@ if ('IntersectionObserver' in window){
         shown = true;
         if (!RM){
           const order = ['web', 'edit', 'camera', 'chair', 'sound'];
-          order.forEach((k, i) => setTimeout(() => { if (!selected && !hovered){ demo = k; kick(); } }, 500 + i*800));
-          setTimeout(() => { demo = null; kick(); }, 500 + order.length*800);
+          const mark = k => spots.forEach(b => b.classList.toggle('lit', b.dataset.group === k));
+          order.forEach((k, i) => setTimeout(() => { if (!selected && !hovered){ demo = k; mark(k); kick(); } }, 500 + i*800));
+          setTimeout(() => { demo = null; mark(null); kick(); }, 500 + order.length*800);
         }
       }
       if (!en.isIntersecting && selected) closeSvc(false);
     }
   }, { threshold: [0, 0.35] }).observe(document.getElementById('studio'));
 }
-if ('ResizeObserver' in window) new ResizeObserver(size).observe(room); else window.addEventListener('resize', size);
+if ('ResizeObserver' in window) new ResizeObserver(() => { size(); pans(); }).observe(room); else window.addEventListener('resize', () => { size(); pans(); });
 size(); centreWrap();
 if (img && !img.complete) img.addEventListener('load', centreWrap, { once: true });
 fromHash();
