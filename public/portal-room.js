@@ -193,11 +193,13 @@ function findQuads(img) {
 /* ---------- the renderer ---------- */
 const VS = `attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}`;
 const FS = `precision highp float;varying vec2 v;
-uniform sampler2D uBase,uMedia,uEditor;uniform mat3 uHs,uHl,uHr;uniform vec3 uHave;uniform float uMA,uEA;uniform vec4 uView;uniform vec3 uKey;uniform vec3 uQA;
+uniform sampler2D uBase,uMedia,uEditor,uAmb;uniform mat3 uHs,uHl,uHr;uniform vec3 uHave;uniform float uMA,uEA;uniform vec4 uView;uniform vec3 uKey;uniform vec3 uQA;
 vec2 loc(mat3 H,vec2 p){vec3 q=H*vec3(p,1.);return q.xy/q.z;}
 float inq(vec2 l){float m=.025;return step(-m,l.x)*step(l.x,1.+m)*step(-m,l.y)*step(l.y,1.+m);}
 vec3 fitm(vec2 l,float ba){vec2 u=l;if(uMA>ba)u.y=(l.y-.5)*(uMA/ba)+.5;else u.x=(l.x-.5)*(ba/uMA)+.5;
- if(u.x<0.||u.x>1.||u.y<0.||u.y>1.)return vec3(0.);return texture2D(uMedia,u).rgb;}
+ if(u.x<0.||u.x>1.||u.y<0.||u.y>1.){vec2 c=l;if(uMA>ba)c.x=(l.x-.5)*(ba/uMA)+.5;else c.y=(l.y-.5)*(uMA/ba)+.5;
+  vec3 a=texture2D(uAmb,c).rgb;float e=min(min(u.x,1.-u.x),min(u.y,1.-u.y));return mix(a*.3,a*.42,smoothstep(-.25,-.02,e));}
+ return texture2D(uMedia,u).rgb;}
 void main(){vec4 b=texture2D(uBase,v);float gr=b.g-max(b.r,b.b);float k=smoothstep(uKey.x,uKey.y,gr);vec3 c=b.rgb;
  if(gr>0.)c.g=mix(c.g,max(c.r,c.b),uKey.z*smoothstep(0.,uKey.x,gr));
  vec3 m=vec3(0.);float hit=0.;
@@ -221,11 +223,14 @@ class Stage {
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     this.u = n => gl.getUniformLocation(pr, n);
-    this.tex = [0, 1, 2].map(i => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+    this.tex = [0, 1, 2, 3].map(i => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255])); return t; });
-    gl.uniform1i(this.u('uBase'), 0); gl.uniform1i(this.u('uMedia'), 1); gl.uniform1i(this.u('uEditor'), 2);
+    gl.uniform1i(this.u('uBase'), 0); gl.uniform1i(this.u('uMedia'), 1); gl.uniform1i(this.u('uEditor'), 2); gl.uniform1i(this.u('uAmb'), 3);
+    // a tiny, soft copy of what's playing lights the parts of the screen the picture doesn't cover (no black bars)
+    this.amb = document.createElement('canvas'); this.amb.width = 48; this.amb.height = 27;
+    this.ambX = this.amb.getContext('2d'); try { this.ambX.filter = 'blur(2px)'; } catch (e) {}
     const q = scene.quads, I = [1, 0, 0, 0, 1, 0, 0, 0, 1];
     this.H = { screen: q.screen ? homography(q.screen, UNIT) : I, left: q.left ? homography(q.left, UNIT) : I, right: q.right ? homography(q.right, UNIT) : I };
     this.F = { screen: q.screen ? homography(UNIT, q.screen) : I };
@@ -243,15 +248,16 @@ class Stage {
   }
   put(unit, src) { const gl = this.gl; gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, this.tex[unit]); try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); } catch (e) {} this.dirty = true; }
   setBase(video) { this.baseVideo = video; }
-  setMedia(src, aspect) { this.media = src; this.mediaA = aspect || 16 / 9; this.gl.uniform1f(this.u('uMA'), this.mediaA); if (src && !(src instanceof HTMLVideoElement)) this.put(1, src); this.dirty = true; }
+  setMedia(src, aspect) { this.media = src; this.mediaA = aspect || 16 / 9; this.gl.uniform1f(this.u('uMA'), this.mediaA); if (src && !(src instanceof HTMLVideoElement)) { this.put(1, src); this.ambient(src); } this.dirty = true; }
+  ambient(src) { try { this.ambX.clearRect(0, 0, 48, 27); this.ambX.drawImage(src, -4, -4, 56, 35); this.put(3, this.amb); } catch (e) {} }
   touch() { this.dirty = true; }
   draw() {
     if (document.hidden) return;
     const gl = this.gl, bv = this.baseVideo, mv = this.media instanceof HTMLVideoElement ? this.media : null;
     let any = this.dirty;
     if (bv && bv.readyState >= 2 && !bv.paused) { this.put(0, bv); any = true; }
-    if (mv && mv.readyState >= 2 && (!mv.paused || this.dirty || mv.seeking || this.lastT !== mv.currentTime)) { this.put(1, mv); this.lastT = mv.currentTime; any = true; }
-    if (this.media && this.media.tagName === 'CANVAS' && this.media.live) { this.put(1, this.media); any = true; }
+    if (mv && mv.readyState >= 2 && (!mv.paused || this.dirty || mv.seeking || this.lastT !== mv.currentTime)) { this.put(1, mv); if ((this.ambN = (this.ambN || 0) + 1) % 3 === 1 || mv.paused) this.ambient(mv); this.lastT = mv.currentTime; any = true; }
+    if (this.media && this.media.tagName === 'CANVAS' && this.media.live) { this.put(1, this.media); this.ambient(this.media); any = true; }
     if (!any) return;
     this.dirty = false;
     gl.uniform1f(this.u('uMA'), this.mediaA);
