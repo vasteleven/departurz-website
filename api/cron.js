@@ -17,9 +17,10 @@ import { outFolder, docsFolder, clientInFolder } from './_lib/files.js';
 import { sweepReviews, reviewFolder } from './_lib/rooms.js';
 import { syncBooks } from './_lib/books.js';
 import { morningEmail } from './_lib/digest.js';
+import { loadStored } from './_lib/setupcore.js';
 
 const OVERDUE = [1, 3, 7, 14, 21, 28];
-const portal = () => env('PORTAL_URL', 'https://departurz.com').replace(/\/$/, '') + '/portal-app.html';
+const portal = () => env('PORTAL_URL', 'https://www.departurz.com').replace(/\/$/, '') + '/portal-app.html';
 const when = (d, td) => { const n = daysBetween(td, d); return n === 0 ? 'today' : n === 1 ? 'tomorrow' : n > 1 ? `in ${n} days` : `${-n} day${n === -1 ? '' : 's'} ago`; };
 const pretty = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
 
@@ -168,6 +169,7 @@ async function crewLetters(td, log) {
 export async function GET(request) {
   const secret = env('CRON_SECRET');
   if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Not allowed' }, 401);
+  await loadStored();
   const td = today(), log = [];
   const jobs = [
     ['clients', () => clientLetters(td, log)], ['crew', () => crewLetters(td, log)], ['square', () => squareSweep().then(n => n && log.push(`square paid: ${n}`))],

@@ -5,6 +5,7 @@ import { HttpError, env, need, isoDay } from './util.js';
 
 /* ---------- access token for departurzedits ---------- */
 let cached = { token: '', exp: 0 };
+export const resetGoogle = () => { cached = { token: '', exp: 0 }; };   // after the Drive account is (re)connected
 export async function accessToken() {
   if (cached.token && Date.now() < cached.exp - 60000) return cached.token;
   const r = await fetch('https://oauth2.googleapis.com/token', {

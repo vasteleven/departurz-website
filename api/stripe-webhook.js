@@ -3,9 +3,11 @@
 // checkout.session.async_payment_succeeded). Set STRIPE_WEBHOOK_SECRET to the signing secret it shows.
 import { json } from './_lib/util.js';
 import { stripeWebhook } from './_lib/pay.js';
+import { loadStored } from './_lib/setupcore.js';
 
 export async function POST(request) {
   try {
+    await loadStored();
     const raw = await request.text();
     return json(await stripeWebhook(raw, request.headers.get('stripe-signature')));
   } catch (e) {

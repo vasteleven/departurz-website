@@ -42,7 +42,7 @@ export async function markPaid(nos, via, ref, emailHint) {
   const to = emailHint || (p && String(p.client_email).split(/[\s,;]+/)[0]);
   const cl = c.Clients.find(r => lower(r.email) === lower(to)) || {};
   const total = rows.reduce((a, i) => a + num(i.amount), 0);
-  const portal = env('PORTAL_URL', 'https://departurz.com').replace(/\/$/, '');
+  const portal = env('PORTAL_URL', 'https://www.departurz.com').replace(/\/$/, '');
   const conf = p ? String(p.code) : String(rows[0].project_code);
   if (to) await send({ to, subject: `Payment received: ${money(total)} · ${conf}`, heading: 'Payment received', html: `<p>Hi ${esc(firstName(cl.name))},</p><p>We received <b>${esc(money(total))}</b> by ${esc(via)} for ${rows.map(i => `<b>${esc(i.label || i.no)}</b> (${esc(i.no)})`).join(', ')}. Thank you.</p><p>It's filed under your confirmation number <b>${esc(conf)}</b>, with your receipt, in the portal.</p>`, cta: { label: 'Open your receipt', url: `${portal}/portal-app.html#/client/fare` } });
   await send({ to: NOTIFY(), subject: `Paid: ${money(total)} by ${via} (${p ? p.code : rows[0].project_code})`, heading: 'Payment in', html: `<p>${esc(cl.company || cl.name || to || 'A client')} paid <b>${esc(money(total))}</b> by ${esc(via)}.</p><p>${rows.map(i => esc(i.no + ' · ' + (i.label || ''))).join('<br>')}</p>${ref ? `<p style="color:#6B6A66">Reference: ${esc(ref)}</p>` : ''}` });

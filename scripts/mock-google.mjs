@@ -168,7 +168,14 @@ export function install(base) {
   globalThis.fetch = async (input, opts = {}) => {
     const url = new URL(typeof input === 'string' ? input : input.url);
     store.calls.push(`${opts.method || 'GET'} ${url.host}${url.pathname}`);
-    if (url.host === 'oauth2.googleapis.com') return ok({ access_token: 'mock', expires_in: 3600 });
+    if (url.host === 'oauth2.googleapis.com') {
+      const b = new URLSearchParams(String(opts.body || ''));
+      if (b.get('grant_type') === 'authorization_code') {
+        const idt = ['e30', Buffer.from(JSON.stringify({ email: 'departurzedits@gmail.com' })).toString('base64url'), 'x'].join('.');
+        return ok({ access_token: 'mock', expires_in: 3600, refresh_token: 'rt-' + b.get('code'), id_token: idt, scope: 'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets' });
+      }
+      return ok({ access_token: 'mock', expires_in: 3600 });
+    }
     if (url.host === 'sheets.googleapis.com') return sheets(url, opts);
     if (url.host === 'www.googleapis.com') return drive(url, opts, base);
     if (url.host === 'api.resend.com') { const b = JSON.parse(opts.body); store.mail.push(b); return ok({ id: nid('mail') }); }

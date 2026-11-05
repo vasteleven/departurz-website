@@ -184,6 +184,23 @@ await ok('books: rebuilt from paid invoices and crew pay, and downloadable for N
   assert.equal(x.status, 200); assert.match(x.headers.get('content-disposition'), /DEPARTURZ Books/);
   assert.equal((await call('GET', 'books/xlsx', null, R)).status, 403);
 });
+await ok('the /setup page: locked by the setup key, then Google connects the Drive and builds everything', async () => {
+  process.env.SETUP_KEY = 'a-long-setup-phrase-for-tests';
+  const st = (await call('GET', 'setup/status')).data;
+  assert.equal(st.key, true); assert.equal(st.google, true);
+  assert.equal((await call('POST', 'setup/start', { key: 'wrong', email: 'nate@departurz.example' })).status, 403);
+  const s = await call('POST', 'setup/start', { key: 'a-long-setup-phrase-for-tests', email: 'nate@departurz.example', name: 'Nate' });
+  const u = new URL(s.data.url);
+  assert.equal(u.hostname, 'accounts.google.com'); assert.match(u.searchParams.get('scope'), /auth\/drive/);
+  assert.equal((await call('GET', 'setup/google?state=nope&code=x')).status, 400, 'unknown state is refused');
+  const done = await call('GET', 'setup/google?state=' + u.searchParams.get('state') + '&code=abc');
+  assert.equal(done.status, 200); assert.match(done.data, /The portal is set up/); assert.match(done.data, /departurzedits@gmail\.com/);
+  const { kv } = await import('../api/_lib/kv.js');
+  const cfg = JSON.parse(await kv.get('cfg:portal'));
+  assert.equal(cfg.GOOGLE_REFRESH_TOKEN, 'rt-abc'); assert.equal(cfg.CLIENTS_SHEET_ID, 'clients-sheet');
+  assert.equal((await call('GET', 'setup/google?state=' + u.searchParams.get('state') + '&code=abc')).status, 400, 'a setup link works once');
+  process.env.GOOGLE_REFRESH_TOKEN = 'x';
+});
 await ok('chat: client thread, crew DMs, and nobody reads what isn\'t theirs', async () => {
   assert.equal((await call('POST', 'messages', { c: 'client-DPZ-0142', text: 'Hi' }, C)).status, 200);
   assert.equal((await call('POST', 'messages', { c: 'client-DPZ-0142', text: 'Hey!' }, N)).status, 200);

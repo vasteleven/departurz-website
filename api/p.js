@@ -10,6 +10,8 @@ import * as pay from './_lib/pay.js';
 import * as rooms from './_lib/rooms.js';
 import * as desk from './_lib/desk.js';
 import * as books from './_lib/books.js';
+import * as setup from './_lib/setupweb.js';
+import { loadStored } from './_lib/setupcore.js';
 import { post, markRead, history, shape, clientChan } from './_lib/messages.js';
 import { send, NOTIFY } from './_lib/mail.js';
 import { kv, limited } from './_lib/kv.js';
@@ -170,6 +172,11 @@ const ROUTES = {
   'POST desk/task': teamOnly(reply(({ user, body: b }) => desk.saveTask(user.email, b))),
   'POST desk/project': teamOnly(reply(({ user, body: b }) => desk.saveProject(user.email, b))),
 
+  // first-time setup from the browser (the /setup page; locked by SETUP_KEY)
+  'GET setup/status': () => setup.status().then(r => json(r, 200, { 'Cache-Control': 'no-store' })),
+  'POST setup/start': ({ request, body: b }) => setup.start(request, b).then(r => json(r)),
+  'GET setup/google': ({ request, q }) => setup.google(request, q),
+
   // the books (owner)
   'POST books/sync': ownerOnly(reply(() => books.syncBooks())),
   'GET books/xlsx': ownerOnly(() => books.booksXlsx())
@@ -181,6 +188,7 @@ async function handle(request) {
   const fn = ROUTES[request.method + ' ' + r];
   if (!fn) return json({ error: 'Not found' }, 404);
   try {
+    await loadStored();                 // settings the /setup page saved, for anything not set in Vercel
     // cookies only ride along on JSON requests from our own pages (forms from other sites can't send JSON),
     // and the one plain form we accept carries its own one-time token
     if (request.method === 'POST' && r !== 'auth/verify' && !(request.headers.get('content-type') || '').includes('application/json') && !(request.headers.get('authorization') || '').startsWith('Bearer ')) {

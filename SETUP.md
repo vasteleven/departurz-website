@@ -8,7 +8,7 @@ This folder is the whole website plus the client and crew portal, ready for one 
 - **Chat** (client threads, crew channels, direct messages) is stored in Upstash Redis, which has a free tier.
 - **Emails go out on their own**, once a day at 8am Los Angeles time: reminders, project updates, thank-you letters, and Kit sign-ups.
 
-Plan on about an hour the first time. Steps 1 to 4 are required. Payments (step 6) and Kit (step 7) can be added whenever you're ready.
+Plan on about 30 minutes the first time, all in the browser. Steps 1 to 4 are required. Payments (step 6) and Kit (step 7) can be added whenever you're ready.
 
 ---
 
@@ -18,7 +18,6 @@ Plan on about an hour the first time. Steps 1 to 4 are required. Payments (step 
 - **Hosting:** the Vercel project **departurz-website** (team vasteleven's projects, Pro plan), with `departurz.com` and `www.departurz.com` attached. `departurz.com` forwards to `www.departurz.com`.
 - **Settings below** (the environment variables) go in that project: **Vercel > departurz-website > Settings > Environment Variables**. After adding or changing any, redeploy once (**Deployments > ⋯ > Redeploy**) so the site picks them up.
 - **Undo:** if a change ever goes wrong, **Deployments**, pick the last good one, **Promote to Production**.
-- You'll need Node.js 20 or newer from nodejs.org only for the two terminal steps below (`npm run google-token` and `npm run setup`), run inside a copy of the repo.
 
 The site is live. Until the steps below are done, the contact form opens the visitor's email app instead of sending on its own, and the portal tells visitors it opens with their first project.
 
@@ -28,66 +27,41 @@ Do all of this signed in as **departurzedits@gmail.com**.
 
 1. Go to console.cloud.google.com and create a project called **DEPARTURZ Portal**.
 2. **APIs & Services > Library:** enable **Google Drive API** and **Google Sheets API**.
-3. **APIs & Services > OAuth consent screen** (Google may call it "Google Auth Platform"):
-   - User type **External**. App name **DEPARTURZ**, support email departurzedits@gmail.com, logo optional.
-   - Under **Audience**, click **Publish app** so the status says **In production**. This matters: in "Testing" mode Google signs the portal out of the Drive every 7 days.
-4. **Credentials > Create credentials > OAuth client ID**, type **Web application**, name it **DEPARTURZ Portal**:
-   - Authorized JavaScript origins: `https://departurz.com`, `https://www.departurz.com`, `http://localhost:3000`
-   - Authorized redirect URIs: `http://localhost:5174/oauth`
-5. Copy the **Client ID** and **Client secret**.
+3. **APIs & Services > OAuth consent screen** (Google may call it "Google Auth Platform"): **Get started**, app name **DEPARTURZ**, support email departurzedits@gmail.com, audience **External**.
+4. Under **Audience**, click **Publish app** so the status says **In production**. This matters: in "Testing" mode Google signs the portal out of the Drive every 7 days.
+5. **Clients > Create client**, type **Web application**, name **DEPARTURZ Portal**:
+   - Authorized JavaScript origins: `https://www.departurz.com`, `https://departurz.com`
+   - Authorized redirect URIs: `https://www.departurz.com/api/p/setup/google` (add `http://localhost:5174/oauth` too only if you'll ever use the terminal route below)
+6. Copy the **Client ID** and **Client secret** straight away. Google only shows the secret once.
 
-## 3. Build the Drive folders and the two Sheets (on your computer, once)
+## 3. Add the settings to Vercel
 
-In this folder, create a file called `.env.local` with:
-
-```
-GOOGLE_CLIENT_ID=paste the client ID
-GOOGLE_CLIENT_SECRET=paste the client secret
-```
-
-Then in a terminal in this folder:
-
-```
-npm install
-npm run google-token
-```
-
-A browser opens. Sign in as **departurzedits@gmail.com**. Google shows a warning that it hasn't verified the app; that's expected for your own private app. Click **Advanced > Go to DEPARTURZ (unsafe)**, then **Continue**. The terminal prints your `GOOGLE_REFRESH_TOKEN`.
-
-Then run (with your own email, the one you'll sign in with):
-
-```
-npm run setup -- --admin you@departurz.com --name Nate
-```
-
-This creates **DEPARTURZ Portal / Clients** and **/ Team** in the Drive, the two Sheets with every tab, header and dropdown, and the **DEPARTURZ Books** sheet, and adds you to the Team tab as the owner. It prints five IDs for the next step. (It also adds an example client project you can delete later.) It's safe to run again later: an older sheet just gets any new tabs and columns added at the end.
-
-`.env.local` holds secrets. Keep it on your computer only. It's already excluded from Git.
-
-## 4. Add the settings to Vercel
-
-**Storage first:** in the Vercel project, open **Storage > Create Database > Upstash for Redis** (free plan), and connect it to this project. That adds its settings for you.
+**Storage first:** in the Vercel project, open **Storage**, add **Upstash for Redis** from the Marketplace (free plan) and connect it to this project. That adds its settings for you.
 
 Then **Settings > Environment Variables**, add these for **Production**:
 
 | Name | Value |
 |---|---|
-| `SESSION_SECRET` | A long random string. Make one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 | `GOOGLE_CLIENT_ID` | From step 2 |
 | `GOOGLE_CLIENT_SECRET` | From step 2 |
-| `GOOGLE_REFRESH_TOKEN` | From step 3 |
-| `CLIENTS_SHEET_ID`, `TEAM_SHEET_ID`, `CLIENTS_FOLDER_ID`, `TEAM_FOLDER_ID`, `BOOKS_SHEET_ID` | The five IDs from step 3 |
-| `RESEND_API_KEY` | From resend.com (the same account the contact form uses). The domain departurz.com must be verified there. |
-| `PORTAL_FROM` | `DEPARTURZ <portal@departurz.com>` |
-| `PORTAL_URL` | `https://www.departurz.com` (the address the site settles on) |
-| `CRON_SECRET` | Another long random string (Vercel sends it with the daily job) |
+| `SETUP_KEY` | A long phrase only you know. It unlocks the setup page in step 4. |
+| `CRON_SECRET` | Another long random phrase (Vercel sends it with the daily job; without it there are no daily emails) |
+| `RESEND_API_KEY` | From resend.com, for sign-in links and every portal email. The domain departurz.com must be verified there. |
+| `PORTAL_FROM` | Optional. Defaults to `DEPARTURZ <portal@departurz.com>` |
 | `NOTIFY_EMAIL` | Optional. Where bookings, uploads and messages are sent. Defaults to `wecreate@departurz.com` |
 | `ANTHROPIC_API_KEY` | Optional. Turns on the AI answers in the homepage chat bubble |
-| `OWNER_NAME` | Optional. The name clients see on their project and on your notes. Defaults to `Nate` |
-| `REVIEW_ROUNDS` | Optional. Rounds of notes included per project, unless a project's `review_rounds` says otherwise. Defaults to `2` |
-| `DIGEST_TO` | Optional. Where the morning email goes. Defaults to everyone marked `owner` on the Team tab |
 
-Redeploy (**Deployments > ... > Redeploy**). Then open `departurz.com/portal`, enter your email, and you're in.
+Then **Deployments > ⋯ > Redeploy** so the site picks them up.
+
+## 4. Connect the Drive (one page, about a minute)
+
+Open **departurz.com/setup**. The checklist shows what's in place. Enter your `SETUP_KEY`, the email you'll sign in with, and your name, then **Connect the Drive**. Google asks you to sign in: pick **departurzedits@gmail.com**. It may say it hasn't verified the app; that's expected for your own private app. Click **Advanced > Go to DEPARTURZ**, then **Continue**, and allow Drive and Sheets.
+
+The page builds **DEPARTURZ Portal / Clients** and **/ Team** in the Drive, the **DEPARTURZ Clients** and **DEPARTURZ Team** sheets with every tab, header and dropdown, and the **DEPARTURZ Books** sheet, and puts you on the Team tab as the owner. (An example client project is added too; delete it whenever you like.) The Drive connection and the sheet IDs are kept in the project's Redis, so there's nothing to copy into Vercel. Run it again any time: it only adds what's missing, and it reconnects the Drive if Google ever asks you to.
+
+Then open **departurz.com/portal**, sign in with your email, and you're in.
+
+**The terminal route (only if you'd rather):** with Node.js 20+, in a copy of the repo, put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local`, then `npm install`, `npm run google-token` and `npm run setup -- --admin you@departurz.com --name Nate`. It prints the refresh token and five IDs to add to Vercel (`GOOGLE_REFRESH_TOKEN`, `CLIENTS_SHEET_ID`, `TEAM_SHEET_ID`, `CLIENTS_FOLDER_ID`, `TEAM_FOLDER_ID`, `BOOKS_SHEET_ID`). Anything set in Vercel wins over what the setup page saved. `.env.local` holds secrets: keep it on your computer only.
 
 ## 5. Running it day to day
 

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal setup · DEPARTURZ</title>
+<link rel="icon" href="logo/favicon-32.png">
+<style>
+:root{--ink:#0A0A0A;--paper:#F2F0EB;--mute:#9C9A94;--line:#2A2A2E;--grad:linear-gradient(90deg,#3FB8EE,#9E80F2)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--ink);color:var(--paper);font-family:Arial,Helvetica,sans-serif;display:grid;place-items:center;padding:28px 16px}
+main{width:100%;max-width:560px}
+.wm{display:block;width:180px;height:auto;margin:0 0 26px}
+h1{margin:0 0 6px;font-size:40px;line-height:1;text-transform:uppercase;letter-spacing:-.01em}
+.bar{height:4px;width:120px;border-radius:4px;background:var(--grad);margin:0 0 20px}
+p{color:#BEBCB6;font-size:15px;line-height:1.6;margin:0 0 14px}
+ol{list-style:none;padding:0;margin:0 0 24px;display:grid;gap:8px}
+ol li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;font-size:14.5px;line-height:1.45}
+ol li i{font-style:normal;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#2A2A2E;color:var(--mute);font-size:13px;font-weight:700}
+ol li.ok i{background:var(--grad);color:var(--ink)}
+ol li span b{display:block;color:var(--paper)}
+ol li span small{color:var(--mute);font-size:13px}
+form{display:grid;gap:12px;padding:20px;border-radius:18px;background:#141416;border:1px solid var(--line)}
+label{display:grid;gap:6px;font-size:13px;color:var(--mute);letter-spacing:.02em}
+input[type=text],input[type=email],input[type=password]{height:46px;border-radius:12px;border:1px solid #3A3A40;background:#0E0E10;color:var(--paper);padding:0 14px;font-size:15px;outline:none}
+input:focus{border-color:#9E80F2;box-shadow:0 0 0 3px rgba(158,128,242,.2)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#BEBCB6}
+.check input{width:18px;height:18px;margin-top:2px;accent-color:#9E80F2}
+button{height:50px;border:0;border-radius:99px;background:var(--grad);color:var(--ink);font-weight:800;font-size:15px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.err{display:none;color:#FFB4A8;font-size:14px;margin:0}
+.done{display:none;margin-top:14px;padding:16px;border-radius:14px;background:#141416;border:1px solid var(--line)}
+a{color:#3FB8EE}
+</style>
+</head>
+<body>
+<main>
+  <img class="wm" src="logo/wordmark.svg" alt="DEPARTURZ">
+  <h1>Portal setup</h1>
+  <div class="bar"></div>
+  <p>This connects the portal to the <b>departurzedits@gmail.com</b> Drive and builds its home there: the folders, the Clients and Team sheets, and the books. It takes about a minute, and it's safe to run again.</p>
+  <ol id="steps" aria-live="polite">
+    <li data-k="google"><i>1</i><span><b>Google sign-in key</b><small>GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel</small></span></li>
+    <li data-k="redis"><i>2</i><span><b>Database</b><small>Upstash for Redis, connected under Vercel > Storage</small></span></li>
+    <li data-k="key"><i>3</i><span><b>Setup key</b><small>SETUP_KEY in Vercel: a long phrase only you know</small></span></li>
+    <li data-k="cron"><i>4</i><span><b>Daily jobs key</b><small>CRON_SECRET in Vercel: another long phrase (it unlocks the morning emails)</small></span></li>
+    <li data-k="email"><i>5</i><span><b>Email</b><small>RESEND_API_KEY in Vercel, for sign-in links and notifications (can come after)</small></span></li>
+    <li data-k="drive"><i>6</i><span><b>Drive connected</b><small>This page does it</small></span></li>
+  </ol>
+  <form id="f" autocomplete="off">
+    <label>Setup key (the SETUP_KEY you put in Vercel)<input type="password" name="key" required></label>
+    <label>Your email, the one you'll sign in to the portal with<input type="email" name="email" required placeholder="you@departurz.com"></label>
+    <label>Your name, as clients see it<input type="text" name="name" value="Nate"></label>
+    <label class="check"><input type="checkbox" name="example" checked><span>Add an example client project, so you can see how the rows work (delete it any time)</span></label>
+    <p class="err" id="err" role="alert"></p>
+    <button type="submit" id="go">Connect the Drive</button>
+    <p style="font-size:13px;margin:0">Google asks you to sign in: pick <b>departurzedits@gmail.com</b>. It may say it hasn't verified the app. That's expected for your own private app: click <b>Advanced</b>, then <b>Go to DEPARTURZ</b>, then <b>Continue</b>, and allow Drive and Sheets.</p>
+  </form>
+  <div class="done" id="done"><p style="margin:0">The portal is already connected. Running this again only adds anything that's missing; nothing is erased. <a href="/portal">Open the portal</a>.</p></div>
+</main>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  fetch('/api/p/setup/status', { headers: { Accept: 'application/json' } }).then(r => r.json()).then(s => {
+    document.querySelectorAll('#steps li').forEach(li => { if (s[li.dataset.k]) { li.classList.add('ok'); li.querySelector('i').textContent = '✓'; } });
+    if (s.drive) $('#done').style.display = 'block';
+  }).catch(() => {});
+  $('#f').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = e.target, b = $('#go'), err = $('#err');
+    err.style.display = 'none'; b.disabled = true; b.textContent = 'Opening Google…';
+    try {
+      const r = await fetch('/api/p/setup/start', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ key: f.key.value, email: f.email.value.trim(), name: f.name.value.trim(), example: f.example.checked }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.url) throw new Error(j.error || 'That did not work. Try again in a minute.');
+      location.href = j.url;
+    } catch (x) { err.textContent = x.message; err.style.display = 'block'; b.disabled = false; b.textContent = 'Connect the Drive'; }
+  });
+})();
+</script>
+</body>
+</html>
