@@ -28,11 +28,18 @@ Do all of this signed in as **departurzedits@gmail.com**.
 1. Go to console.cloud.google.com and create a project called **DEPARTURZ Portal**.
 2. **APIs & Services > Library:** enable **Google Drive API** and **Google Sheets API**.
 3. **APIs & Services > OAuth consent screen** (Google may call it "Google Auth Platform"): **Get started**, app name **DEPARTURZ**, support email departurzedits@gmail.com, audience **External**.
-4. Under **Audience**, click **Publish app** so the status says **In production**. This matters: in "Testing" mode Google signs the portal out of the Drive every 7 days.
-5. **Clients > Create client**, type **Web application**, name **DEPARTURZ Portal**:
+4. **Branding:** fill in the rest, or Google won't let you publish:
+   - Application home page: `https://www.departurz.com`
+   - Application privacy policy link: `https://www.departurz.com/privacy`
+   - Application terms of service link: `https://www.departurz.com/terms`
+   - Authorized domains: **Add domain**, `departurz.com`
+   - Developer contact information: your email
+   - Click **Save**. Skip the logo (a logo makes Google ask for a review).
+5. Under **Audience**, click **Publish app** so the status says **In production**. This matters: in "Testing" mode Google signs the portal out of the Drive every 7 days. If Google mentions verification, you don't need it: the portal only connects your own Drive.
+6. **Clients > Create client**, type **Web application**, name **DEPARTURZ Portal**:
    - Authorized JavaScript origins: `https://www.departurz.com`, `https://departurz.com`
    - Authorized redirect URIs: `https://www.departurz.com/api/p/setup/google` (add `http://localhost:5174/oauth` too only if you'll ever use the terminal route below)
-6. Copy the **Client ID** and **Client secret** straight away. Google only shows the secret once.
+7. Copy the **Client ID** and **Client secret** straight away. Google only shows the secret once.
 
 ## 3. Add the settings to Vercel
 
@@ -171,7 +178,7 @@ The portal's API already supports the apps: they sign in the same way (Google, o
 
 ## Good to know
 
-- The Terms of Use and Privacy pop-up text lives in `public/legal.js`, one place for every page. It's a plain-language starting point; have an attorney review it, and update the date at the top whenever it changes.
+- The Terms of Use and Privacy text lives in `public/legal.js`, one place for every page: it's the pop-up, and the pack step also builds it into the standalone `/terms` and `/privacy` pages that Google's Branding page links to (`legal_pages.mjs`). It's a plain-language starting point; have an attorney review it, and update the date at the top whenever it changes.
 
 - When someone opens a file from the portal, Drive makes that one file viewable by anyone with its link, so the link works for them without a Google account. The links are long and unguessable, and folders stay private.
 - If Google ever stops letting the portal into the Drive (for example the departurzedits password changes), run `npm run google-token` again and update `GOOGLE_REFRESH_TOKEN` in Vercel.

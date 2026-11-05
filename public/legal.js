@@ -1,8 +1,10 @@
 /* DEPARTURZ: Terms of Use and Privacy, shown in a pop-up from the links at the bottom of every page.
-   Edit the text here once and every page picks it up. Links: <a href="#terms" data-legal="terms"> and data-legal="privacy". */
+   Edit the text here once and every page picks it up. Links: <a href="/terms" data-legal="terms"> and data-legal="privacy".
+   The same text is also built into standalone pages at /terms and /privacy (legal_pages.mjs, run by the pack step),
+   because Google's sign-in setup needs real links to them. */
 (function(){
   "use strict";
-  const UPDATED = 'October 23, 2026';
+  const UPDATED = 'November 5, 2026';
   const CONTACT = 'through the <a href="contact.html">contact page</a>, or by mail at DEPARTURZ, 3311 La Cienega Blvd., Los Angeles, CA 90016';
 
   const TERMS = `
@@ -48,6 +50,10 @@
 <p><b>Payments:</b> handled entirely by Stripe, PayPal or Square on their own secure pages. We receive confirmation that you paid, not your card or bank details.</p>
 <h3>How we use it</h3>
 <p>To reply to you, plan and deliver your project, run the portal, send project emails (reminders, updates, cuts ready for review, receipts), keep the Site secure, meet legal and accounting duties, and, if you leave them switched on, send thank-you notes and returning-client offers.</p>
+<h3>Google sign-in and Google user data</h3>
+<p><b>Signing in with Google:</b> if you choose Continue with Google on the portal sign-in page, Google shares your basic profile with us: your name, email address and profile picture. We use your email to confirm who you are and open your portal, and your name to address you. We don't ask for access to your Gmail, Drive, contacts or calendar.</p>
+<p><b>The studio's own Google Drive:</b> DEPARTURZ connects the portal to its own Google account (the studio's, not yours) so that project files, cuts for review and the records behind the portal are kept in the studio's Google Drive and Google Sheets. That access is used only to run the portal for our clients and crew.</p>
+<p>Information we receive from Google APIs is used only to provide and improve the portal. We don't sell it, don't use it for advertising, don't use it to train AI or machine learning models, and don't share it with anyone except the services listed below that help run the portal, or when the law requires it. Our use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements. You can remove the portal's access to your Google account at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>, and ask us to delete what we hold ${CONTACT}.</p>
 <h3>Who helps us</h3>
 <p>We share information only with the services that run the Site for us, and only what each one needs:</p>
 <ul>
