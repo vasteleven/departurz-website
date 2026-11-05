@@ -1,6 +1,6 @@
 // Run the whole site and portal on your computer with pretend Google, Drive and email:
 //   npm run dev        then open http://localhost:3000/portal.html
-// Sign in with jordan@lumencoffee.example (client) or amara@crew.example / nate@departurz.example (crew).
+// Sign in with jordan@lumencoffee.example (client), amara@crew.example (crew), rae@departurz.example (manager) or nate@departurz.example (owner).
 // Sign-in links are printed here instead of emailed. Nothing touches your real accounts.
 import http from 'node:http';
 import fs from 'node:fs';
@@ -33,7 +33,14 @@ process.env.TEAM_FOLDER_ID = mock.addFolder('Team', portalRoot);
 // a sample cut and a finished file in the Lumen project's folders
 const proj = mock.addFolder('DPZ-0142 · Lumen Coffee brand film', process.env.CLIENTS_FOLDER_ID);
 const out = mock.addFolder('From DEPARTURZ', proj);
-const cut = mock.addFile('Teaser 15s, draft v1.mp4', out, 214e6, 'video/mp4');
+// DEV_REVIEW_VIDEO=path/to/clip.mp4 puts a real video behind the sample cut, so the review room can play it
+const sample = process.env.DEV_REVIEW_VIDEO || path.join(site, 'work/new-york.mp4');
+const bytes = fs.existsSync(sample) ? new Uint8Array(fs.readFileSync(sample)) : null;
+const cut = mock.addFile('Teaser 15s, draft v1' + (bytes ? path.extname(sample) : '.mp4'), out, 214e6, bytes && /\.webm$/.test(sample) ? 'video/webm' : 'video/mp4', bytes);
+// and a picture in the project's For review folder
+const forReview = mock.addFolder('For review', proj);
+const poster = path.join(site, 'portal/05-arc-1400.webp');
+if (fs.existsSync(poster)) mock.addFile('Launch poster v1.webp', forReview, 0, 'image/webp', new Uint8Array(fs.readFileSync(poster)));
 mock.addFile('Stills, selects (48).zip', out, 1.2e9, 'application/zip');
 const docs = mock.addFolder('Documents', proj);
 mock.addFile('Domain setup guide.pdf', docs, 420e3, 'application/pdf');   // shows up as DPZ-0142-D5
@@ -66,7 +73,7 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, base);
   try {
     if (url.pathname.startsWith('/__upload/')) {
-      const r = mock.handleUpload(url.pathname.split('/').pop(), req.headers['content-range'], buf.length);
+      const r = mock.handleUpload(url.pathname.split('/').pop(), req.headers['content-range'], buf.length, buf);
       res.writeHead(r.status, { 'Content-Type': 'application/json' }); return res.end(r.body);
     }
     if (url.pathname === '/__dev/mail') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(mock.store.mail)); }
@@ -85,7 +92,7 @@ http.createServer(async (req, res) => {
   } catch (e) { console.error(e); res.writeHead(500); res.end(String(e)); }
 }).listen(PORT, () => {
   console.log(`\n  DEPARTURZ portal (pretend Google) on ${base}/portal.html`);
-  console.log('  Client: jordan@lumencoffee.example   Crew: amara@crew.example   Admin: nate@departurz.example\n');
+  console.log('  Client: jordan@lumencoffee.example   Crew: amara@crew.example, hana@crew.example   Manager: rae@departurz.example   Owner: nate@departurz.example\n');
 });
 
 // print sign-in links as they're "emailed"

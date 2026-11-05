@@ -2,7 +2,7 @@
 // It lets the whole portal run on a laptop with no accounts and nothing sent anywhere.
 const realFetch = globalThis.fetch;
 
-export const store = { sheets: {}, files: {}, uploads: {}, mail: [], calls: [] };
+export const store = { sheets: {}, files: {}, uploads: {}, mail: [], calls: [], content: {} };
 let n = 0;
 const nid = p => p + (++n).toString(36) + Math.random().toString(36).slice(2, 6);
 
@@ -25,7 +25,12 @@ export function seedSheet(id, tabs) {
   for (const [tab, rows] of Object.entries(tabs)) store.sheets[id][tab] = rows.map((r, i) => (i === 0 ? r.slice() : r.map(entered)));
 }
 export function addFolder(name, parent) { const id = nid('f'); store.files[id] = { id, name, mimeType: 'application/vnd.google-apps.folder', parents: parent ? [parent] : [], createdTime: new Date().toISOString() }; return id; }
-export function addFile(name, parent, size, mimeType) { const id = nid('d'); store.files[id] = { id, name, mimeType: mimeType || 'application/octet-stream', parents: [parent], size: String(size || 0), createdTime: new Date().toISOString() }; return id; }
+export function addFile(name, parent, size, mimeType, bytes) {
+  const id = nid('d');
+  store.files[id] = { id, name, mimeType: mimeType || 'application/octet-stream', parents: [parent], size: String(bytes ? bytes.length : size || 0), createdTime: new Date(Date.now() + n).toISOString() };
+  if (bytes) store.content[id] = bytes;
+  return id;
+}
 
 const ok = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json', ...headers } });
 const tabOf = range => { const m = decodeURIComponent(range).match(/^'?(.*?)'?(?:!(.*))?$/); return { tab: m[1], cell: m[2] || '' }; };
@@ -39,7 +44,9 @@ function sheets(url, opts) {
     store.files[sid] = { id: sid, name: b.properties.title, mimeType: 'application/vnd.google-apps.spreadsheet', parents: ['root'], createdTime: new Date().toISOString() };
     return ok({ spreadsheetId: sid, sheets: b.sheets.map((x, i) => ({ properties: { title: x.properties.title, sheetId: i } })) });
   }
-  if (/^\/v4\/spreadsheets\/[^/]+:batchUpdate$/.test(url.pathname)) { store.calls.push('format ' + JSON.parse(opts.body).requests.length); return ok({}); }
+  if (/^\/v4\/spreadsheets\/[^/]+:batchUpdate$/.test(url.pathname)) { store.calls.push('format ' + JSON.parse(opts.body).requests.length); return ok({ replies: [] }); }
+  const meta = url.pathname.match(/^\/v4\/spreadsheets\/([^/:]+)$/);
+  if (meta) { const book = store.sheets[meta[1]]; return book ? ok({ sheets: Object.keys(book).map((t, i) => ({ properties: { title: t, sheetId: i } })) }) : ok({ error: { message: 'not found' } }, 404); }
   const m = url.pathname.match(/^\/v4\/spreadsheets\/([^/]+)\/values(.*)$/);
   if (!m) return ok({ error: { message: 'mock: unknown sheets call' } }, 400);
   const book = store.sheets[m[1]];
@@ -48,6 +55,16 @@ function sheets(url, opts) {
   if (rest === ':batchGet') {
     const ranges = url.searchParams.getAll('ranges');
     return ok({ valueRanges: ranges.map(r => { const { tab } = tabOf(r); return { range: r, values: (book[tab] || []).map(row => row.slice()) }; }) });
+  }
+  if (rest === ':batchClear') {
+    for (const r of JSON.parse(opts.body).ranges) {
+      const { tab, cell } = tabOf(r);
+      const rows = book[tab] || [];
+      const from = +((cell.match(/^[A-Z]+(\d+)/) || [])[1] || 1) - 1;
+      rows.splice(Math.max(0, from));
+      if (!rows.length && from > 0) rows.push([]);
+    }
+    return ok({});
   }
   if (rest === ':batchUpdate') {
     const b = JSON.parse(opts.body);
@@ -86,12 +103,29 @@ function drive(url, opts, base) {
     store.uploads[sid] = { name: meta.name, parents: meta.parents, mime: h.get('X-Upload-Content-Type'), size: Number(h.get('X-Upload-Content-Length') || 0), got: 0 };
     return new Response(null, { status: 200, headers: { Location: `${base}/__upload/${sid}` } });
   }
-  const fm = p.match(/^\/drive\/v3\/files\/([^/]+)(\/permissions)?$/);
+  const fm = p.match(/^\/drive\/v3\/files\/([^/]+)(\/permissions|\/copy|\/export)?$/);
   if (fm) {
     const f = store.files[decodeURIComponent(fm[1])];
     if (!f) return ok({ error: { message: 'File not found' } }, 404);
-    if (fm[2]) return ok({ id: 'anyone' });
-    if (url.searchParams.get('alt') === 'media') return new Response(new Uint8Array(Number(f.size) || 8), { headers: { 'Content-Type': f.mimeType, 'Content-Length': String(Number(f.size) || 8) } });
+    if (fm[2] === '/permissions') return ok({ id: 'anyone' });
+    if (fm[2] === '/copy') {
+      const b = JSON.parse(opts.body || '{}');
+      const id = addFile(b.name || f.name, (b.parents || f.parents)[0], f.size, f.mimeType);
+      if (store.content[f.id]) store.content[id] = store.content[f.id];
+      return ok({ ...store.files[id] });
+    }
+    if (fm[2] === '/export') return new Response(new TextEncoder().encode('PK mock export of ' + f.name), { headers: { 'Content-Type': url.searchParams.get('mimeType') || 'application/octet-stream' } });
+    if (url.searchParams.get('alt') === 'media') {
+      const body = store.content[f.id] || new Uint8Array(Number(f.size) || 8);
+      const rg = new Headers(opts.headers).get('Range');
+      const m = rg && rg.match(/^bytes=(\d+)-(\d*)$/);
+      if (m) {
+        const a = +m[1], b = Math.min(body.length - 1, m[2] ? +m[2] : body.length - 1);
+        if (a >= body.length) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${body.length}` } });
+        return new Response(body.slice(a, b + 1), { status: 206, headers: { 'Content-Type': f.mimeType, 'Content-Length': String(b - a + 1), 'Content-Range': `bytes ${a}-${b}/${body.length}` } });
+      }
+      return new Response(body, { headers: { 'Content-Type': f.mimeType, 'Content-Length': String(body.length) } });
+    }
     if (opts.method === 'PATCH') { const add = url.searchParams.get('addParents'), rm = (url.searchParams.get('removeParents') || '').split(','); f.parents = f.parents.filter(x => !rm.includes(x)).concat(add ? [add] : []); return ok({ id: f.id }); }
     return ok({ ...f, webViewLink: `https://drive.google.com/file/d/${f.id}/view`, webContentLink: `https://drive.google.com/uc?id=${f.id}&export=download` });
   }
@@ -115,13 +149,15 @@ function drive(url, opts, base) {
 }
 
 // the browser sends upload bytes here, the way it would to Google
-export function handleUpload(sid, rangeHeader, bytes) {
+export function handleUpload(sid, rangeHeader, bytes, chunk) {
   const u = store.uploads[sid];
   if (!u) return { status: 404, body: '{}' };
+  if (chunk && chunk.length) (u.parts = u.parts || []).push(new Uint8Array(chunk));
   const m = String(rangeHeader || '').match(/bytes (\d+)-(\d+)\/(\d+|\*)/);
   if (m) { u.got = +m[2] + 1; if (m[3] !== '*') u.size = +m[3]; } else u.got += bytes;
   if (u.got >= u.size) {
-    const id = addFile(u.name, u.parents[0], u.size, u.mime);
+    const all = u.parts ? (() => { const out = new Uint8Array(u.parts.reduce((a, p) => a + p.length, 0)); let o = 0; for (const p of u.parts) { out.set(p, o); o += p.length; } return out; })() : null;
+    const id = addFile(u.name, u.parents[0], u.size, u.mime, all && all.length === u.size ? all : null);
     delete store.uploads[sid];
     return { status: 200, body: JSON.stringify({ id, name: u.name, size: String(u.size) }) };
   }

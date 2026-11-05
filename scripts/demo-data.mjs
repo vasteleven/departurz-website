@@ -10,8 +10,8 @@ export function demo() {
       { email: 'jordan@lumencoffee.example', name: 'Jordan Rivera', company: 'Lumen Coffee Co.', role: 'Head of Brand', city: 'Los Angeles, CA', bio: 'We roast in the Arts District and pour in three cafés across LA.', instagram: '@lumencoffee', tiktok: '@lumencoffee', updates: 'yes', thanks: 'yes', offers: 'yes' }
     ]),
     Projects: rows(CLIENTS.Projects, [
-      { code: 'DPZ-0142', client_email: 'jordan@lumencoffee.example', title: 'Lumen Coffee brand film', service: 'Production + Post-Production', status: 'In the edit', lead: 'Nate', seat: '1A', start_date: D(-35), review_title: 'Teaser 15s, draft v1', review_date: D(-2), review_length: '0:15' },
-      { code: 'DPZ-0150', client_email: 'press@ghanadoc.example', title: 'Ghana documentary', service: 'Post-Production', status: 'In the edit', lead: 'Nate' }
+      { code: 'DPZ-0142', client_email: 'jordan@lumencoffee.example', title: 'Lumen Coffee brand film', service: 'Production + Post-Production', status: 'In the edit', lead: 'Nate', crew: 'amara@crew.example, Kofi Mensah', code_name: 'Project Ember', review_rounds: 2, seat: '1A', start_date: D(-35), review_title: 'Teaser 15s, draft v1', review_date: D(-2), review_length: '0:15' },
+      { code: 'DPZ-0150', client_email: 'press@ghanadoc.example', title: 'Ghana documentary', service: 'Post-Production', status: 'In the edit', lead: 'Nate', crew: 'hana@crew.example' }
     ]),
     Milestones: rows(CLIENTS.Milestones, [
       { project_code: 'DPZ-0142', label: 'Booked', date: D(-35), state: 'done', note: 'Deposit received. Welcome aboard.', notified_at: D(-35) },
@@ -40,32 +40,37 @@ export function demo() {
       { ref: 'DPZ-0142-D4', project_code: 'DPZ-0142', title: 'Location release, roastery', kind: 'release', url: 'https://example.com/release', date: D(-1), status: 'to sign', note: 'Covers filming inside the Arts District roastery.' }
     ]),
     Events: rows(CLIENTS.Events, [
-      { project_code: 'DPZ-0142', date: D(22), type: 'event', title: 'Café launch party', by: 'jordan@lumencoffee.example' },
-      { project_code: 'DPZ-0142', date: D(2), type: 'note', title: 'New bag design arrives', by: 'jordan@lumencoffee.example' }
-    ])
+      { project_code: 'DPZ-0142', date: D(22), type: 'event', title: 'Café launch party', by: 'jordan@lumencoffee.example', status: 'requested' },
+      { project_code: 'DPZ-0142', date: D(9), type: 'book', title: 'Studio session (requested)', note: 'Starts 10:00 · 4 hours', by: 'jordan@lumencoffee.example', status: 'requested' },
+      { project_code: 'DPZ-0142', date: D(2), type: 'note', title: 'New bag design arrives', by: 'jordan@lumencoffee.example' },
+      { project_code: 'DPZ-0142', date: D(4), type: 'shoot', title: 'Pickup shots at the café', by: 'nate@departurz.example', status: 'confirmed' }
+    ]),
+    Reviews: rows(CLIENTS.Reviews, [])
   };
   const team = {
     Team: rows(TEAM.Team, [
-      { email: 'nate@departurz.example', name: 'Nate', role: 'Director', city: 'Los Angeles', tz: 'America/Los_Angeles', since: 2019, admin: 'yes', active: 'yes', rate: '' },
+      { email: 'nate@departurz.example', name: 'Nate', role: 'Director', city: 'Los Angeles', tz: 'America/Los_Angeles', since: 2019, admin: 'owner', active: 'yes', rate: '' },
+      { email: 'rae@departurz.example', name: 'Rae Lin', role: 'Producer', city: 'Houston', tz: 'America/Chicago', since: 2024, admin: 'manager', active: 'yes' },
       { email: 'amara@crew.example', name: 'Amara Okafor', role: 'Editor', department: 'Editors', public: 'yes', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 2025, bio: 'Story-first editor. Documentaries, brand films and music videos.', skills: 'Premiere Pro, DaVinci Resolve, Story editing', instagram: '@amara.cuts', payout_method: 'Wise', payout_detail: 'NGN account ending 4410', rate: 350, active: 'yes' },
       { email: 'kofi@crew.example', name: 'Kofi Mensah', role: 'Colorist', city: 'Accra', tz: 'Africa/Accra', active: 'yes' },
       { email: 'hana@crew.example', name: 'Hana Sato', role: 'Drone + camera', city: 'Tokyo', tz: 'Asia/Tokyo', active: 'yes' }
     ]),
     Tasks: rows(TEAM.Tasks, [
-      { id: 't1', assignee: 'amara@crew.example', title: 'Lumen teaser v2: pour lands later, opener -12f', project: 'Lumen Coffee', due: D(1), status: 'doing', by: 'Nate' },
-      { id: 't2', assignee: 'Amara Okafor', title: 'Export XML for color', project: 'Lumen Coffee', due: D(2), status: 'todo', by: 'Kofi Mensah' },
-      { id: 't3', assignee: 'amara@crew.example', title: 'Ghana doc: market scene under 3:00', project: 'Ghana doc', due: D(-1), status: 'todo', by: 'Nate' },
-      { id: 't4', assignee: 'amara@crew.example', title: 'Assembly cut, Lumen brand film', project: 'Lumen Coffee', due: D(-4), status: 'done', by: 'Nate' }
+      { id: 't1', assignee: 'amara@crew.example', title: 'Teaser v2: pour lands later, opener -12f', project: 'DPZ-0142', due: D(1), status: 'doing', by: 'Nate' },
+      { id: 't2', assignee: 'Amara Okafor', title: 'Export XML for color', project: 'DPZ-0142', due: D(2), status: 'todo', by: 'Kofi Mensah' },
+      { id: 't3', assignee: 'hana@crew.example', title: 'Market scene under 3:00', project: 'DPZ-0150', due: D(-1), status: 'todo', by: 'Nate' },
+      { id: 't4', assignee: 'amara@crew.example', title: 'Assembly cut, brand film', project: 'DPZ-0142', due: D(-4), status: 'done', by: 'Nate' }
     ]),
     Payouts: rows(TEAM.Payouts, [
-      { id: 'p1', email: 'amara@crew.example', label: 'Lumen Coffee, assembly cut (3 days)', amount: 1050, date: D(-4), status: 'paid', via: 'Wise' },
-      { id: 'p2', email: 'amara@crew.example', label: 'Lumen teaser + v2', amount: 700, date: D(8), status: 'pending' }
+      { id: 'p1', email: 'amara@crew.example', label: 'Project Ember, assembly cut (3 days)', amount: 1050, date: D(-4), status: 'paid', via: 'Wise' },
+      { id: 'p2', email: 'amara@crew.example', label: 'Project Ember teaser + v2', amount: 700, date: D(8), status: 'pending' }
     ]),
     Kudos: rows(TEAM.Kudos, [
       { email: 'amara@crew.example', from: 'Nate', date: D(-1), text: 'Thank you for the late night on the teaser. The client said it gave them chills.', sent_at: D(-1) }
     ]),
-    Channels: rows(TEAM.Channels, [{ id: 'general', name: 'general', members: 'all' }, { id: 'lumen', name: 'lumen-coffee', members: 'all' }]),
-    Files: rows(TEAM.Files, [])
+    Channels: rows(TEAM.Channels, [{ id: 'general', name: 'general', members: 'all' }, { id: 'ember', name: 'project-ember', members: 'amara@crew.example, Kofi Mensah, Nate' }]),
+    Files: rows(TEAM.Files, []),
+    Cuts: rows(TEAM.Cuts, [])
   };
   return { clients, team };
 }

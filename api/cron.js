@@ -4,6 +4,9 @@
 //  - crew: deadline reminders (2 days and 1 day before, on the day, then overdue nudges copied to wecreate@)
 //  - crew: thank-you notes added to the Kudos tab
 //  - Kit: enrolls any client not yet subscribed; checks open Square payment links
+//  - review rooms: picks up files dropped into each project's For review folder and tells the client
+//  - books: rebuilds Money in and Crew pay in the DEPARTURZ Books sheet
+//  - Nate's morning email: today, tomorrow, and everything waiting on him
 import { env, json, lower, today, daysBetween, esc, firstName, money } from './_lib/util.js';
 import { load, patch, emails, isOff } from './_lib/roster.js';
 import { send, NOTIFY } from './_lib/mail.js';
@@ -11,6 +14,9 @@ import { subscribe, setTag, TAGS } from './_lib/kit.js';
 import { day, isActive, milestones, needId, syncDocs } from './_lib/client.js';
 import { squareSweep } from './_lib/pay.js';
 import { outFolder, docsFolder, clientInFolder } from './_lib/files.js';
+import { sweepReviews, reviewFolder } from './_lib/rooms.js';
+import { syncBooks } from './_lib/books.js';
+import { morningEmail } from './_lib/digest.js';
 
 const OVERDUE = [1, 3, 7, 14, 21, 28];
 const portal = () => env('PORTAL_URL', 'https://departurz.com').replace(/\/$/, '') + '/portal-app.html';
@@ -27,9 +33,9 @@ async function clientLetters(td, log) {
     const hi = `<p>Hi ${esc(firstName(lead.name))},</p>`;
     const active = isActive(p);
 
-    // 0. every active project gets its Drive folders (From client, From DEPARTURZ) ready for files
+    // 0. every active project gets its Drive folders (From client, From DEPARTURZ, Documents, For review) ready for files
     if (active && !p.drive_folder_id) {
-      try { await outFolder(p); await clientInFolder(p); await docsFolder(p); log.push(`folders ${p.code}`); } catch (e) { log.push(`folders ${p.code} failed: ${e.message}`); }
+      try { await outFolder(p); await clientInFolder(p); await docsFolder(p); await reviewFolder(p); log.push(`folders ${p.code}`); } catch (e) { log.push(`folders ${p.code} failed: ${e.message}`); }
     }
 
     // 0b. documents dropped into the Documents folder get their number; anything new is announced once
@@ -88,12 +94,7 @@ async function clientLetters(td, log) {
       }
     }
 
-    // 3. a cut is ready for their notes
-    if (p.review_file_id && String(p.review_notified) !== String(p.review_file_id)) {
-      await send({ to, subject: `Ready for your notes: ${p.review_title || 'a new cut'} · ${p.code}`, heading: 'Your cut is ready', html: hi + `<p><b>${esc(p.review_title || 'A new cut')}</b> of ${esc(p.title || 'your project')} is up. Watch it, then approve it or send notes with timecodes right from the portal.</p>`, cta: { label: 'Watch it now', url: portal() + '#/client/timeline' } });
-      await patch('clients', 'Projects', p._row, { review_notified: String(p.review_file_id), review_state: p.review_state || 'Waiting' });
-      log.push(`review ${p.code}`);
-    }
+    // 3. a cut is ready for their notes: handled by the review room sweep below (rooms.js)
 
     // 4. delivered: a thank-you, and a door left open for the next one
     const delivered = (day(p.delivered_date) && p.delivered_date <= td) || /deliver|landed|complete/i.test(String(p.status || ''));
@@ -124,7 +125,9 @@ async function clientLetters(td, log) {
 }
 
 async function crewLetters(td, log) {
-  const t = await load('team', true);
+  const [t, c] = await Promise.all([load('team', true), load('clients')]);
+  // crew see a project by its code name (or code), never the client's name
+  const projName = v => { const p = c.Projects.find(x => String(x.code) === String(v)); return p ? (p.code_name || String(p.code)) : String(v || ''); };
   const active = t.Team.filter(r => r.email && !isOff(r.active));
   const find = a => active.find(r => lower(r.email) === lower(a) || lower(r.name) === lower(a));
 
@@ -144,7 +147,7 @@ async function crewLetters(td, log) {
       to: who.email, cc: late.length ? NOTIFY() : undefined,
       subject: late.length ? `Overdue: ${late.length === 1 ? late[0].title : late.length + ' tasks'}${items.length > late.length ? ` (+${items.length - late.length} due soon)` : ''}` : `Due soon: ${items.length === 1 ? items[0].title : items.length + ' tasks'}`,
       heading: late.length === items.length ? 'These are past due' : late.length ? 'Past due, and coming up' : 'On your call sheet',
-      html: `<p>Hi ${esc(firstName(who.name))},</p><p>${late.length ? "Checking in on these. If something is blocking you, reply and tell us. We'd rather know early." : 'A quick look at what is coming up:'}</p><ul>${items.map(x => `<li><b>${esc(x.title)}</b>${x.project ? ' · ' + esc(x.project) : ''}<br><span style="color:${x.due < td ? '#C2412D' : '#6B6A66'}">Due ${esc(pretty(x.due))} (${when(x.due, td)})</span></li>`).join('')}</ul><p>Tick them off in the crew portal when they're done.</p>`,
+      html: `<p>Hi ${esc(firstName(who.name))},</p><p>${late.length ? "Checking in on these. If something is blocking you, reply and tell us. We'd rather know early." : 'A quick look at what is coming up:'}</p><ul>${items.map(x => `<li><b>${esc(x.title)}</b>${x.project ? ' · ' + esc(projName(x.project)) : ''}<br><span style="color:${x.due < td ? '#C2412D' : '#6B6A66'}">Due ${esc(pretty(x.due))} (${when(x.due, td)})</span></li>`).join('')}</ul><p>Tick them off in the crew portal when they're done.</p>`,
       cta: { label: 'Open Deadlines', url: portal() + '#/team/callsheet' }
     });
     for (const x of items) await patch('team', 'Tasks', x._row, { reminded_at: td });
@@ -166,7 +169,12 @@ export async function GET(request) {
   const secret = env('CRON_SECRET');
   if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Not allowed' }, 401);
   const td = today(), log = [];
-  for (const [name, job] of [['clients', () => clientLetters(td, log)], ['crew', () => crewLetters(td, log)], ['square', () => squareSweep().then(n => n && log.push(`square paid: ${n}`))]]) {
+  const jobs = [
+    ['clients', () => clientLetters(td, log)], ['crew', () => crewLetters(td, log)], ['square', () => squareSweep().then(n => n && log.push(`square paid: ${n}`))],
+    ['reviews', () => sweepReviews(log)], ['books', () => syncBooks()],    // rebuilt every day, so it isn't listed as something sent
+    ['morning', () => morningEmail(log)]                       // last, so it sees everything above
+  ];
+  for (const [name, job] of jobs) {
     try { await job(); } catch (e) { console.error('[cron]', name, e.stack || e); log.push(`${name} failed: ${e.message}`); }
   }
   return json({ day: td, sent: log });

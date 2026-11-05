@@ -411,6 +411,7 @@ button.att:hover{background:rgba(128,128,128,.22)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
 
+<script src="portal-room.js"></script>
 <script>
 (function(){
 "use strict";
@@ -534,7 +535,7 @@ const DATA = {
     ]
   },
   team: {
-    me: { name: 'Amara Okafor', role: 'Editor', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 'Crew since 2025',
+    me: { name: 'Amara Okafor', role: 'Editor', access: 'crew', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 'Crew since 2025',
       bio: 'Story-first editor. Documentaries, brand films and music videos. Premiere and Resolve.',
       skills: ['Premiere Pro', 'DaVinci Resolve', 'Story editing', 'Subtitles', 'Social cutdowns'],
       socials: { Instagram: '@amara.cuts', Vimeo: 'amaracuts', LinkedIn: 'amara-okafor', Website: '' },
@@ -548,64 +549,119 @@ const DATA = {
     ],
     channels: [
       { id: 'general', name: 'general', kind: 'channel', unread: 0, msgs: [
-        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T17:05', text: 'Big week. Lumen first cut goes out on the ' + fmt(D(7)) + '. Ghana doc color starts Monday.' },
-        { from: 'Hana Sato', tz: 'Asia/Tokyo', at: D(0) + 'T02:10', text: 'Tokyo aerials are uploaded to Cargo, 4K60 log. 38 clips.' } ] },
-      { id: 'lumen', name: 'lumen-coffee', kind: 'channel', unread: 3, msgs: [
-        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T19:30', text: 'Client wants the cup pour to land a beat later. Can you take that in v2?' },
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T17:05', text: 'Big week. Ember first cut goes out on the ' + fmt(D(7)) + '. Kente color starts Monday.' },
+        { from: 'Hana Sato', tz: 'Asia/Tokyo', at: D(0) + 'T02:10', text: 'Tokyo aerials are uploaded to Files, 4K60 log. 38 clips.' } ] },
+      { id: 'ember', name: 'project-ember', kind: 'channel', unread: 3, msgs: [
+        { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T19:30', text: 'Client notes are in: the cup pour lands a beat later. Can you take that in v3?' },
         { from: 'me', tz: 'Africa/Lagos', at: D(0) + 'T07:12', text: 'On it. I will also tighten the opener by about 12 frames.' },
-        { from: 'Kofi Mensah', tz: 'Africa/Accra', at: D(0) + 'T07:40', text: 'Send me the XML when you lock and I will start the grade.', file: 'LUT_lumen_warm_v2.cube' },
-        { from: 'Diego Ruiz', tz: 'America/Chicago', at: D(0) + 'T08:15', text: 'Room tone from the roastery is in Cargo too.' } ] },
-      { id: 'ghana', name: 'ghana-doc', kind: 'channel', unread: 1, msgs: [
+        { from: 'Kofi Mensah', tz: 'Africa/Accra', at: D(0) + 'T07:40', text: 'Send me the XML when you lock and I will start the grade.', file: 'LUT_ember_warm_v2.cube' },
+        { from: 'Diego Ruiz', tz: 'America/Chicago', at: D(0) + 'T08:15', text: 'Room tone is in Files too.' } ] },
+      { id: 'kente', name: 'project-kente', kind: 'channel', unread: 1, msgs: [
         { from: 'Nate', tz: 'America/Los_Angeles', at: D(-2) + 'T21:00', text: 'Reel 2 interview selects are in. Cut the market scene to under 3 minutes.' } ] },
       { id: 'dm-nate', name: 'Nate', kind: 'dm', unread: 1, msgs: [
         { from: 'Nate', tz: 'America/Los_Angeles', at: D(-1) + 'T22:48', text: 'Thank you for the late night on the teaser. The client loved it.' } ] },
       { id: 'dm-kofi', name: 'Kofi Mensah', kind: 'dm', unread: 0, msgs: [
         { from: 'Kofi Mensah', tz: 'Africa/Accra', at: D(-3) + 'T12:00', text: 'Do you have the camera LUT for the B cam?' },
-        { from: 'me', tz: 'Africa/Lagos', at: D(-3) + 'T13:20', text: 'Sent to Cargo, it is in Lumen / Camera / LUTs.' } ] }
+        { from: 'me', tz: 'Africa/Lagos', at: D(-3) + 'T13:20', text: 'It is in Files, under Project Ember / Camera.' } ] }
     ],
     tasks: [
-      { id: 't1', title: 'Lumen teaser v2: pour lands later, opener -12f', project: 'Lumen Coffee', due: D(1), status: 'doing', by: 'Nate' },
-      { id: 't2', title: 'Export XML for color', project: 'Lumen Coffee', due: D(2), status: 'todo', by: 'Kofi Mensah' },
-      { id: 't3', title: 'Ghana doc: market scene under 3:00', project: 'Ghana doc', due: D(-1), status: 'todo', by: 'Nate' },
-      { id: 't4', title: 'Subtitles for interview reel 2', project: 'Ghana doc', due: D(6), status: 'todo', by: 'Nate' },
-      { id: 't5', title: 'Assembly cut, Lumen brand film', project: 'Lumen Coffee', due: D(-4), status: 'done', by: 'Nate' }
+      { id: 't1', title: 'Teaser v3: pour lands later, opener -12f', project: 'Project Ember', due: D(1), status: 'doing', by: 'Nate' },
+      { id: 't2', title: 'Export XML for color', project: 'Project Ember', due: D(2), status: 'todo', by: 'Kofi Mensah' },
+      { id: 't3', title: 'Market scene under 3:00', project: 'Project Kente', due: D(-1), status: 'todo', by: 'Nate' },
+      { id: 't4', title: 'Subtitles for interview reel 2', project: 'Project Kente', due: D(6), status: 'todo', by: 'Nate' },
+      { id: 't5', title: 'Assembly cut, brand film', project: 'Project Ember', due: D(-4), status: 'done', by: 'Nate' }
     ],
     files: [
       { name: 'Tokyo_aerials_4K60_log.zip', size: 18.4e9, by: 'Hana Sato', date: D(0), kind: 'film', folder: 'Drone / Tokyo' },
-      { name: 'Roastery_room_tone.wav', size: 96e6, by: 'Diego Ruiz', date: D(0), kind: 'music', folder: 'Lumen / Sound' },
-      { name: 'LUT_lumen_warm_v2.cube', size: 1.3e6, by: 'Kofi Mensah', date: D(0), kind: 'doc', folder: 'Lumen / Color' },
-      { name: 'Teaser_v1.prproj', size: 42e6, by: 'Amara Okafor', date: D(-2), kind: 'film', folder: 'Lumen / Edit' }
+      { name: 'Roastery_room_tone.wav', size: 96e6, by: 'Diego Ruiz', date: D(0), kind: 'music', folder: 'Project Ember / Sound' },
+      { name: 'LUT_ember_warm_v2.cube', size: 1.3e6, by: 'Kofi Mensah', date: D(0), kind: 'doc', folder: 'Project Ember / Color' },
+      { name: 'Teaser_v1.prproj', size: 42e6, by: 'Amara Okafor', date: D(-2), kind: 'film', folder: 'Project Ember / Edit' }
     ],
     pay: { year: 8420, pending: 1150, next: D(8), rate: 'Day rate $350',
       payouts: [
-        { label: 'Lumen Coffee, assembly cut (3 days)', amount: 1050, date: D(-4), status: 'paid' },
-        { label: 'Ghana doc, reel 1 (4 days)', amount: 1400, date: D(-18), status: 'paid' },
-        { label: 'Lumen teaser + v2', amount: 700, date: D(8), status: 'pending' },
-        { label: 'Ghana doc, market scene', amount: 450, date: D(8), status: 'pending' } ],
+        { label: 'Project Ember, assembly cut (3 days)', amount: 1050, date: D(-4), status: 'paid' },
+        { label: 'Project Kente, reel 1 (4 days)', amount: 1400, date: D(-18), status: 'paid' },
+        { label: 'Project Ember teaser + v2', amount: 700, date: D(8), status: 'pending' },
+        { label: 'Project Kente, market scene', amount: 450, date: D(8), status: 'pending' } ],
       months: [['May', 900], ['Jun', 1350], ['Jul', 1800], ['Aug', 1250], ['Sep', 1650], ['Oct', 1470]] },
     kudos: [
       { from: 'Nate', date: D(-1), text: 'Thank you for the late night on the teaser. The client said it gave them chills. That is all you.' },
-      { from: 'Nate', date: D(-20), text: 'Reel 1 of the Ghana doc is the best first assembly I have seen. Proud to have you on the crew.' }
+      { from: 'Nate', date: D(-20), text: 'Reel 1 of Project Kente is the best first assembly I have seen. Proud to have you on the crew.' }
     ]
   }
 };
+DATA.team.projects = [{ code: 'DPZ-0142', label: 'Project Ember' }, { code: 'DPZ-0150', label: 'Project Kente' }];
+DATA.team.rooms = { cuts: 1, changes: 0 };
+DATA.team.desk = {
+  requests: [
+    { id: 'r1', date: D(9), type: 'book', title: 'Studio session', note: 'Starts 10:00 · 4 hours', status: 'requested', project: 'DPZ-0142', projectTitle: 'Lumen Coffee brand film', client: 'Lumen Coffee Co.' },
+    { id: 'r2', date: D(22), type: 'event', title: 'Café launch party', note: 'Event coverage, 6pm to 10pm', status: 'requested', project: 'DPZ-0142', projectTitle: 'Lumen Coffee brand film', client: 'Lumen Coffee Co.' }
+  ],
+  notes: [{ id: 'r3', date: D(2), type: 'note', title: 'New bag design arrives', note: 'Can we get it in the end card?', status: 'shared', project: 'DPZ-0142', client: 'Lumen Coffee Co.' }],
+  schedule: [
+    { id: 'r4', date: D(4), type: 'shoot', title: 'Pickup shots at the café', project: 'DPZ-0142', projectTitle: 'Lumen Coffee brand film', client: 'Lumen Coffee Co.', status: 'confirmed', handledBy: 'Nate' },
+    { id: 'r5', date: D(7), type: 'review', title: 'First cut to client', project: 'DPZ-0142', projectTitle: 'Lumen Coffee brand film', client: 'Lumen Coffee Co.', status: 'confirmed' }
+  ],
+  tasks: [
+    { id: 't1', title: 'Teaser v3: pour lands later, opener -12f', project: 'DPZ-0142', assignee: 'amara@crew.example', who: 'Amara Okafor', due: D(1), status: 'doing', by: 'Nate' },
+    { id: 't6', title: 'Grade the market scene', project: 'DPZ-0150', assignee: 'kofi@crew.example', who: 'Kofi Mensah', due: D(5), status: 'todo', by: 'Rae Lin' }
+  ],
+  crew: [{ email: 'amara@crew.example', name: 'Amara Okafor', role: 'Editor' }, { email: 'kofi@crew.example', name: 'Kofi Mensah', role: 'Colorist' }, { email: 'hana@crew.example', name: 'Hana Sato', role: 'Drone + camera' }, { email: 'diego@crew.example', name: 'Diego Ruiz', role: 'Sound engineer' }],
+  projects: [
+    { code: 'DPZ-0142', title: 'Lumen Coffee brand film', codeName: 'Project Ember', client: 'Lumen Coffee Co.', status: 'In the edit', crew: ['amara@crew.example', 'kofi@crew.example', 'diego@crew.example'] },
+    { code: 'DPZ-0150', title: 'Ghana documentary', codeName: 'Project Kente', client: 'Ghana Doc Press', status: 'In the edit', crew: ['hana@crew.example', 'kofi@crew.example'] }
+  ]
+};
+DATA.client.review = { title: 'Teaser 15s v2', date: D(-1), state: '', waiting: 1 };
+// the screening rooms in the preview: a few sample cuts that play from the Work page
+function sampleRoom(side, room){
+  const now = new Date().toISOString(), ago = h => new Date(Date.now() - h * 3600e3).toISOString();
+  const role = () => (DATA.team.me.access || 'crew');
+  const db = sampleRoom.db = sampleRoom.db || {
+    'rev:s2': { type: 'video', src: 'work/nyc-mix.mp4', item: { key: 'rev:s2', kind: 'rev', type: 'video', title: 'Teaser 15s', version: 2, status: 'waiting', round: 2, date: D(-1) }, notes: [{ id: 'a1', at: ago(20), who: 'Nate', from: 'team', text: 'Music is still the temp track. Your song goes in once it is picked.', t: 1 }] },
+    'rev:s1': { type: 'video', src: 'work/new-york.mp4', item: { key: 'rev:s1', kind: 'rev', type: 'video', title: 'Teaser 15s', version: 1, status: 'changes', round: 1, date: D(-6) }, notes: [{ id: 'a2', at: ago(140), who: 'You', mine: true, from: 'client', text: 'Can the cup pour land a beat later?', t: 6.5 }, { id: 'a3', at: ago(139), who: 'You', mine: true, from: 'client', text: 'Love this shot. Keep it.', t: 2.2, x: .62, y: .4 }] },
+    'rev:s3': { type: 'image', src: 'portal/05-arc-1400.webp', item: { key: 'rev:s3', kind: 'rev', type: 'image', title: 'Launch poster', version: 1, status: 'approved', round: 1, date: D(-9) }, notes: [{ id: 'a4', at: ago(220), who: 'You', mine: true, from: 'client', text: 'Logo a little bigger here', x: .5, y: .2 }] },
+    'cut:c3': { type: 'video', src: 'work/nyc-mix.mp4', item: { key: 'cut:c3', kind: 'cut', type: 'video', title: 'Teaser', version: 3, status: 'waiting', round: 1, date: D(0), by: 'Amara Okafor', note: 'Pour lands 8 frames later, opener trimmed.' }, notes: [{ id: 'b1', at: ago(2), who: 'Nate', from: 'team', text: 'Trim the first beat, it drags.', t: 0.8 }] },
+    'cut:c2': { type: 'video', src: 'work/new-york.mp4', item: { key: 'cut:c2', kind: 'cut', type: 'video', title: 'Teaser', version: 2, status: 'approved', round: 1, date: D(-1), by: 'Amara Okafor', sent: D(-1) }, notes: [] }
+  };
+  const can = it => {
+    if (it.item.kind === 'rev') return side === 'client' ? { note: it.item.status === 'waiting', decide: it.item.status === 'waiting' } : room === 'client' ? { note: true, resolve: true } : {};
+    return { note: true, decide: role() === 'owner' && it.item.status === 'waiting', send: role() === 'owner' && !it.item.sent, resolve: role() !== 'crew' };
+  };
+  const shown = it => side === 'client' ? it : { ...it, notes: it.notes.map(n => n.from === 'client' ? { ...n, who: room === 'editors' && role() === 'crew' ? 'Client' : 'Jordan Rivera', mine: false } : n) };
+  const keys = room === 'editors' ? ['cut:c3', 'cut:c2', 'rev:s2', 'rev:s1'] : ['rev:s2', 'rev:s1', 'rev:s3'];
+  const summary = k => { const it = db[k], i = it.item; return { ...i, by: i.by === 'Amara Okafor' && role() === 'crew' ? 'You' : i.by, notes: it.notes.length, open: it.notes.filter(n => !n.done).length, notified: true }; };
+  return {
+    list: () => ({ room, side, projects: side === 'client' ? [{ code: 'DPZ-0142', label: 'Lumen Coffee brand film' }] : DATA.team.projects.slice(0, 1), project: 'DPZ-0142', items: keys.map(summary), rounds: room === 'client' ? { used: 1, included: 2 } : null, can: { upload: room === 'editors' || role() === 'owner' }, crew: room === 'editors' && role() !== 'crew' ? ['Amara Okafor', 'Kofi Mensah'] : undefined }),
+    item: k => { const it = shown(db[k]); return { item: summary(k), type: it.type, media: it.src, size: 0, whole: true, notes: it.notes, can: can(db[k]) }; },
+    note: (k, b) => { const n = { id: 'n' + Date.now(), at: now, who: 'You', mine: true, from: side === 'client' ? 'client' : 'team', text: b.text, t: b.t, page: b.page, x: b.x, y: b.y }; db[k].notes.push(n); return { note: n }; },
+    done: (k, id) => { const n = db[k].notes.find(x => x.id === id); n.done = !n.done; },
+    remove: (k, id) => { db[k].notes = db[k].notes.filter(x => x.id !== id); },
+    decide: (k, action) => { db[k].item.status = action === 'approve' ? 'approved' : 'changes'; return { status: db[k].item.status }; },
+    send: k => { db[k].item.sent = D(0); db[k].item.status = 'approved'; return { emailed: true }; }
+  };
+}
 const clientEvents = () => C_events().concat(DATA.client.needs.filter(n => n.status !== 'received').map(n => ({ date: n.due, type: 'due', title: n.label + ' due', note: n.detail })));
 const C_events = () => DATA.client.events;
 const STATE = { calMonth: null, calSel: null, calFilter: 'all', thread: null, pay: null, viewAs: '', project: '' };
 const lastText = c => { const m = c.msgs[c.msgs.length - 1]; return m ? (m.text || (m.file ? 'Sent a file: ' + m.file : '')) : 'No messages yet'; };
 
 /* ===================== routing ===================== */
+const NAV_CLIENT = [
+  ['overview', 'Overview', 'home'], ['review', 'Review room', 'film'], ['timeline', 'Timeline', 'route'], ['checkin', 'Check-in', 'bag'], ['calendar', 'Calendar', 'cal'],
+  ['docs', 'Documents', 'doc'], ['fare', 'Payments', 'card'], ['messages', 'Messages', 'chat'], ['profile', 'Profile', 'user']
+];
+// the crew side grows with the person's access: managers and the owner get the Desk and the client review room
+const access = () => (T && T.me && T.me.access) || 'crew';
 const NAV = {
-  client: [
-    ['overview', 'Overview', 'home'], ['timeline', 'Timeline', 'route'], ['checkin', 'Check-in', 'bag'], ['calendar', 'Calendar', 'cal'],
-    ['docs', 'Documents', 'doc'], ['fare', 'Payments', 'card'], ['messages', 'Messages', 'chat'], ['profile', 'Profile', 'user']
-  ],
-  team: [
-    ['lounge', 'Lounge', 'home'], ['comms', 'Comms', 'chat'], ['callsheet', 'Deadlines', 'cal'], ['cargo', 'Files', 'box'],
-    ['payroll', 'Payroll', 'cash'], ['crewcard', 'Crew card', 'user']
-  ]
+  get client(){ return NAV_CLIENT; },
+  get team(){
+    const staff = access() !== 'crew';
+    return [['lounge', 'Lounge', 'home'], ...(staff ? [['desk', 'Desk', 'list2']] : []), ['comms', 'Comms', 'chat'], ['callsheet', 'Deadlines', 'cal'], ['cargo', 'Files', 'box'],
+      ['editors', 'Editors room', 'film'], ...(staff ? [['review', 'Client review', 'play']] : []), ['payroll', 'Payroll', 'cash'], ['crewcard', 'Crew card', 'user']];
+  }
 };
-const TABS = { client: ['overview', 'checkin', 'calendar', 'fare', 'messages'], team: ['lounge', 'comms', 'callsheet', 'cargo', 'payroll'] };
+const TABS = { client: ['overview', 'review', 'calendar', 'messages', 'more'], team: ['lounge', 'comms', 'callsheet', 'editors', 'more'] };
 function route(){
   const h = (location.hash || '').replace(/^#\/?/, '').split('/');
   const side = CONFIG.live ? CONFIG.side : h[0] === 'team' ? 'team' : 'client';
@@ -616,6 +672,10 @@ function badge(side, key){
   if (side === 'client' && key === 'checkin') return DATA.client.needs.filter(n => n.status !== 'received').length;
   if (side === 'client' && key === 'docs') return (DATA.client.documents || []).filter(d => d.status === 'to sign').length;
   if (side === 'client' && key === 'messages') return CONFIG.live ? (C.unread || 0) : 1;
+  if (side === 'client' && key === 'review') return (C.review && C.review.waiting) || 0;
+  if (side === 'team' && key === 'desk') return T.desk ? T.desk.requests.length : 0;
+  if (side === 'team' && key === 'editors') return T.rooms ? (access() === 'crew' ? T.rooms.changes : T.rooms.cuts) : 0;
+  if (key === 'more'){ const shown = TABS[side]; return NAV[side].filter(n => !shown.includes(n[0])).reduce((a, n) => a + badge(side, n[0]), 0); }
   if (side === 'team' && key === 'comms') return DATA.team.channels.reduce((a, c) => a + c.unread, 0);
   if (side === 'team' && key === 'callsheet') return DATA.team.tasks.filter(t => t.status !== 'done' && daysTo(t.due) <= 2).length;
   return 0;
@@ -625,13 +685,15 @@ function shell(r){
   $('#door').textContent = r.side === 'team' ? 'Crew lounge' : 'Client portal';
   $('#nav').innerHTML = NAV[r.side].map(([k, l, i]) => { const b = badge(r.side, k);
     return `<a href="#/${r.side}/${k}" ${k === r.page ? 'aria-current="page"' : ''}>${ic(i)}<span>${l}</span>${b ? `<span class="ct">${b}</span>` : ''}</a>`; }).join('');
-  $('#tabbar').innerHTML = TABS[r.side].map(k => { const [, l, i] = NAV[r.side].find(n => n[0] === k); const b = badge(r.side, k);
+  $('#tabbar').innerHTML = TABS[r.side].map(k => { const b = badge(r.side, k);
+    if (k === 'more'){ const cur = !TABS[r.side].includes(r.page); return `<a href="#" data-act="more" ${cur ? 'aria-current="page"' : ''}>${ic('list')}<span>More</span>${b ? `<span class="ct">${b}</span>` : ''}</a>`; }
+    const [, l, i] = NAV[r.side].find(n => n[0] === k);
     return `<a href="#/${r.side}/${k}" ${k === r.page ? 'aria-current="page"' : ''}>${ic(i)}<span>${l}</span>${b ? `<span class="ct">${b}</span>` : ''}</a>`; }).join('');
   $('#me').innerHTML = `<span class="av">${initials(me.name)}</span><span><b>${esc(me.name)}</b><span>${esc(r.side === 'team' ? me.role : me.company)}</span></span><a href="portal.html" data-act="signout">Sign out</a>`;
 }
 function hello(title, sub, act){
   const h = new Date().getHours(); const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-  return `${STATE.viewAs ? `<div class="viewas">${ic('user', ' width="18" height="18"')}<span><b>Admin view of ${esc(STATE.viewAs)}.</b> This is what they see. Buttons here won't act for them.</span></div>` : ''}${CONFIG.live ? '' : `<div class="preview">${ic('bell', ' width="18" height="18"')}<span><b>Preview with sample data.</b> Nothing here is saved or sent yet.</span><a href="#/${route().side === 'team' ? 'client' : 'team'}">${route().side === 'team' ? 'See the client side →' : 'See the crew side →'}</a></div>`}
+  return `${STATE.viewAs ? `<div class="viewas">${ic('user', ' width="18" height="18"')}<span><b>Admin view of ${esc(STATE.viewAs)}.</b> This is what they see. Buttons here won't act for them.</span></div>` : ''}${CONFIG.live ? '' : `<div class="preview">${ic('bell', ' width="18" height="18"')}<span><b>Preview with sample data.</b> Nothing here is saved or sent yet.</span>${route().side === 'team' ? `<span class="seg" style="margin-left:auto">${[['crew', 'Crew'], ['manager', 'Manager'], ['owner', 'Owner']].map(([k, l]) => `<button type="button" data-act="prole" data-role="${k}" aria-pressed="${access() === k}">${l}</button>`).join('')}</span>` : ''}<a href="#/${route().side === 'team' ? 'client' : 'team'}"${route().side === 'team' ? ' style="margin-left:10px"' : ''}>${route().side === 'team' ? 'Client side →' : 'See the crew side →'}</a></div>`}
   <div class="top"><div class="hello"><span class="mono">${esc(sub || part)}</span><h1>${title}</h1></div><div class="top-act">${act || ''}<button class="icon-btn" type="button" aria-label="Notifications" data-act="notes">${ic('bell')}<span class="dot"></span></button><a class="av top-av" href="#/${route().side}/${route().side === 'team' ? 'crewcard' : 'profile'}" aria-label="Your profile">${initials(DATA[route().side].me.name)}</a></div></div>`;
 }
 
@@ -686,7 +748,7 @@ function pageOverview(){
   <div class="grid g3" style="margin-top:16px">
     <a class="card" href="#/client/checkin" style="text-decoration:none"><div class="kpi"><span class="mono mute">Check-in</span><span class="big">${open.length} item${open.length === 1 ? '' : 's'}</span><span class="mute" style="font-size:13px">we need from you${late ? ` · <b style="color:var(--bad)">${late} overdue</b>` : ''}</span></div></a>
     <a class="card" href="#/client/fare" style="text-decoration:none"><div class="kpi"><span class="mono mute">Balance</span><span class="big">${money(due)}</span><span class="mute" style="font-size:13px">${due ? 'due ' + fmt(nextDue) : C.invoices.some(i => i.status === 'sent') ? 'confirming your payment' : 'all paid up'}</span></div></a>
-    <a class="card ink" href="#/client/timeline" style="text-decoration:none"><div class="kpi"><span class="mono" style="color:var(--sky)">Ready for you</span><span class="big">${C.review ? (/approved/i.test(C.review.state) ? 'Approved' : '1 draft') : 'Soon'}</span><span style="font-size:13px;color:#9C9A94">${C.review ? esc(C.review.title) : 'Drafts show up here for your notes'}</span></div></a>
+    <a class="card ink" href="#/client/review" style="text-decoration:none"><div class="kpi"><span class="mono" style="color:var(--sky)">Review room</span><span class="big">${C.review ? (C.review.waiting ? C.review.waiting + ' to watch' : /approved/i.test(C.review.state) ? 'Approved' : 'Notes sent') : 'Soon'}</span><span style="font-size:13px;color:#9C9A94">${C.review ? esc(C.review.title) : 'Cuts show up here for your notes'}</span></div></a>
   </div>
   <div class="grid g-main" style="margin-top:16px">
     <section class="card"><div class="c-head"><h2>Coming up</h2><a href="#/client/calendar">Calendar →</a></div>
@@ -777,7 +839,7 @@ function pageTimeline(){
     <div><div class="h"><b>${esc(m.label)}</b><span class="mono mute">${fmt(m.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>${m.state === 'now' ? '<span class="chip now">You are here</span>' : m.state === 'done' ? '<span class="chip ok">Done</span>' : ''}</div>
     <p>${esc(m.note)}</p>
     ${m.state === 'now' && C.review ? `<div class="review"><div class="thumb">${ic('play')}</div><div><span class="mono mute">Ready for your notes</span><div style="font-weight:700;margin-top:2px">${esc(C.review.title)}</div><span class="s mute" style="font-size:13px">Posted ${rel(C.review.date).toLowerCase()}${C.review.length ? ' · ' + esc(C.review.length) : ''}${C.review.state ? ' · ' + esc(C.review.state) : ''}</span>
-      <div class="acts"><button class="btn sm" type="button" data-act="watch">${ic('play', ' width="14" height="14"')}Watch</button><button class="btn sm ghost" type="button" data-act="notes-draft">Request changes</button><button class="btn sm ghost" type="button" data-act="approve">Approve</button></div></div></div>` : ''}
+      <div class="acts"><a class="btn sm" href="#/client/review">${ic('play', ' width="14" height="14"')}Open the review room</a></div></div></div>` : ''}
     </div></li>`).join('')}
   </ol></section>
   <aside class="grid" style="align-content:start">
@@ -953,7 +1015,7 @@ function defaultChannel(){ return CONFIG.live ? (T.channels.find(c => c.unread) 
 function teamEvents(){
   if (CONFIG.live) return T.tasks.map(t => ({ date: t.due, type: 'task', title: t.title, sub: t.project + ' · from ' + t.by, done: t.status === 'done' })).concat(T.events || []);
   return T.tasks.map(t => ({ date: t.due, type: 'task', title: t.title, sub: t.project + ' · from ' + t.by, done: t.status === 'done' }))
-    .concat([{ date: D(7), type: 'review', title: 'Lumen first cut to client', sub: 'Lumen Coffee' }, { date: D(15), type: 'delivery', title: 'Lumen final delivery', sub: 'Lumen Coffee' }, { date: D(10), type: 'shoot', title: 'Houston drone day', sub: 'Hana + Diego' }]);
+    .concat([{ date: D(7), type: 'review', title: 'Project Ember: first cut to client', sub: 'Project Ember' }, { date: D(15), type: 'delivery', title: 'Project Ember: final delivery', sub: 'Project Ember' }, { date: D(10), type: 'shoot', title: 'Houston drone day', sub: 'Hana + Diego' }]);
 }
 function pageCallsheet(){
   const lg = [['#FFF0DB', 'Your tasks'], ['#EFEAFE', 'Client dates'], ['#E8F6FD', 'Shoots'], ['#E6F5EE', 'Done']];
@@ -975,8 +1037,8 @@ function cargoRows(){
 function pagePayroll(){
   const p = T.pay, max = Math.max(1, ...p.months.map(m => m[1]));
   const own = !(CONFIG.live && T.admin) || p.payouts.length || p.rate;
-  if (!own) return hello('Payroll', 'Crew pay') + adminPay();
-  return hello('Payroll', 'What you have earned') + (CONFIG.live && T.admin ? adminPay() + '<div style="height:16px"></div>' : '') + `<div class="grid g3" style="margin-bottom:16px">
+  if (!own) return hello('Payroll', 'Crew pay') + adminPay() + '<div style="height:16px"></div>' + booksCard();
+  return hello('Payroll', 'What you have earned') + (CONFIG.live && T.admin ? adminPay() + '<div style="height:16px"></div>' : '') + (booksCard() ? booksCard() + '<div style="height:16px"></div>' : '') + `<div class="grid g3" style="margin-bottom:16px">
     <div class="card ink"><span class="mono" style="color:var(--sky)">Paid this year</span><div class="big grad" style="font-size:52px;margin-top:6px">${money(p.year)}</div></div>
     <div class="card"><span class="mono mute">Pending</span><div class="big" style="font-size:52px;margin-top:6px">${money(p.pending)}</div><span class="mute" style="font-size:13px">${p.next ? 'pays out ' + fmt(p.next, { month: 'long', day: 'numeric' }) : p.pending ? 'waiting on approval' : 'nothing pending'}</span></div>
     <div class="card"><span class="mono mute">Payout to</span>${p.rate ? `<span class="mono mute" style="float:right">${esc(p.rate)}</span>` : ''}<div style="font-weight:800;font-size:22px;margin-top:6px">${esc(T.me.payout.method)}</div><span class="mute" style="font-size:13px">${esc(T.me.payout.detail)}</span><div style="margin-top:10px"><button class="btn sm ghost" type="button" data-act="payout-method">Change</button></div></div></div>
@@ -997,17 +1059,136 @@ function pageCrewcard(){
   </div></div>`;
 }
 
+/* ===================== screening rooms ===================== */
+function pageReview(){
+  const side = route().side;
+  if (side === 'client') return hello('Review room', C.project ? C.project.code + ' · ' + C.project.title : '') + '<div id="roomMount"></div>';
+  return hello('Client review', 'What each client is watching, and their notes') + '<div id="roomMount"></div>';
+}
+function pageEditors(){
+  return hello('Editors room', access() === 'crew' ? 'Your cuts, Nate\'s notes, and the client\'s notes on your projects' : 'Cuts from the crew. Approve them, then send them to the client') + '<div id="roomMount"></div>';
+}
+function mountRoom(r, key){
+  const el = document.getElementById('roomMount');
+  if (!el || !window.DPZRoom) return;
+  const room = r.page === 'editors' ? 'editors' : 'client';
+  ROOM = { key, inst: window.DPZRoom.mount(el, {
+    live: CONFIG.live, side: r.side, room, api, toast, modal, closeModal, readOnly: !!STATE.viewAs,
+    project: r.side === 'client' ? projCode() : '',
+    upload: (file, extra) => sendFile('room', file, extra),
+    openFile: id => openFile(id),
+    sample: sampleRoom(r.side, room)
+  }) };
+}
+function moreSheet(){
+  const r = route();
+  modal(`<h3 id="sheetTitle">Everything</h3><ul class="list">${NAV[r.side].map(([k, l, i]) => { const b = badge(r.side, k); return `<li><a class="row" href="#/${r.side}/${k}" data-close style="text-decoration:none"><span class="ico">${ic(i)}</span><span class="grow t">${l}</span>${b ? `<span class="chip now">${b}</span>` : ''}</a></li>`; }).join('')}</ul><div class="acts"><button class="btn ghost" type="button" data-close>Close</button></div>`);
+}
+
+/* ===================== the Desk (owner and managers) ===================== */
+const deskProj = code => (T.desk.projects.find(p => p.code === code) || { code, title: '', codeName: '' });
+const deskLabel = code => { const p = deskProj(code); return [p.code, p.title].filter(Boolean).join(' · '); };
+function pageDesk(){
+  const K = T.desk || { requests: [], notes: [], schedule: [], tasks: [], crew: [], projects: [] };
+  const evIc = t => ic(t === 'shoot' ? 'film' : t === 'review' ? 'play' : t === 'delivery' ? 'dl' : 'cal');
+  const dateBox = d => `<span class="ico" style="flex-direction:column;gap:0;line-height:1;width:46px"><b style="font-size:15px">${parse(d).getDate()}</b><span style="font-size:10px;text-transform:uppercase">${parse(d).toLocaleDateString('en-US', { month: 'short' })}</span></span>`;
+  const req = K.requests.map(e => `<li class="row" style="align-items:flex-start">${dateBox(e.date)}<span class="grow"><span class="t">${esc(e.title)}</span> <span class="chip ${e.type === 'book' ? 'now' : 'info'}">${e.type === 'book' ? 'Booking' : 'Event day'}</span><br><span class="s">${esc(e.client)}${e.project ? ' · ' + esc(e.project) : ''} · ${fmt(e.date, { weekday: 'long', month: 'short', day: 'numeric' })}</span>${e.note ? `<br><span class="s">${esc(e.note)}</span>` : ''}</span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="btn sm" type="button" data-act="desk-ok" data-id="${esc(e.id)}">Confirm</button><button class="btn sm ghost" type="button" data-act="desk-no" data-id="${esc(e.id)}">Decline</button></span></li>`).join('');
+  const st = { todo: ['info', 'To do'], doing: ['now', 'Doing'], done: ['ok', 'Done'] };
+  const tasks = K.tasks.map(t => `<li><button class="row" type="button" data-act="desk-task" data-id="${esc(t.id)}" style="width:100%;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:10px 0"><span class="av sm">${initials(t.who)}</span><span class="grow"><span class="t" style="${t.status === 'done' ? 'text-decoration:line-through;opacity:.6' : ''}">${esc(t.title)}</span><br><span class="s">${esc(t.who)}${t.project ? ' · ' + esc(deskLabel(t.project)) : ''}${t.due ? ' · due ' + fmt(t.due) : ''}</span></span><span class="chip ${st[t.status][0]}">${st[t.status][1]}</span></button></li>`).join('');
+  const sched = K.schedule.map(e => `<li class="row"><span class="ico">${evIc(e.type)}</span><span class="grow"><span class="t">${esc(e.title)}</span><br><span class="s">${esc(e.project)}${e.client ? ' · ' + esc(e.client) : ''}</span></span><span class="chip ${daysTo(e.date) <= 2 ? 'due' : 'info'}">${rel(e.date)}</span></li>`).join('');
+  const crewName = em => (K.crew.find(c => c.email === em) || { name: em }).name;
+  const projs = K.projects.map(p => `<li class="row" style="align-items:flex-start"><span class="grow"><span class="t">${esc(p.code)} · ${esc(p.title)}</span><br><span class="s">${esc(p.client)} · crew know it as <b>${esc(p.codeName || p.code)}</b></span><br><span style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${p.crew.length ? p.crew.map(em => `<span class="chip info">${esc(crewName(em))}</span>`).join('') : '<span class="s">Nobody on it yet</span>'}</span></span><button class="btn sm ghost" type="button" data-act="desk-proj" data-code="${esc(p.code)}">Edit</button></li>`).join('');
+  const notes = K.notes.map(n => `<li class="row" style="align-items:flex-start"><span class="ico">${ic('pen')}</span><span class="grow"><span class="t">${esc(n.title)}</span><br><span class="s">${esc(n.client)} · for ${fmt(n.date)}</span>${n.note && n.note !== n.title ? `<br><span style="font-size:14px">${esc(n.note)}</span>` : ''}</span></li>`).join('');
+  const mgr = access() === 'manager';
+  return hello('Desk', mgr ? 'Bookings, crew and calendars' : 'Bookings, crew, calendars and deliveries') + `<div class="grid g-main"><div class="grid" style="align-content:start">
+    <section class="card"><div class="c-head"><h2>Booking requests</h2><span class="mute" style="font-size:13px">The client gets an email either way</span></div>${req ? `<ul class="list">${req}</ul>` : '<div class="empty">No requests waiting. New ones from client calendars land here.</div>'}</section>
+    <section class="card"><div class="c-head"><h2>Crew tasks</h2><button class="btn sm" type="button" data-act="desk-task">New task</button></div>${tasks ? `<ul class="list">${tasks}</ul>` : '<div class="empty">No tasks yet.</div>'}</section>
+    <section class="card"><div class="c-head"><h2>Coming up</h2><button class="btn sm ghost" type="button" data-act="desk-date">Add a date</button></div>${sched ? `<ul class="list">${sched}</ul>` : '<div class="empty">Nothing on the calendars in the next two months.</div>'}</section>
+  </div><div class="grid" style="align-content:start">
+    <section class="card"><div class="c-head"><h2>Projects</h2><span class="mute" style="font-size:13px">Who's on each one</span></div>${projs ? `<ul class="list">${projs}</ul>` : '<div class="empty">No active projects.</div>'}</section>
+    <section class="card"><div class="c-head"><h2>Deliver files</h2></div><label class="field" style="margin-bottom:12px">To<select id="delProj">${K.projects.map(p => `<option value="${esc(p.code)}">${esc(p.code)} · ${esc(p.client || p.title)}</option>`).join('')}</select></label>
+      <label class="drop"><input type="file" multiple data-up="deliver"><span>${ic('up', ' width="28" height="28"')}</span><b>Drop finished files</b><small>They show up in the client's portal under Files. For cuts they should watch and comment on, use the review rooms.</small></label><div class="files-q" data-q="deliver" style="margin-top:10px"></div></section>
+    ${notes ? `<section class="card"><div class="c-head"><h2>Shared by clients</h2></div><ul class="list">${notes}</ul></section>` : ''}
+    ${mgr ? `<section class="card ink"><span class="mono" style="color:var(--sky)">Your desk</span><p style="margin:8px 0 0;font-size:15px;line-height:1.55">Bookings, crew tasks, files, calendars and client review notes are yours. Money and client messages stay with Nate.</p></section>` : ''}
+  </div></div>`;
+}
+async function deskCall(b, path, body, done, previewFn){
+  if (!CONFIG.live){ previewFn && previewFn(); closeModal(); toast(done + ' (preview)'); render(true); return; }
+  busy(b, true, '…');
+  try { await api(path, body); closeModal(); toast(done); await refresh(true); }
+  catch (e) { busy(b, false); toast(e.message); }
+}
+function taskModal(id){
+  const K = T.desk, t = K.tasks.find(x => x.id === id) || { title: '', project: '', assignee: '', due: '', status: 'todo' };
+  modal(`<h3 id="sheetTitle">${id ? 'Change the task' : 'New task'}</h3><div class="grid" style="gap:10px">
+    <label class="field">What needs doing<input id="tkTitle" value="${esc(t.title)}" placeholder="e.g. Teaser v3: trim the opener"></label>
+    <label class="field">Who<select id="tkWho">${K.crew.map(c => `<option value="${esc(c.email)}" ${c.email === t.assignee ? 'selected' : ''}>${esc(c.name)}${c.role ? ' · ' + esc(c.role) : ''}</option>`).join('')}</select></label>
+    <label class="field">Project<select id="tkProj"><option value="">No project</option>${K.projects.map(p => `<option value="${esc(p.code)}" ${p.code === t.project ? 'selected' : ''}>${esc(p.code)} · ${esc(p.title)}</option>`).join('')}</select></label>
+    <div class="grid g2" style="gap:10px"><label class="field">Due<input type="date" id="tkDue" value="${esc(t.due || '')}"></label><label class="field">Status<select id="tkSt">${['todo', 'doing', 'done'].map(v => `<option value="${v}" ${v === t.status ? 'selected' : ''}>${{ todo: 'To do', doing: 'Doing', done: 'Done' }[v]}</option>`).join('')}</select></label></div></div>
+    <p class="mute" style="font-size:12.5px">They get an email when it's theirs, and a reminder before it's due. The crew see the project by its code name, never the client.</p>
+    <div class="acts"><button class="btn" type="button" data-act="desk-task-save" data-id="${esc(id || '')}">${id ? 'Save' : 'Give it to them'}</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+function projModal(code){
+  const K = T.desk, p = deskProj(code);
+  modal(`<h3 id="sheetTitle">${esc(p.code)} · ${esc(p.title)}</h3><div class="grid" style="gap:10px">
+    <label class="field">Code name the crew see<input id="pjName" value="${esc(p.codeName || '')}" placeholder="${esc(p.code)}"></label>
+    <div class="field">Crew on this project<div class="grid" style="gap:6px;margin-top:6px">${K.crew.map(c => `<label class="check"><input type="checkbox" value="${esc(c.email)}" data-pjcrew ${p.crew && p.crew.includes(c.email) ? 'checked' : ''}><span><b>${esc(c.name)}</b>${c.role ? ' · ' + esc(c.role) : ''}</span></label>`).join('')}</div></div></div>
+    <p class="mute" style="font-size:12.5px">Crew only see projects they're on: its dates, files and the editors room. Anyone you add gets an email.</p>
+    <div class="acts"><button class="btn" type="button" data-act="desk-proj-save" data-code="${esc(p.code)}">Save</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+function dateModal(){
+  const K = T.desk;
+  modal(`<h3 id="sheetTitle">Add a date</h3><div class="grid" style="gap:10px">
+    <label class="field">Project<select id="dtProj">${K.projects.map(p => `<option value="${esc(p.code)}">${esc(p.code)} · ${esc(p.title)}</option>`).join('')}</select></label>
+    <div class="grid g2" style="gap:10px"><label class="field">Date<input type="date" id="dtDay" value="${D(1)}"></label><label class="field">What<select id="dtType"><option value="shoot">Shoot day</option><option value="review">Review</option><option value="delivery">Delivery</option><option value="event">Event</option></select></label></div>
+    <label class="field">Title<input id="dtTitle" placeholder="e.g. Pickup shots at the café"></label>
+    <label class="field">Note (optional)<textarea id="dtNote" placeholder="Call time, address, what to bring"></textarea></label>
+    <label class="check"><input type="checkbox" id="dtTell" checked><span>Email the client about it</span></label></div>
+    <p class="mute" style="font-size:12.5px">It shows on the client's calendar and the crew's Deadlines. Crew on the project get an email for shoot days.</p>
+    <div class="acts"><button class="btn" type="button" data-act="desk-date-save">Add it</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
+}
+const DESK = {
+  'desk-ok': b => deskCall(b, 'desk/booking', { id: b.dataset.id, action: 'confirm' }, 'Confirmed. They\'ve been emailed.', () => { const K = T.desk, e = K.requests.find(x => x.id === b.dataset.id); K.requests = K.requests.filter(x => x !== e); K.schedule.push({ ...e, status: 'confirmed' }); K.schedule.sort((x, y) => x.date.localeCompare(y.date)); }),
+  'desk-no': b => modal(`<h3 id="sheetTitle">Decline this request?</h3><p style="margin:0 0 10px">They get an email asking them to pick another day.</p><label class="field">A note for them (optional)<textarea id="noNote" placeholder="e.g. We're shooting in Houston that week. Does the Monday after work?"></textarea></label><div class="acts"><button class="btn" type="button" data-act="desk-no-go" data-id="${esc(b.dataset.id)}">Decline and email them</button><button class="btn ghost" type="button" data-close>Back</button></div>`),
+  'desk-no-go': b => deskCall(b, 'desk/booking', { id: b.dataset.id, action: 'decline', note: ($('#noNote').value || '').trim() }, 'Declined. They\'ve been emailed.', () => { T.desk.requests = T.desk.requests.filter(x => x.id !== b.dataset.id); }),
+  'desk-task': b => taskModal(b.dataset.id),
+  'desk-task-save': b => { const v = { id: b.dataset.id || undefined, title: $('#tkTitle').value.trim(), assignee: $('#tkWho').value, project: $('#tkProj').value, due: $('#tkDue').value, status: $('#tkSt').value };
+    if (!v.title) return toast('Give the task a name.');
+    deskCall(b, 'desk/task', v, v.id ? 'Saved.' : 'Sent. They\'ve been emailed.', () => { const K = T.desk, who = (K.crew.find(c => c.email === v.assignee) || {}).name || v.assignee; const t = K.tasks.find(x => x.id === v.id); if (t) Object.assign(t, v, { who }); else K.tasks.unshift({ ...v, id: 't' + Date.now(), who, by: T.me.name }); }); },
+  'desk-proj': b => projModal(b.dataset.code),
+  'desk-proj-save': b => { const crew = [...document.querySelectorAll('[data-pjcrew]:checked')].map(i => i.value), codeName = $('#pjName').value.trim();
+    deskCall(b, 'desk/project', { code: b.dataset.code, crew, codeName }, 'Saved. Anyone new has been emailed.', () => Object.assign(deskProj(b.dataset.code), { crew, codeName })); },
+  'desk-date': () => dateModal(),
+  'desk-date-save': b => { const v = { project: $('#dtProj').value, date: $('#dtDay').value, type: $('#dtType').value, title: $('#dtTitle').value.trim(), note: $('#dtNote').value.trim(), tell: $('#dtTell').checked };
+    if (!v.date) return toast('Pick a date.');
+    deskCall(b, 'desk/event', v, v.tell ? 'Added. The client has been emailed.' : 'Added to the calendar.', () => { const p = deskProj(v.project); T.desk.schedule.push({ id: 'x' + Date.now(), ...v, title: v.title || 'Shoot day', client: p.client, projectTitle: p.title, status: 'confirmed' }); T.desk.schedule.sort((x, y) => x.date.localeCompare(y.date)); }); },
+  'books-sync': async b => { if (!CONFIG.live) return toast('In the live portal this rebuilds the books sheet (preview).'); busy(b, true, 'Updating…'); try { const j = await api('books/sync', {}); toast('The books are up to date.'); T.admin.books = { url: j.url, synced: new Date().toISOString() }; render(true); } catch (e) { busy(b, false); toast(e.message); } },
+  'books-xlsx': () => { if (!CONFIG.live) return toast('In the live portal this downloads the books for Numbers (preview).'); location.href = API + 'books/xlsx'; toast('Getting the latest numbers. The download starts in a few seconds.'); }
+};
+function booksCard(){
+  if (!(CONFIG.live ? T.admin : access() === 'owner')) return '';
+  const B = (T.admin && T.admin.books) || {};
+  return `<section class="card"><div class="c-head"><h2>The books</h2><span class="mute" style="font-size:13px">${B.synced ? 'Updated ' + rel(B.synced.slice(0, 10)).toLowerCase() : 'Rebuilt every morning'}</span></div>
+    <p style="margin:0 0 12px;font-size:14px;line-height:1.55">Money in, card fees, crew pay and your expenses by month and by project, with a tax set-aside. Paid invoices and crew pay fill in by themselves; type expenses into the Expenses tab.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">${B.url ? `<a class="btn sm" href="${esc(B.url)}" target="_blank" rel="noopener">Open the Google Sheet</a>` : ''}<button class="btn sm ghost" type="button" data-act="books-xlsx">Download for Numbers</button><button class="btn sm ghost" type="button" data-act="books-sync">${B.url ? 'Update now' : 'Make the books'}</button></div></section>`;
+}
+
 /* ===================== render + events ===================== */
-const PAGES = { overview: pageOverview, timeline: pageTimeline, checkin: pageCheckin, calendar: pageCalendar, docs: pageDocs, fare: pageFare, messages: pageMessages, profile: pageProfile,
-  lounge: pageLounge, comms: pageComms, callsheet: pageCallsheet, cargo: pageCargo, payroll: pagePayroll, crewcard: pageCrewcard };
-let lastKey = '';
+const PAGES = { overview: pageOverview, review: pageReview, timeline: pageTimeline, checkin: pageCheckin, calendar: pageCalendar, docs: pageDocs, fare: pageFare, messages: pageMessages, profile: pageProfile,
+  lounge: pageLounge, desk: pageDesk, comms: pageComms, callsheet: pageCallsheet, cargo: pageCargo, editors: pageEditors, payroll: pagePayroll, crewcard: pageCrewcard };
+let lastKey = '', ROOM = null;
 function render(keepScroll){
   const r = route(); shell(r);
+  // a screening room keeps playing while the rest of the portal refreshes around it
+  const roomKey = ['review', 'editors'].includes(r.page) ? [r.side, r.page, STATE.project, STATE.viewAs, CONFIG.live, access()].join('/') : '';
+  if (roomKey && ROOM && ROOM.key === roomKey && document.getElementById('roomMount')) return;
+  if (ROOM){ ROOM.inst.destroy(); ROOM = null; }
   const key = r.side + '/' + r.page + '/' + (STATE.thread || '');
   document.title = (NAV[r.side].find(n => n[0] === r.page) || [, ''])[1] + ' · DEPARTURZ Portal';
   const draft = $('#msgIn') ? $('#msgIn').value : null, typing = document.activeElement && document.activeElement.id === 'msgIn';
-  const noProject = r.side === 'client' && !C.project && ['overview', 'timeline', 'checkin', 'docs', 'fare', 'messages'].includes(r.page);
+  const noProject = r.side === 'client' && !C.project && ['overview', 'review', 'timeline', 'checkin', 'docs', 'fare', 'messages'].includes(r.page);
   $('#main').innerHTML = noProject ? pageNoProject() : PAGES[r.page]();
+  if (roomKey && !noProject) mountRoom(r, roomKey);
   if (draft && $('#msgIn') && key === lastKey) { $('#msgIn').value = draft; if (typing) $('#msgIn').focus(); }
   const msgs = $('#msgs'); if (msgs) msgs.scrollTop = msgs.scrollHeight;
   if (key !== lastKey && !keepScroll){ window.scrollTo(0, 0); }
@@ -1062,6 +1243,10 @@ document.addEventListener('click', e => {
   if (b.dataset.goThread){ STATE.thread = b.dataset.goThread; const c = T.channels.find(x => x.id === b.dataset.goThread); if (c){ if (c.unread && CONFIG.live) api('read', { c: c.id }).catch(() => {}); c.unread = 0; } return; }
   const a = b.dataset.act; if (!a) return;
   if (a === 'notes'){ showNotes(); return; }
+  if (a === 'watch'){ location.hash = '#/client/review'; return; }
+  if (a === 'more'){ e.preventDefault(); moreSheet(); return; }
+  if (a === 'prole'){ T.me.access = b.dataset.role; render(); return; }
+  if (DESK[a]){ e.preventDefault(); DESK[a](b); return; }
   if (CONFIG.live && LIVE[a]){
     if (STATE.viewAs && !['cal-prev', 'cal-next', 'cal-today', 'back', 'open-need', 'watch', 'dl', 'receipts', 'signout'].includes(a)){ toast('This is a view-only copy of their portal.'); return; }
     e.preventDefault(); LIVE[a](b); return;
@@ -1079,7 +1264,7 @@ document.addEventListener('click', e => {
   }
   else if (a === 'watch') modal(`<h3 id="sheetTitle">${esc(C.review.title)}</h3><div class="thumb" style="margin-top:12px">${ic('play')}</div><p class="mute" style="font-size:13px">In the live portal the draft streams from the project's Drive folder.</p><div class="acts"><button class="btn" type="button" data-close>Close</button></div>`);
   else if (a === 'notes-draft') modal(`<h3 id="sheetTitle">Request changes</h3><p class="mute" style="margin:0 0 12px;font-size:14px">Add timecodes if you can, like "0:07 hold the pour longer".</p><label class="field">Your notes<textarea id="draftNotes" placeholder="0:07 hold the pour a beat longer"></textarea></label><div class="acts"><button class="btn" type="button" data-act="send-notes">Send notes</button><button class="btn ghost" type="button" data-close>Cancel</button></div>`);
-  else if (a === 'send-notes'){ closeModal(); toast('Notes sent to the crew (preview).'); }
+  else if (a === 'send-notes'){ closeModal(); toast('Notes sent to DEPARTURZ (preview).'); }
   else if (a === 'approve') modal(`<h3 id="sheetTitle">Approve this cut?</h3><p style="margin:0;font-size:15px">We'll lock it and move on to the final delivery.</p><div class="acts"><button class="btn" type="button" data-act="approved">Approve</button><button class="btn ghost" type="button" data-close>Not yet</button></div>`);
   else if (a === 'approved'){ closeModal(); toast('Approved. Thank you!'); }
   else if (a === 'pay' || a === 'pay-part'){
@@ -1228,6 +1413,7 @@ function addFiles(qid, files){
   if (STATE.viewAs) return toast('This is a view-only copy of their portal.');
   let extra = {};
   if (route().side === 'client') extra = qid === 'extra' ? { need: 'extra', label: (($('[data-label="extra"]') || {}).value || '').trim() || 'Other', project: projCode() } : { need: qid, project: projCode() };
+  else if (qid === 'deliver') extra = { deliver: ($('#delProj') || {}).value };
   else if (qid === 'cargo'){
     const sel = $('#folder'); let folder = sel ? sel.value : 'General';
     if (folder === '__new') folder = (($('#newFolder') || {}).value || '').trim() || 'General';
@@ -1511,7 +1697,7 @@ function showNotes(){
   const r = route(), items = [];
   if (r.side === 'client' && C.project){
     C.needs.filter(n => n.status !== 'received' && daysTo(n.due) <= 3).forEach(n => items.push([daysTo(n.due) < 0 ? 'bad' : 'due', n.label + (daysTo(n.due) < 0 ? ' is overdue' : ' is due ' + rel(n.due).toLowerCase()), '#/client/checkin']));
-    if (C.review && !/approved/i.test(C.review.state || '')) items.push(['now', C.review.title + ' is ready for your notes', '#/client/timeline']);
+    if (C.review && C.review.waiting) items.push(['now', C.review.waiting === 1 ? C.review.title + ' is ready for your notes' : C.review.waiting + ' things are ready for your notes', '#/client/review']);
     (C.documents || []).filter(d => d.status === 'to sign').forEach(d => items.push(['due', d.title + ' needs your signature', '#/client/docs']));
     if (r.page !== 'messages' && (CONFIG.live ? C.unread : 0)) items.push(['info', C.unread + ' new message' + (C.unread === 1 ? '' : 's'), '#/client/messages']);
     const due = C.invoices.filter(i => i.status === 'due' && daysTo(i.due) <= 7);
@@ -1520,6 +1706,9 @@ function showNotes(){
     T.tasks.filter(t => t.status !== 'done' && daysTo(t.due) <= 2).forEach(t => items.push([daysTo(t.due) < 0 ? 'bad' : 'due', t.title + (daysTo(t.due) < 0 ? ' is overdue' : ' is due ' + rel(t.due).toLowerCase()), '#/team/callsheet']));
     T.channels.filter(c => c.unread).forEach(c => items.push(['info', c.unread + ' new in ' + (c.kind === 'channel' ? '#' : '') + c.name, '#/team/comms']));
     if (T.admin && T.admin.approvals.length) items.push(['now', T.admin.approvals.length + ' crew payout' + (T.admin.approvals.length === 1 ? '' : 's') + ' to approve', '#/team/payroll']);
+    if (T.desk && T.desk.requests.length) items.push(['now', T.desk.requests.length + ' booking request' + (T.desk.requests.length === 1 ? '' : 's') + ' to answer', '#/team/desk']);
+    if (T.rooms && access() !== 'crew' && T.rooms.cuts) items.push(['now', T.rooms.cuts + ' cut' + (T.rooms.cuts === 1 ? '' : 's') + ' waiting in the editors room', '#/team/editors']);
+    if (T.rooms && T.rooms.changes) items.push(['due', 'Notes are back on ' + T.rooms.changes + ' of your cuts', '#/team/editors']);
   }
   const label = { bad: 'Late', due: 'Soon', now: 'Ready', info: 'New' };
   modal(`<h3 id="sheetTitle">Updates</h3>${items.length ? `<ul class="list">${items.map(([k, t, h]) => `<li><a class="row" href="${h}" data-close style="text-decoration:none"><span class="chip ${k}" style="flex:none">${label[k]}</span><span class="grow t">${esc(t)}</span></a></li>`).join('')}</ul>` : '<p class="mute" style="margin:0">You\'re all caught up.</p>'}<div class="acts"><button class="btn ghost" type="button" data-close>Close</button></div>`);

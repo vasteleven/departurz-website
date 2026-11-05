@@ -2,7 +2,9 @@
 //   npm run setup -- --admin you@departurz.com --name Nate
 // Creates:  DEPARTURZ Portal / Clients   DEPARTURZ Portal / Team
 //           "DEPARTURZ Clients" and "DEPARTURZ Team" Google Sheets with every tab, header and dropdown
-// and adds you to the Team tab as an admin. Safe to run again: it reuses what already exists.
+//           "DEPARTURZ Books" (Summary, Money in, Crew pay, Expenses, Settings)
+// and adds you to the Team tab as the owner. Safe to run again: it reuses what already exists, and adds any tabs or
+// columns a newer version of the portal needs (existing rows are never touched).
 // Add --no-example to skip the example client project.
 import { loadEnv, saveEnv } from './env.mjs';
 import { CLIENTS, TEAM, CHOICES } from '../api/_lib/schema.js';
@@ -19,8 +21,33 @@ const { g, ensureFolder, fileInfo, appendRow } = await import('../api/_lib/googl
 const SHEETS = 'https://sheets.googleapis.com/v4/spreadsheets';
 const DATE = /(^date$|^due$|_date$|_at$)/;
 
+// a sheet made by an older version gets the tabs and columns it's missing, added at the end
+async function upgradeSheet(title, id, schema) {
+  const meta = await g(`${SHEETS}/${id}?fields=sheets.properties`);
+  const have = Object.fromEntries(meta.sheets.map(x => [x.properties.title, x.properties.sheetId]));
+  const norm = h => String(h || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const missingTabs = Object.keys(schema).filter(t => have[t] === undefined);
+  if (missingTabs.length) {
+    const r = await g(`${SHEETS}/${id}:batchUpdate`, { method: 'POST', body: JSON.stringify({ requests: missingTabs.map(t => ({ addSheet: { properties: { title: t, gridProperties: { frozenRowCount: 1 } } } })) }) });
+    r.replies.forEach((x, i) => { have[missingTabs[i]] = x.addSheet.properties.sheetId; });
+  }
+  const added = [];
+  const data = [];
+  for (const t of Object.keys(schema)) {
+    const head = missingTabs.includes(t) ? [] : (((await g(`${SHEETS}/${id}/values/${encodeURIComponent(`'${t}'!1:1`)}`)).values || [])[0] || []);
+    const missing = schema[t].filter(c => !head.map(norm).includes(c));
+    if (!missing.length) continue;
+    const col = n => { let s = ''; n += 1; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+    data.push({ range: `'${t}'!${col(head.length)}1`, values: [missing] });
+    added.push(missingTabs.includes(t) ? `${t} (new tab)` : `${t}: ${missing.join(', ')}`);
+  }
+  if (data.length) await g(`${SHEETS}/${id}/values:batchUpdate`, { method: 'POST', body: JSON.stringify({ valueInputOption: 'RAW', data }) });
+  console.log(added.length ? `  ✓ ${title} updated: ${added.join(' · ')}` : `  ✓ ${title} already set up`);
+  return id;
+}
+
 async function makeSheet(title, schema, folderId, existing) {
-  if (existing) { console.log(`  ✓ ${title} already set up`); return existing; }
+  if (existing) return upgradeSheet(title, existing, schema);
   const tabs = Object.keys(schema);
   const s = await g(SHEETS, { method: 'POST', body: JSON.stringify({ properties: { title, timeZone: process.env.TIMEZONE || 'America/Los_Angeles' }, sheets: tabs.map((t, i) => ({ properties: { title: t, index: i, gridProperties: { frozenRowCount: 1 }, tabColor: i === 0 ? { red: 0.25, green: 0.72, blue: 0.93 } : undefined } })) }) });
   const ids = Object.fromEntries(s.sheets.map(x => [x.properties.title, x.properties.sheetId]));
@@ -54,9 +81,9 @@ const clientsId = await makeSheet('DEPARTURZ Clients', CLIENTS, root, process.en
 const teamId = await makeSheet('DEPARTURZ Team', TEAM, root, process.env.TEAM_SHEET_ID);
 
 if (!process.env.TEAM_SHEET_ID) {
-  await appendRow(teamId, 'Team', { email: admin, name: adminName, role: 'Director', city: 'Los Angeles', tz: 'America/Los_Angeles', since: String(new Date().getFullYear()), admin: 'yes', active: 'yes' });
+  await appendRow(teamId, 'Team', { email: admin, name: adminName, role: 'Director', city: 'Los Angeles', tz: 'America/Los_Angeles', since: String(new Date().getFullYear()), admin: 'owner', active: 'yes' });
   await appendRow(teamId, 'Channels', { id: 'general', name: 'general', members: 'all' });
-  console.log(`  ✓ Added ${admin} as an admin, and a #general channel`);
+  console.log(`  ✓ Added ${admin} as the owner, and a #general channel`);
 }
 if (!process.env.CLIENTS_SHEET_ID && !args.includes('--no-example')) {
   const d = n => { const x = new Date(); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
@@ -69,10 +96,20 @@ if (!process.env.CLIENTS_SHEET_ID && !args.includes('--no-example')) {
   console.log('  ✓ Added an example client project you can open from the crew side (Admin > Open client view)');
 }
 
+// the books sheet (books.js finds it again by name, so this is safe to run twice)
+process.env.CLIENTS_FOLDER_ID = clientsFolder;
+const { booksId, syncBooks } = await import('../api/_lib/books.js');
+process.env.CLIENTS_SHEET_ID = clientsId; process.env.TEAM_SHEET_ID = teamId;
+const books = await booksId();
+await syncBooks().catch(e => console.log('  (the books will fill in on the first daily run: ' + e.message + ')'));
+console.log(`  ✓ DEPARTURZ Books: https://docs.google.com/spreadsheets/d/${books}`);
+saveEnv('BOOKS_SHEET_ID', books);
+
 saveEnv('CLIENTS_SHEET_ID', clientsId); saveEnv('TEAM_SHEET_ID', teamId);
 saveEnv('CLIENTS_FOLDER_ID', clientsFolder); saveEnv('TEAM_FOLDER_ID', teamFolder);
-console.log(`\n  Done. Add these four to Vercel (they're also saved in .env.local):\n
+console.log(`\n  Done. Add these five to Vercel (they're also saved in .env.local):\n
   CLIENTS_SHEET_ID=${clientsId}
   TEAM_SHEET_ID=${teamId}
   CLIENTS_FOLDER_ID=${clientsFolder}
-  TEAM_FOLDER_ID=${teamFolder}\n`);
+  TEAM_FOLDER_ID=${teamFolder}
+  BOOKS_SHEET_ID=${books}\n`);

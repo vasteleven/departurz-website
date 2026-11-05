@@ -60,7 +60,7 @@ Then run (with your own email, the one you'll sign in with):
 npm run setup -- --admin you@departurz.com --name Nate
 ```
 
-This creates **DEPARTURZ Portal / Clients** and **/ Team** in the Drive, plus the two Sheets with every tab, header and dropdown, and adds you to the Team tab as an admin. It prints four IDs for the next step. (It also adds an example client project you can delete later.)
+This creates **DEPARTURZ Portal / Clients** and **/ Team** in the Drive, the two Sheets with every tab, header and dropdown, and the **DEPARTURZ Books** sheet, and adds you to the Team tab as the owner. It prints five IDs for the next step. (It also adds an example client project you can delete later.) It's safe to run again later: an older sheet just gets any new tabs and columns added at the end.
 
 `.env.local` holds secrets. Keep it on your computer only. It's already excluded from Git.
 
@@ -76,13 +76,16 @@ Then **Settings > Environment Variables**, add these for **Production**:
 | `GOOGLE_CLIENT_ID` | From step 2 |
 | `GOOGLE_CLIENT_SECRET` | From step 2 |
 | `GOOGLE_REFRESH_TOKEN` | From step 3 |
-| `CLIENTS_SHEET_ID`, `TEAM_SHEET_ID`, `CLIENTS_FOLDER_ID`, `TEAM_FOLDER_ID` | The four IDs from step 3 |
+| `CLIENTS_SHEET_ID`, `TEAM_SHEET_ID`, `CLIENTS_FOLDER_ID`, `TEAM_FOLDER_ID`, `BOOKS_SHEET_ID` | The five IDs from step 3 |
 | `RESEND_API_KEY` | From resend.com (the same account the contact form uses). The domain departurz.com must be verified there. |
 | `PORTAL_FROM` | `DEPARTURZ <portal@departurz.com>` |
 | `PORTAL_URL` | `https://www.departurz.com` (the address the site settles on) |
 | `CRON_SECRET` | Another long random string (Vercel sends it with the daily job) |
 | `NOTIFY_EMAIL` | Optional. Where bookings, uploads and messages are sent. Defaults to `wecreate@departurz.com` |
 | `ANTHROPIC_API_KEY` | Optional. Turns on the AI answers in the homepage chat bubble |
+| `OWNER_NAME` | Optional. The name clients see on their project and on your notes. Defaults to `Nate` |
+| `REVIEW_ROUNDS` | Optional. Rounds of notes included per project, unless a project's `review_rounds` says otherwise. Defaults to `2` |
+| `DIGEST_TO` | Optional. Where the morning email goes. Defaults to everyone marked `owner` on the Team tab |
 
 Redeploy (**Deployments > ... > Redeploy**). Then open `departurz.com/portal`, enter your email, and you're in.
 
@@ -99,7 +102,9 @@ Everything is driven from the two Sheets. Dates are `YYYY-MM-DD` (the Sheets for
 
 **What you need from them:** **Needs** tab (`kind`, `label`, `detail`, `due`). They upload or paste it under Check-in, and you get an email with links. They get reminders 3 days and 1 day before, on the day, and gentle nudges if it's late (copied to you).
 
-**Send files and cuts:** drop files into the project's **From DEPARTURZ** folder in Drive (**DEPARTURZ Portal / Clients / code · title**; the portal makes it the morning after you add the project, or as soon as the client signs in). They appear under "From us". To ask for notes on a cut, put the file's ID (the long code in its Drive link) in the project's `review_file_id`, and a `review_title`. They get an email, watch it in the portal, and approve or send notes. Their answer lands in `review_state` and in your inbox.
+**Send finished files:** drop them into the project's **From DEPARTURZ** folder in Drive (**DEPARTURZ Portal / Clients / code · title**; the portal makes it the morning after you add the project, or as soon as the client signs in), or use **Deliver files** on the Desk. They appear in the client's portal under Files.
+
+**Cuts for the client to review:** see "The review rooms" below.
 
 **Confirmation numbers:** a project's `code` is the client's confirmation number. It's on their boarding pass and on every document, invoice, receipt and portal email, so everything for one project matches.
 
@@ -109,13 +114,51 @@ Everything is driven from the two Sheets. Dates are `YYYY-MM-DD` (the Sheets for
 
 **Wrap a project:** set its `status` to **Delivered** (or fill `delivered_date`). The next morning they get a thank-you letter with an invite to book again, and they're tagged in Kit.
 
-**Add crew:** **Team** tab (email, name, role, city, `tz` like `Africa/Lagos`, day `rate`). `admin` = yes gives someone the client threads, crew pay and client views. `active` = no locks someone out.
+**Add crew:** **Team** tab (email, name, role, city, `tz` like `Africa/Lagos`, day `rate`). `active` = no locks someone out. The `admin` column sets what they can do:
+- `owner`: everything. That's you, and only you. (`yes` from the first setup means the same.)
+- `manager`: the Desk (booking requests, crew tasks, who's on which project, calendar dates, delivering files) and the client review room, where they can add notes. They never see money (no crew pay, invoices or books) and never see client messages.
+- `no` or blank: crew.
+
+**Who sees what (the privacy wall):**
+- Crew only see projects they're on: put their emails or first names in the project's `crew` column (or tick them under Desk > Projects > Edit).
+- Crew see a project by its `code_name` (like "Project Ember"), or by its code if there's none. Never the client's name, company, email or project title. Files a client uploaded show as from "Client".
+- Clients only ever see you (`OWNER_NAME`) and "DEPARTURZ". Never a crew name.
+- Client messages are between the client and you. Crew and managers can't open them.
 - **Tasks** tab: `assignee` (their email or name), `title`, `project`, `due`. They get reminders 2 days and 1 day before, on the day, and overdue nudges copied to you.
 - **Channels** tab: group chats. `members` = all, or a list of emails.
 - **Kudos** tab: write a thank-you (`email`, `from`, `text`) and it's emailed to them the next morning and kept on their crew card. You can also send one from the portal (Lounge > Admin).
 - **Payouts:** crew submit hours in the portal. You approve them and mark them paid under Payroll after you send the money (Wise, PayPal, Zelle, whatever they chose). Each step emails them.
 
 **Social links on the Contact page** are listed at the top of the script in `public/contact.html` (`SOCIALS`). Fill in a handle and its link turns on; empty ones show as "Coming soon".
+
+## 5b. The review rooms
+
+Two screening rooms, both in the portal. A cut plays on the big screen and on the right monitor, and in the editing app on the left monitor. **Full screen** (the corner button, or the F key) watches it on its own.
+
+**The editors room** (crew side, everyone on a project):
+1. An editor uploads a cut (**Upload a cut**). You get an email. Name files like `Teaser v3` and the versions line up by themselves.
+2. You and managers leave notes. Each note keeps its timecode, and can point at a spot on the frame.
+3. You **Approve** it or send it back (**Needs changes**; the editor gets your notes by email).
+4. **Send to the client** puts a copy in the client's review room and emails them. Your notes, and the editor's name, never travel with it.
+Editors also see the client's notes on their project's cuts, signed "Client", read-only.
+
+**The client review room** (client side; you and managers see every client's under **Client review**):
+- Anything you drop into the project's **For review** folder in Drive shows up there too (within a minute of the client or you opening the room, and every morning), and the client is emailed.
+- The client watches, leaves notes on the frame (videos), on the picture (images) or on the page (PDFs), then taps **Approve** or **Ask for changes**. You get an email with every note and its timecode; the editor who made it gets one too, signed "Client".
+- Each "Ask for changes" uses a round. Set a project's included rounds in `review_rounds` (default 2). You get a heads-up when a client goes past them.
+- Videos: export **MP4 (H.264)** for the rooms. ProRes and other camera formats don't play in browsers.
+
+**The room itself:** the picture is `public/room/scene.jpg` (the screen and both monitors flat green), and `public/room/editor.png` is the editing app on the left monitor. To swap in the Krea room: replace `scene.jpg` with the new still (16:9, same framing as the video), add the character loop as `public/room/scene.mp4` and set `"loop": "room/scene.mp4"` in `public/room/scene.json`. The green screens are found automatically. For a new editing-app picture, set `viewer` in `scene.json` to the box where the video plays (left, top, right, bottom, as fractions of the picture).
+
+## 5c. The Desk (you and managers)
+
+**Booking requests** from client calendars wait here. **Confirm** or **Decline** (with a note); the client gets an email either way, and confirmed days show up on the crew's Deadlines. **Crew tasks**: give someone a task (they get an email and reminders). **Projects**: who's on each one, and the code name crew see. **Add a date**: shoot days, reviews and deliveries go on the client's calendar (optionally emailing them) and the crew's Deadlines (crew on the project get an email for shoot days).
+
+## 5d. The books and the morning email
+
+**The books** (**DEPARTURZ Books** sheet, owner only, under Payroll): Money in (every paid invoice, with the card fee worked out), Crew pay (approved and paid), Expenses (type yours in by hand; the portal never touches this tab), and a Summary by month and by project with profit and a tax set-aside. Fees and the tax percent are in the **Settings** tab: check them against your processor statements and your accountant. It rebuilds every morning, or press **Update now**. **Download for Numbers** gives you the same thing as an `.xlsx` that opens in Numbers or Excel.
+
+**The morning email** goes to you every day at about 8am Los Angeles time (7am in winter): today's and tomorrow's shoots, reviews, deliveries and due tasks; booking requests, cuts and crew hours waiting on you; client approvals and payments since yesterday; invoices coming due; and anything running late.
 
 ## 6. Payments (add any of these, any time)
 
@@ -141,7 +184,7 @@ Build your Kit automations on those tags (for example: `Portal: delivered` waits
 
 ## 8. Try changes on your computer
 
-`npm run dev` runs the whole site and portal at http://localhost:3000 with a pretend Google, Drive and email, filled with sample data. Sign in at `/portal` with `jordan@lumencoffee.example` (client), `amara@crew.example` (crew) or `nate@departurz.example` (admin). The sign-in links print in the terminal.
+`npm run dev` runs the whole site and portal at http://localhost:3000 with a pretend Google, Drive and email, filled with sample data. Sign in at `/portal` with `jordan@lumencoffee.example` (client), `amara@crew.example` or `hana@crew.example` (crew), `rae@departurz.example` (manager) or `nate@departurz.example` (owner). The sign-in links print in the terminal.
 
 `npm test` runs the automated checks.
 

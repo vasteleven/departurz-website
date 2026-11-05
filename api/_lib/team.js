@@ -1,5 +1,6 @@
-// The crew side: chat, deadlines, files, pay and crew cards. Admins (Team tab, admin = yes) also see
-// every client thread, approve hours, mark payouts paid and send thank-you notes.
+// The crew side: chat, deadlines, files, pay and crew cards. The owner (Team tab, admin = owner) also sees every
+// client thread, approves hours, marks payouts paid and sends thank-you notes. Managers get the Desk (desk.js) but
+// never money or client messages. Crew only ever see the projects they're on, by code, never the client.
 import { HttpError, lower, clean, today, yes, esc, money, firstName, isEmail, id as newId } from './util.js';
 import { load, add, patch, emails, isOff } from './roster.js';
 import { fileInfo, startUpload, g } from './google.js';
@@ -7,8 +8,11 @@ import { createHash } from 'node:crypto';
 import { teamFolder, outFolder, ticket, readTicket, logFile, kindOf } from './files.js';
 import { thread, dmId, groupChan, clientChan } from './messages.js';
 import { send, NOTIFY } from './mail.js';
-import { day, isActive, milestones, evType } from './client.js';
+import { day, isActive, milestones, evType } from './projects.js';
 import { limited } from './kv.js';
+import { teamContext, myProjects, projLabel, labelOf, isClientEmail, projFolder } from './access.js';
+import { addReview, addCut, notifyClient, reviewFolder, cutsFolder } from './rooms.js';
+export { teamContext };
 
 const num = v => { const n = Number(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) ? n : 0; };
 const taskId = x => String(x.id || 'r' + x._row);
@@ -53,20 +57,24 @@ function people(t, c) {
 }
 const assignedTo = (x, me) => { const a = lower(x.assignee); return a && (a === me.email || a === lower(me.name)); };
 
-export async function teamContext(email) {
-  const [t, c] = await Promise.all([load('team'), load('clients')]);
-  const row = t.Team.find(r => lower(r.email) === email);
-  if (!row) throw new HttpError(403, 'You are not on the crew list.');
-  return { t, c, row, admin: yes(row.admin), name: row.name || email.split('@')[0], email };
+// Files rows are shown to crew only when they belong to a project they're on, or to a shared Team folder.
+// Chat attachments and profile photos stay out of the list (they live in their conversation / crew card).
+const privateFolder = f => /(^| \/ )(Chat|Profile photos)$/.test(String(f.folder || ''));
+function fileVisible(f, ctx, codes) {
+  if (privateFolder(f)) return lower(f.by) === ctx.email;
+  if (ctx.staff) return true;
+  if (f.project) return codes.has(String(f.project)) && !/^Clients \/ [^/]+ \/ Chat$/.test(String(f.folder || ''));
+  return /^Team \//.test(String(f.folder || ''));
 }
 
-// every conversation this person can see: group channels, client threads (admins and the project lead), and DMs
+// every conversation this person can see: group channels, client threads (the owner only), and DMs
 export function channelList(ctx) {
-  const { t, c, email, admin } = ctx;
+  const { t, c, email } = ctx;
+  const admin = ctx.owner;
   const memberOf = m => { const s = String(m || '').trim(); return !s || /^all$/i.test(s) || emails(s).includes(email) || s.toLowerCase().split(/\s*,\s*/).includes(lower(ctx.name)); };
   const groups = t.Channels.filter(ch => (ch.id || ch.name) && memberOf(ch.members)).map(ch => ({ id: groupChan(ch.id || ch.name), name: String(ch.name || ch.id).replace(/^#/, ''), kind: 'channel' }));
   if (!groups.length) groups.push({ id: 'ch-general', name: 'general', kind: 'channel' });
-  const clientThreads = c.Projects.filter(isActive).filter(p => admin || lower(p.lead) === lower(ctx.name)).map(p => {
+  const clientThreads = (admin ? c.Projects.filter(isActive) : []).map(p => {
     const cl = c.Clients.find(r => emails(p.client_email).includes(lower(r.email)));
     return { id: clientChan(p.code), name: (cl && (cl.company || cl.name)) || p.title || String(p.code), sub: `${p.code} · ${p.title || ''}`, kind: 'client', code: String(p.code), to: emails(p.client_email) };
   });
@@ -80,7 +88,7 @@ export async function teamData(email) {
   const nameOf = people(t, c);
   const crewRows = t.Team.filter(r => lower(r.email) !== email && !isOff(r.active) && isEmail(r.email));
   const me = {
-    email, admin, name: ctx.name, role: row.role || 'Crew', city: row.city || '', tz: row.tz || 'America/Los_Angeles',
+    email, admin, access: ctx.role, name: ctx.name, role: row.role || 'Crew', city: row.city || '', tz: row.tz || 'America/Los_Angeles',
     since: row.since ? 'Crew since ' + sinceYear(row.since) : 'DEPARTURZ crew', bio: row.bio || '',
     skills: String(row.skills || '').split(',').map(s => s.trim()).filter(Boolean),
     socials: { Instagram: row.instagram || '', Vimeo: row.vimeo || '', LinkedIn: row.linkedin || '', Website: row.website || '' },
@@ -92,22 +100,33 @@ export async function teamData(email) {
   // conversations
   const all = channelList(ctx);
   const active = c.Projects.filter(isActive);
+  const mineP = myProjects(ctx), codes = new Set(mineP.map(p => String(p.code)));
   const threads = await Promise.all(all.map(ch => thread(ch.id, email, 50)));
   const channels = all.map((ch, i) => ({ id: ch.id, name: ch.name, sub: ch.sub || '', kind: ch.kind, code: ch.code || '', msgs: threads[i].msgs, unread: threads[i].unread }));
 
   // deadlines
-  const tasks = t.Tasks.filter(x => assignedTo(x, ctx) && x.title).map(x => ({ id: taskId(x), title: x.title, project: x.project || '', due: day(x.due), status: ['done', 'doing'].includes(lower(x.status)) ? lower(x.status) : 'todo', by: x.by || 'Nate' }));
+  const byCode = code => c.Projects.find(p => String(p.code) === String(code));
+  const taskProject = v => { const p = byCode(v); return p ? projLabel(p, ctx) : String(v || ''); };
+  const tasks = t.Tasks.filter(x => assignedTo(x, ctx) && x.title).map(x => ({ id: taskId(x), title: x.title, project: taskProject(x.project), due: day(x.due), status: ['done', 'doing'].includes(lower(x.status)) ? lower(x.status) : 'todo', by: x.by || 'Nate' }));
   const events = [];
-  for (const p of active) {
-    milestones(c, p.code).forEach(m => { const ty = evType(m.label); if (m.date && ty !== 'event') events.push({ date: m.date, type: ty, title: `${p.title || p.code}: ${m.label}`, sub: String(p.code) }); });
-    c.Events.filter(e => String(e.project_code) === String(p.code) && day(e.date) && ['shoot', 'event', 'book', 'review', 'delivery'].includes(lower(e.type)))
-      .forEach(e => { const ty = lower(e.type); events.push({ date: e.date, type: ty === 'event' || ty === 'book' ? 'shoot' : ty, title: `${p.title || p.code}: ${e.title}`, sub: String(p.code) }); });
+  for (const p of mineP) {
+    const L = projLabel(p, ctx);
+    milestones(c, p.code).forEach(m => { const ty = evType(m.label); if (m.date && ty !== 'event') events.push({ date: m.date, type: ty, title: `${L}: ${m.label}`, sub: L }); });
+    // booking requests reach the crew calendar once they're confirmed (managers and the owner handle them on the Desk)
+    c.Events.filter(e => String(e.project_code) === String(p.code) && day(e.date) && ['shoot', 'event', 'book', 'review', 'delivery'].includes(lower(e.type)) && lower(e.status) !== 'declined' && (!['book', 'event'].includes(lower(e.type)) || !isClientEmail(c, e.by) || lower(e.status) === 'confirmed'))
+      .forEach(e => { const ty = lower(e.type); events.push({ date: e.date, type: ty === 'event' || ty === 'book' ? 'shoot' : ty, title: `${L}: ${String(e.title || '').replace(/ \(requested\)$/, '')}`, sub: L }); });
   }
 
   // files
-  const files = [...t.Files].filter(f => f.drive_id).sort((a, b) => (day(b.date) || '').localeCompare(day(a.date) || '') || b._row - a._row).slice(0, 40)
-    .map(f => ({ id: f.drive_id, name: f.name, size: num(f.size), by: nameOf(f.by), date: day(f.date) || today(), kind: kindOf(f.mime, f.name), folder: String(f.folder || '').replace(/^Team \/ /, '') }));
-  const folders = [...new Set(active.map(p => p.title || String(p.code)).concat(['General', 'Drone footage', 'Music and sound']))];
+  const folderLabel = f => {
+    const s = String(f.folder || ''), p = f.project && byCode(f.project);
+    if (p && !ctx.staff) return s.replace(/^(Clients|Team) \/ [^/]+/, labelOf(p)).replace(/ \/ From client\b/, '');
+    return s.replace(/^Team \/ /, '');
+  };
+  const files = [...t.Files].filter(f => f.drive_id && fileVisible(f, ctx, codes)).sort((a, b) => (day(b.date) || '').localeCompare(day(a.date) || '') || b._row - a._row).slice(0, 40)
+    .map(f => ({ id: f.drive_id, name: f.name, size: num(f.size), by: !ctx.staff && isClientEmail(c, f.by) ? 'Client' : nameOf(f.by), date: day(f.date) || today(), kind: kindOf(f.mime, f.name), folder: folderLabel(f) }));
+  const folders = [...new Set(mineP.map(p => projLabel(p, ctx)).concat(['General', 'Drone footage', 'Music and sound']))];
+  const projects = mineP.map(p => ({ code: String(p.code), label: projLabel(p, ctx) }));
 
   // pay
   const mine = t.Payouts.filter(p => lower(p.email) === email);
@@ -132,8 +151,10 @@ export async function teamData(email) {
   const kudos = t.Kudos.filter(k => lower(k.email) === email && k.text && (k.sent_at || (day(k.date) && day(k.date) <= today())))
     .sort((a, b) => (day(b.date) || '').localeCompare(day(a.date) || '')).map(k => ({ from: k.from || 'Nate', date: day(k.date) || day(k.sent_at) || today(), text: k.text }));
 
-  const out = { me, crew, channels, tasks, events, files, folders, pay, kudos };
-  if (admin) {
+  const out = { me, crew, channels, tasks, events, files, folders, projects, pay, kudos };
+  // the editors room badge: cuts waiting on Nate (owner, managers), or notes back on your own cuts (crew)
+  out.rooms = { cuts: ctx.staff ? t.Cuts.filter(x => x.file_id && !['approved', 'changes'].includes(lower(x.status))).length : 0, changes: t.Cuts.filter(x => lower(x.by) === email && lower(x.status) === 'changes').length };
+  if (ctx.owner) {
     out.admin = {
       approvals: t.Payouts.filter(p => lower(p.status) === 'submitted').map(p => ({ id: payId(p), who: nameOf(p.email), label: p.label || p.project || 'Work', amount: num(p.amount), note: p.note || '' })),
       scheduled: t.Payouts.filter(p => lower(p.status) === 'pending').map(p => ({ id: payId(p), who: nameOf(p.email), label: p.label || p.project || 'Work', amount: num(p.amount), date: day(p.date) })),
@@ -141,14 +162,14 @@ export async function teamData(email) {
       clients: active.map(p => ({ code: String(p.code), title: p.title || '', email: emails(p.client_email)[0] || '' }))
     };
   }
-  return out;
+  return { out, ctx };
 }
 
 /* ---------- actions ---------- */
 export async function toggleTask(email, b) {
   const ctx = await teamContext(email);
   const x = ctx.t.Tasks.find(r => taskId(r) === String(b.id));
-  if (!x || !(assignedTo(x, ctx) || ctx.admin)) throw new HttpError(404, 'That task is not on your list.');
+  if (!x || !(assignedTo(x, ctx) || ctx.staff)) throw new HttpError(404, 'That task is not on your list.');
   const done = lower(x.status) !== 'done';
   await patch('team', 'Tasks', x._row, { status: done ? 'done' : 'todo', done_at: done ? today() : '' });
   if (done) await send({ to: NOTIFY(), subject: `Done: ${x.title} (${ctx.name})`, heading: 'Task done', html: `<p><b>${esc(ctx.name)}</b> finished <b>${esc(x.title)}</b>${x.project ? ` for ${esc(x.project)}` : ''}.</p>` });
@@ -195,22 +216,46 @@ export async function submitHours(email, b) {
   return { id: pid, amount };
 }
 
-/* uploads into the team Drive (or, from a client thread, into that client's delivery folder) */
+/* uploads into the team Drive. Where they land:
+     a project the person is on      Team / <code · title>            (cuts: Team / <code · title> / Cuts)
+     a shared folder                 Team / <name>
+     a client thread (owner)         Clients / <code> / From DEPARTURZ
+     deliver: code (owner, manager)  Clients / <code> / From DEPARTURZ   (the client sees it under Files)
+     review: code (owner)            Clients / <code> / For review       (the client review room) */
+const findProject = (ctx, code) => ctx.c.Projects.find(x => String(x.code) === String(code));
 export async function teamUploadStart(email, b, originUrl) {
   const ctx = await teamContext(email);
   if (await limited('up:' + email, 600, 3600)) throw new HttpError(429, 'That is a lot of uploads at once. Give it a few minutes.');
-  let parent, folderLabel, project = '';
+  let parent, folderLabel, project = '', extra = {};
   const m = String(b.thread || '').match(/^client-(.+)$/);
+  const mine = myProjects(ctx);
   if (m) {
     const p = ctx.c.Projects.find(x => String(x.code).replace(/[^A-Za-z0-9_-]/g, '') === m[1]);
-    if (!p || !(ctx.admin || lower(p.lead) === lower(ctx.name))) throw new HttpError(403, 'You are not on that client thread.');
+    if (!p || !ctx.owner) throw new HttpError(403, 'You are not on that client thread.');
+    parent = await outFolder(p); project = String(p.code); folderLabel = `Clients / ${p.code} / Chat`;
+  } else if (b.deliver) {
+    const p = findProject(ctx, b.deliver);
+    if (!p || !ctx.staff) throw new HttpError(403, 'Only Nate and managers can deliver files to a client.');
     parent = await outFolder(p); project = String(p.code); folderLabel = `Clients / ${p.code} / From DEPARTURZ`;
+  } else if (b.review) {
+    const p = findProject(ctx, b.review);
+    if (!p || !ctx.owner) throw new HttpError(403, 'Only Nate sends files to a client\'s review room.');
+    parent = await reviewFolder(p); project = String(p.code); folderLabel = `Clients / ${p.code} / For review`; extra = { review: project };
+  } else if (b.cut) {
+    const p = mine.find(x => String(x.code) === String(b.cut));
+    if (!p) throw new HttpError(403, 'You are not on that project.');
+    parent = await cutsFolder(p); project = String(p.code); folderLabel = `Team / ${p.code} / Cuts`; extra = { cut: project, note: clean(b.note, 2000) };
   } else {
     const name = b.chat ? 'Chat' : clean(b.folder, 80) || 'General';
-    parent = await teamFolder(name); folderLabel = `Team / ${name}`;
+    const p = !b.chat && mine.find(x => projLabel(x, ctx) === name || String(x.code) === name);
+    if (p) { parent = await teamFolder(projFolder(p)); project = String(p.code); folderLabel = `Team / ${p.code}`; }
+    else {
+      if (!b.chat && ctx.c.Projects.some(x => [String(x.code), labelOf(x), x.title].includes(name))) throw new HttpError(403, 'You are not on that project.');
+      parent = await teamFolder(name); folderLabel = `Team / ${name}`;
+    }
   }
   const url = await startUpload({ name: clean(b.name, 200) || 'upload', size: Number(b.size) || 0, mimeType: clean(b.type, 100), parentId: parent, origin: originUrl });
-  return { url, ticket: await ticket({ email, parent, project, folder: folderLabel }) };
+  return { url, ticket: await ticket({ email, parent, project, folder: folderLabel, ...extra }) };
 }
 export async function teamUploadDone(email, b) {
   const t = await readTicket(b.ticket);
@@ -218,17 +263,24 @@ export async function teamUploadDone(email, b) {
   const f = await fileInfo(clean(b.id, 120));
   if (!(f.parents || []).includes(t.parent)) throw new HttpError(403, 'That file is not in the folder it was sent to.');
   await logFile({ by: email, name: f.name, size: Number(f.size || 0), mime: f.mimeType, folder: t.folder, project: t.project, drive_id: f.id });
-  return { id: f.id, name: f.name, size: Number(f.size || 0), kind: kindOf(f.mimeType, f.name), folder: t.folder.replace(/^Team \/ /, '') };
+  const out = { id: f.id, name: f.name, size: Number(f.size || 0), kind: kindOf(f.mimeType, f.name), folder: t.folder.replace(/^Team \/ /, '') };
+  if (t.cut) out.cut = await addCut(email, t.cut, f, t.note);
+  if (t.review) { out.review = await addReview(t.review, f); await notifyClient(t.review).catch(e => console.log('[review mail]', e.message)); }
+  return out;
 }
 
 export async function canOpenAsTeam(email, fid) {
   const ctx = await teamContext(email);
-  if (ctx.admin) return true;
-  return ctx.t.Files.some(f => f.drive_id === fid) || ctx.c.Projects.some(p => p.review_file_id === fid);
+  if (ctx.staff) return true;
+  const codes = new Set(myProjects(ctx).map(p => String(p.code)));
+  return ctx.t.Files.some(f => f.drive_id === fid && (fileVisible(f, ctx, codes) || /^Team \/ Chat$/.test(String(f.folder || ''))))
+    || ctx.t.Cuts.some(x => x.file_id === fid && codes.has(String(x.project_code)))
+    || ctx.c.Reviews.some(x => x.file_id === fid && codes.has(String(x.project_code)));
 }
 
 /* ---------- admin ---------- */
-async function adminCtx(email) { const ctx = await teamContext(email); if (!ctx.admin) throw new HttpError(403, 'Only admins can do that.'); return ctx; }
+// money and thank-yous are the owner's alone
+async function adminCtx(email) { const ctx = await teamContext(email); if (!ctx.owner) throw new HttpError(403, 'Only Nate can do that.'); return ctx; }
 
 export async function approvePayout(email, b) {
   const ctx = await adminCtx(email);

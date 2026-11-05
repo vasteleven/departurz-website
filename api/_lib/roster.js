@@ -24,12 +24,21 @@ export async function patch(which, tab, rowNumber, values) { await updateRow(SHE
 export const emails = s => String(s || '').split(/[\s,;]+/).map(lower).filter(Boolean);
 export const isOff = v => /^(no|n|false|0|off|inactive)$/i.test(String(v == null ? '' : v).trim());
 
+// The Team tab's admin column: "owner" sees everything (that's Nate, and "yes" from the first setup means the same);
+// "manager" runs crew tasks, files, client files, review notes and bookings, but never sees money or client messages.
+export function roleOf(row) {
+  const v = lower(row && row.admin);
+  if (v === 'owner' || yes(v)) return 'owner';
+  if (v === 'manager') return 'manager';
+  return 'crew';
+}
+
 // who is signing in: crew first, then clients. Anyone on neither list is turned away.
 export async function who(email) {
   email = lower(email);
   const [t, c] = await Promise.all([load('team'), load('clients')]);
   const tm = t.Team.find(r => lower(r.email) === email && !isOff(r.active));
-  if (tm) return { side: 'team', email, name: tm.name, admin: yes(tm.admin), row: tm };
+  if (tm) return { side: 'team', email, name: tm.name, role: roleOf(tm), admin: roleOf(tm) === 'owner', row: tm };
   const cl = c.Clients.find(r => lower(r.email) === email);
   if (cl) return { side: 'client', email, name: cl.name, row: cl };
   // a project can list a client email that has no Clients row yet

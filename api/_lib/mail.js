@@ -3,7 +3,7 @@ import { env, esc } from './util.js';
 
 export const NOTIFY = () => env('NOTIFY_EMAIL', 'wecreate@departurz.com');
 // the wordmark in the email header is an image from the live site (most email apps can't show SVG)
-const siteUrl = () => String(env('PORTAL_URL', 'https://departurz.com')).replace(/\/+$/, '');
+export const siteUrl = () => String(env('PORTAL_URL', 'https://departurz.com')).replace(/\/+$/, '');
 
 export async function send({ to, subject, heading, html, text, cta, replyTo, cc }) {
   const key = env('RESEND_API_KEY');

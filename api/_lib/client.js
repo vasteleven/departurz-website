@@ -1,26 +1,20 @@
 // The client side of the portal: what a client sees, and what they can send.
 import { HttpError, lower, clean, today, yes, esc, money } from './util.js';
+import { ownerName } from './access.js';
 import { load, add, patch, emails, isOff } from './roster.js';
 import { listFiles, fileInfo, startUpload, shareFile } from './google.js';
 import { outFolder, docsFolder, clientInFolder, ticket, readTicket, logFile, kindOf } from './files.js';
 import { thread, post, clientChan } from './messages.js';
-import { send, NOTIFY } from './mail.js';
+import { send, NOTIFY, siteUrl } from './mail.js';
 import { setTag, TAGS } from './kit.js';
 import { limited } from './kv.js';
+import { day, isActive, milestones, evType } from './projects.js';
+import { syncReviews, reviewSummary } from './rooms.js';
+export { day, isActive, milestones, evType };
 
-export const day = v => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : '');
 const num = v => { const n = Number(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) ? n : 0; };
-export const isActive = p => !/deliver|landed|complete|closed|cancel/i.test(String(p.status || ''));
 export const needId = n => String(n.id || 'r' + n._row);
 const TEXT_KINDS = ['copy', 'songs', 'script', 'shotlist', 'location'];
-
-export function evType(label) {
-  const s = String(label || '').toLowerCase();
-  if (/shoot|film|record|session|drone/.test(s)) return 'shoot';
-  if (/review|cut|draft|notes/.test(s)) return 'review';
-  if (/deliver|final|launch|premiere/.test(s)) return 'delivery';
-  return 'event';
-}
 
 export async function context(email, pick) {
   const c = await load('clients');
@@ -28,21 +22,6 @@ export async function context(email, pick) {
   const mine = c.Projects.filter(p => emails(p.client_email).includes(email));
   const project = mine.find(p => String(p.code) === String(pick)) || [...mine].reverse().find(isActive) || mine[mine.length - 1] || null;
   return { c, me, mine, project };
-}
-
-export function milestones(c, code) {
-  const td = today();
-  const rows = c.Milestones.filter(m => String(m.project_code) === String(code));
-  rows.sort((a, b) => (day(a.date) || '9999').localeCompare(day(b.date) || '9999'));
-  let hasNow = rows.some(m => lower(m.state) === 'now');
-  return rows.map(m => {
-    let s = lower(m.state);
-    if (!['done', 'now', 'next'].includes(s)) {
-      if (day(m.date) && day(m.date) < td) s = 'done';
-      else if (!hasNow) { s = 'now'; hasNow = true; } else s = 'next';
-    }
-    return { label: clean(m.label, 120), date: day(m.date), state: s, note: clean(m.note, 600) };
-  });
 }
 
 export async function clientData(email, pick) {
@@ -66,11 +45,11 @@ export async function clientData(email, pick) {
   let progress = num(project.progress);
   if (progress > 1) progress /= 100;
   if (!project.progress && ms.length) progress = (ms.filter(m => m.state === 'done').length + 0.5 * ms.filter(m => m.state === 'now').length) / ms.length;
-  out.project = { code, title: project.title || 'Your project', service: project.service || '', status: project.status || 'Booked', progress: Math.max(0, Math.min(1, progress)), lead: project.lead || 'Nate', seat: project.seat || '1A' };
+  out.project = { code, title: project.title || 'Your project', service: project.service || '', status: project.status || 'Booked', progress: Math.max(0, Math.min(1, progress)), lead: ownerName(), seat: project.seat || '1A' };
   out.milestones = ms;
-  if (project.review_file_id || project.review_title) {
-    out.review = { title: project.review_title || 'New cut', date: day(project.review_date) || today(), length: String(project.review_length || ''), fileId: project.review_file_id || '', state: project.review_state || '' };
-  }
+  // the newest thing in the review room (the room itself loads on its own page)
+  const revs = await syncReviews(c, project).catch(e => { console.log('[reviews]', e.message); return c.Reviews.filter(r => String(r.project_code) === code); });
+  out.review = reviewSummary(revs);
   out.needs = c.Needs.filter(n => String(n.project_code) === code).map(n => {
     const kind = lower(n.kind) || 'files';
     return { id: needId(n), kind, label: n.label || 'Item', detail: n.detail || '', due: day(n.due), status: lower(n.status) === 'received' ? 'received' : 'open', text: n.text === '' || n.text == null ? TEXT_KINDS.includes(kind) : yes(n.text) };
@@ -78,7 +57,9 @@ export async function clientData(email, pick) {
   out.invoices = c.Invoices.filter(i => String(i.project_code) === code).map(i => ({
     no: String(i.no || 'INV-' + i._row), label: i.label || 'Invoice', amount: num(i.amount), status: ['paid', 'sent'].includes(lower(i.status)) ? lower(i.status) : 'due', due: day(i.due), date: day(i.paid_date), via: i.via || ''
   }));
-  const evs = c.Events.filter(e => String(e.project_code) === code && day(e.date)).map(e => ({ date: e.date, type: lower(e.type) || 'event', title: e.title || 'Event', note: e.note || '' }));
+  // the client sees their own notes and requests, plus everything the team put on the project calendar
+  const evs = c.Events.filter(e => String(e.project_code) === code && day(e.date) && (lower(e.type) !== 'note' || lower(e.by) === email) && lower(e.status) !== 'declined')
+    .map(e => ({ date: e.date, type: lower(e.type) || 'event', title: e.title || 'Event', note: e.note || '', status: lower(e.status) }));
   ms.filter(m => m.date && !evs.some(e => e.date === m.date && e.title === m.label)).forEach(m => evs.push({ date: m.date, type: evType(m.label), title: m.label, note: m.note }));
   out.events = evs;
   // the project's Drive folders are made the first time the client opens it, so there's somewhere to deliver to
@@ -212,17 +193,20 @@ export async function addEvent(user, b) {
   const kind = ['book', 'event', 'note'].includes(b.kind) ? b.kind : 'note';
   const what = clean(b.what, 80), note = clean(b.note, 2000);
   const title = kind === 'note' ? (note.split('\n')[0].slice(0, 80) || 'Note') : what + (kind === 'book' ? ' (requested)' : '');
-  const row = { project_code: ctx.project ? String(ctx.project.code) : '', date, type: kind, title, note: kind === 'note' ? note : [b.start && `Starts ${clean(b.start, 10)}`, b.hours && `${clean(b.hours, 4)} hours`, note].filter(Boolean).join(' · '), by: user.email, created_at: new Date().toISOString().slice(0, 16).replace('T', ' ') };
+  // booking requests and event days wait for the team to confirm them on the Desk; shared notes show up there too
+  const status = kind === 'note' ? (b.share ? 'shared' : '') : 'requested';
+  const row = { project_code: ctx.project ? String(ctx.project.code) : '', date, type: kind, title, note: kind === 'note' ? note : [b.start && `Starts ${clean(b.start, 10)}`, b.hours && `${clean(b.hours, 4)} hours`, note].filter(Boolean).join(' · '), by: user.email, created_at: new Date().toISOString().slice(0, 16).replace('T', ' '), status };
   await add('clients', 'Events', row);
   if (kind !== 'note' || b.share) {
     await send({
       to: NOTIFY(), replyTo: user.email,
       subject: `${kind === 'book' ? 'Booking request' : kind === 'event' ? 'Event day' : 'Calendar note'}: ${date} from ${who(ctx, user)}`,
       heading: kind === 'book' ? 'New booking request' : kind === 'event' ? 'New event day' : 'New calendar note',
-      html: `<p><b>${esc(who(ctx, user))}</b>${ctx.project ? ` (${esc(ctx.project.code)}, ${esc(ctx.project.title)})` : ''} added this to their calendar.</p><p><b>${esc(new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }))}</b><br>${esc(title)}</p>${row.note ? `<p style="white-space:pre-wrap">${esc(row.note)}</p>` : ''}<p>Reply to this email to confirm with them.</p>`
+      html: `<p><b>${esc(who(ctx, user))}</b>${ctx.project ? ` (${esc(ctx.project.code)}, ${esc(ctx.project.title)})` : ''} added this to their calendar.</p><p><b>${esc(new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }))}</b><br>${esc(title)}</p>${row.note ? `<p style="white-space:pre-wrap">${esc(row.note)}</p>` : ''}<p>${kind === 'note' ? 'It\'s on the Desk in the crew portal.' : 'Confirm or decline it on the Desk in the crew portal. They get an email either way.'}</p>`,
+      cta: { label: 'Open the Desk', url: siteUrl() + '/portal-app.html#/team/desk' }
     });
   }
-  return { event: { date, type: kind, title, note: row.note } };
+  return { event: { date, type: kind, title, note: row.note, status } };
 }
 
 /* ---------- reviewing a cut ---------- */
@@ -265,8 +249,10 @@ export async function canOpenAsClient(user, fid) {
   const { c, mine } = await context(user.email);
   const codes = mine.map(p => String(p.code));
   if (mine.some(p => p.review_file_id === fid)) return true;
+  if (c.Reviews.some(r => r.file_id === fid && codes.includes(String(r.project_code)))) return true;
   const t = await load('team');
-  if (t.Files.some(f => f.drive_id === fid && codes.includes(String(f.project)))) return true;
+  // only files on the client side of the Drive (their uploads, deliveries, chat), never the crew's working files
+  if (t.Files.some(f => f.drive_id === fid && codes.includes(String(f.project)) && /^Clients \//.test(String(f.folder || '')))) return true;
   if (c.Documents.some(d => d.file_id === fid && codes.includes(String(d.project_code)))) return true;
   const info = await fileInfo(fid).catch(() => null);
   for (const p of mine) {

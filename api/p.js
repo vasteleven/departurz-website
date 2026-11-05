@@ -7,6 +7,9 @@ import * as auth from './_lib/auth.js';
 import * as client from './_lib/client.js';
 import * as team from './_lib/team.js';
 import * as pay from './_lib/pay.js';
+import * as rooms from './_lib/rooms.js';
+import * as desk from './_lib/desk.js';
+import * as books from './_lib/books.js';
 import { post, markRead, history, shape, clientChan } from './_lib/messages.js';
 import { send, NOTIFY } from './_lib/mail.js';
 import { kv, limited } from './_lib/kv.js';
@@ -15,6 +18,8 @@ const signed = fn => async ctx => { ctx.user = await requireSession(ctx.request)
 const clientOnly = fn => signed(ctx => { if (ctx.user.side !== 'client') throw new HttpError(403, 'That is for clients.'); return fn(ctx); });
 const teamOnly = fn => signed(ctx => { if (ctx.user.side !== 'team') throw new HttpError(403, 'That is for the crew.'); return fn(ctx); });
 const bySide = (c, t) => signed(ctx => (ctx.user.side === 'team' ? t(ctx) : c(ctx)));
+const ownerOnly = fn => teamOnly(async ctx => { const tc = await team.teamContext(ctx.user.email); if (!tc.owner) throw new HttpError(403, 'Only Nate can do that.'); return fn(ctx); });
+const reply = fn => ctx => fn(ctx).then(r => json(r));
 
 /* ---------- the whole portal in one request ---------- */
 async function portal({ user, q }) {
@@ -22,10 +27,15 @@ async function portal({ user, q }) {
   const as = lower(q.get('as'));
   if (user.side === 'team' && as) {
     const ctx = await team.teamContext(user.email);
-    if (!ctx.admin) throw new HttpError(403, 'Only admins can open a client view.');
+    if (!ctx.owner) throw new HttpError(403, 'Only Nate can open a client view.');
     return json({ side: 'client', viewAs: as, data: await client.clientData(as, q.get('project')), config });
   }
-  if (user.side === 'team') return json({ side: 'team', data: await team.teamData(user.email), config });
+  if (user.side === 'team') {
+    const { out, ctx } = await team.teamData(user.email);
+    if (ctx.staff) out.desk = desk.deskData(ctx);
+    if (ctx.owner) out.admin.books = await books.booksInfo();
+    return json({ side: 'team', data: out, config });
+  }
   return json({ side: 'client', data: await client.clientData(user.email, q.get('project')), config });
 }
 
@@ -141,7 +151,28 @@ const ROUTES = {
   'POST payout-method': teamOnly(({ user, body: b }) => team.payoutMethod(user.email, b).then(r => json(r))),
   'POST admin/payout/approve': teamOnly(({ user, body: b }) => team.approvePayout(user.email, b).then(r => json(r))),
   'POST admin/payout/paid': teamOnly(({ user, body: b }) => team.markPayoutPaid(user.email, b).then(r => json(r))),
-  'POST admin/kudos': teamOnly(({ user, body: b }) => team.sendKudos(user.email, b).then(r => json(r)))
+  'POST admin/kudos': teamOnly(({ user, body: b }) => team.sendKudos(user.email, b).then(r => json(r))),
+
+  // the review rooms (both sides; rooms.js decides who sees what)
+  'GET room': signed(reply(({ user, q }) => rooms.roomList(user, q))),
+  'GET room/item': signed(reply(({ user, q }) => rooms.roomItem(user, q))),
+  'POST room/note': signed(reply(({ user, body: b }) => rooms.addNote(user, b))),
+  'POST room/note/done': signed(reply(({ user, body: b }) => rooms.noteDone(user, b))),
+  'POST room/note/remove': signed(reply(({ user, body: b }) => rooms.noteRemove(user, b))),
+  'POST room/decide': signed(reply(({ user, body: b }) => rooms.decide(user, b))),
+  'POST room/send': teamOnly(reply(({ user, body: b }) => rooms.sendCut(user, b))),
+  'POST room/notify': teamOnly(reply(({ user, body: b }) => rooms.notifyNow(user, b))),
+  'GET media': ({ request, q }) => rooms.media(request, q),
+
+  // the Desk (owner and managers)
+  'POST desk/booking': teamOnly(reply(({ user, body: b }) => desk.booking(user.email, b))),
+  'POST desk/event': teamOnly(reply(({ user, body: b }) => desk.addEvent(user.email, b))),
+  'POST desk/task': teamOnly(reply(({ user, body: b }) => desk.saveTask(user.email, b))),
+  'POST desk/project': teamOnly(reply(({ user, body: b }) => desk.saveProject(user.email, b))),
+
+  // the books (owner)
+  'POST books/sync': ownerOnly(reply(() => books.syncBooks())),
+  'GET books/xlsx': ownerOnly(() => books.booksXlsx())
 };
 
 async function handle(request) {
