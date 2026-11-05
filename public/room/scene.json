@@ -1,9 +1,9 @@
 {
-  "note": "The screening room. still: the room picture with the big screen and both monitors in flat green. loop: the character video made from that still (same framing, camera locked); leave it empty to show the still. editor: the editing-app picture for the left monitor, and the box inside it (left, top, right, bottom as fractions) where the video plays. quads: leave null and the room finds the three green screens in the still by itself.",
+  "note": "The screening room. still: the room picture with the big screen and both monitors in flat green (a frame of the loop). loop: the character video made from it (same framing, camera locked); leave it empty to show the still. editor: the editing-app picture for the left monitor, and the box inside it (left, top, right, bottom as fractions) where the video plays. quads: leave null and the room finds the three green screens by itself. aspect: the real shape of each screen (width / height).",
   "still": "room/scene.jpg",
-  "loop": "",
+  "loop": "room/scene.mp4",
   "editor": { "image": "room/editor.png", "viewer": [0.2573, 0.0389, 0.7427, 0.5241] },
   "quads": null,
-  "key": { "low": 0.10, "high": 0.30, "spill": 0.9 },
-  "standin": true
+  "aspect": { "screen": 2.39, "left": 1.778, "right": 1.778 },
+  "key": { "low": 0.10, "high": 0.30, "spill": 0.9 }
 }

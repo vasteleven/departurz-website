@@ -131,38 +131,63 @@ const colMajor = H => new Float32Array([H[0], H[3], H[6], H[1], H[4], H[7], H[2]
 // where content (x, y in 0..1) sits inside a box of aspect boxA when it's fitted without cropping
 function fit(mediaA, boxA) { return mediaA > boxA ? { sx: 1, sy: boxA / mediaA } : { sx: mediaA / boxA, sy: 1 }; }
 
-// the three green screens in the room picture: the biggest is the big screen, the other two are the monitors by x
+// the three green screens in the room picture: the biggest is the big screen, the other two are the monitors by x.
+// Each side is fitted as a straight line (RANSAC), so a corner hidden behind a monitor or a head is still found.
 function findQuads(img) {
   const w = Math.min(1280, img.naturalWidth || img.width), h = Math.round(w * (img.naturalHeight || img.height) / (img.naturalWidth || img.width));
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const cx = cv.getContext('2d', { willReadFrequently: true }); cx.drawImage(img, 0, 0, w, h);
   const px = cx.getImageData(0, 0, w, h).data, mask = new Uint8Array(w * h);
   for (let i = 0, j = 0; i < mask.length; i++, j += 4) { const r = px[j], g = px[j + 1], b = px[j + 2]; mask[i] = g > 90 && g - Math.max(r, b) > 60 ? 1 : 0; }
-  const seen = new Uint8Array(w * h), comps = [], stack = new Int32Array(w * h);
+  const lab = new Int32Array(w * h), stack = new Int32Array(w * h), comps = [];
+  let next = 0;
   for (let s = 0; s < mask.length; s++) {
-    if (!mask[s] || seen[s]) continue;
-    let top = 0, area = 0, sx = 0; stack[top++] = s; seen[s] = 1;
-    let tl = [1e9, 0, 0], br = [-1e9, 0, 0], tr = [-1e9, 0, 0], bl = [1e9, 0, 0];
+    if (!mask[s] || lab[s]) continue;
+    const id = ++next; let top = 0, area = 0, sx = 0, x0 = w, x1 = 0, y0 = h, y1 = 0;
+    stack[top++] = s; lab[s] = id;
     while (top) {
       const p = stack[--top], x = p % w, y = (p / w) | 0; area++; sx += x;
-      const su = x + y, di = x - y;
-      if (su < tl[0]) tl = [su, x, y]; if (su > br[0]) br = [su, x, y]; if (di > tr[0]) tr = [di, x, y]; if (di < bl[0]) bl = [di, x, y];
-      if (x > 0 && mask[p - 1] && !seen[p - 1]) { seen[p - 1] = 1; stack[top++] = p - 1; }
-      if (x < w - 1 && mask[p + 1] && !seen[p + 1]) { seen[p + 1] = 1; stack[top++] = p + 1; }
-      if (y > 0 && mask[p - w] && !seen[p - w]) { seen[p - w] = 1; stack[top++] = p - w; }
-      if (y < h - 1 && mask[p + w] && !seen[p + w]) { seen[p + w] = 1; stack[top++] = p + w; }
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      if (x > 0 && mask[p - 1] && !lab[p - 1]) { lab[p - 1] = id; stack[top++] = p - 1; }
+      if (x < w - 1 && mask[p + 1] && !lab[p + 1]) { lab[p + 1] = id; stack[top++] = p + 1; }
+      if (y > 0 && mask[p - w] && !lab[p - w]) { lab[p - w] = id; stack[top++] = p - w; }
+      if (y < h - 1 && mask[p + w] && !lab[p + w]) { lab[p + w] = id; stack[top++] = p + w; }
     }
-    if (area > w * h * 0.003) comps.push({ area, cx: sx / area, pts: [[tl[1], tl[2]], [tr[1], tr[2]], [br[1] + 1, br[2] + 1], [bl[1], bl[2] + 1]] });
+    if (area > w * h * 0.003) comps.push({ id, area, cx: sx / area, x0, x1, y0, y1 });
   }
   comps.sort((a, b) => b.area - a.area);
-  const norm = c => {
+  let seed = 7;
+  const rand = n => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % n; };
+  // v = a*u + c through the most points (within 1.5 px), then least squares on those
+  function line(U, V) {
+    let best = null, bestN = -1;
+    for (let k = 0; k < 300; k++) {
+      const i = rand(U.length), j = rand(U.length); if (U[i] === U[j]) continue;
+      const a = (V[j] - V[i]) / (U[j] - U[i]), c = V[i] - a * U[i];
+      let n = 0; for (let q = 0; q < U.length; q++) if (Math.abs(V[q] - (a * U[q] + c)) < 1.5) n++;
+      if (n > bestN) { bestN = n; best = [a, c]; }
+    }
+    let su = 0, sv = 0, suu = 0, suv = 0, n = 0;
+    for (let q = 0; q < U.length; q++) if (Math.abs(V[q] - (best[0] * U[q] + best[1])) < 1.5) { su += U[q]; sv += V[q]; suu += U[q] * U[q]; suv += U[q] * V[q]; n++; }
+    const a = (n * suv - su * sv) / (n * suu - su * su || 1);
+    return [a, (sv - a * su) / n];
+  }
+  const meet = (H, V) => { const y = (H[0] * V[1] + H[1]) / (1 - H[0] * V[0]); return [V[0] * y + V[1], y]; };   // y=a x+c meets x=a y+c
+  function quad(c) {
+    const cu = [], ct = [], cb = [], rv = [], rl = [], rr = [];
+    const ax = Math.round(c.x0 + 0.1 * (c.x1 - c.x0)), bx = Math.round(c.x1 - 0.1 * (c.x1 - c.x0));
+    const ay = Math.round(c.y0 + 0.1 * (c.y1 - c.y0)), by = Math.round(c.y1 - 0.1 * (c.y1 - c.y0));
+    for (let x = ax; x <= bx; x++) { let t = -1, b = -1; for (let y = c.y0; y <= c.y1; y++) if (lab[y * w + x] === c.id) { if (t < 0) t = y; b = y + 1; } if (t >= 0) { cu.push(x); ct.push(t); cb.push(b); } }
+    for (let y = ay; y <= by; y++) { let l = -1, r = -1; for (let x = c.x0; x <= c.x1; x++) if (lab[y * w + x] === c.id) { if (l < 0) l = x; r = x + 1; } if (l >= 0) { rv.push(y); rl.push(l); rr.push(r); } }
+    const T = line(cu, ct), B = line(cu, cb), L = line(rv, rl), R = line(rv, rr);
+    const pts = [meet(T, L), meet(T, R), meet(B, R), meet(B, L)];
     // nudge each corner out a pixel and a half so no green fringe is left at the edges
-    const mx = c.pts.reduce((a, p) => a + p[0], 0) / 4, my = c.pts.reduce((a, p) => a + p[1], 0) / 4;
-    return c.pts.map(([x, y]) => { const dx = x - mx, dy = y - my, L = Math.hypot(dx, dy) || 1; return [(x + dx / L * 1.5) / w, (y + dy / L * 1.5) / h]; });
-  };
+    const mx = pts.reduce((a, p) => a + p[0], 0) / 4, my = pts.reduce((a, p) => a + p[1], 0) / 4;
+    return pts.map(([x, y]) => { const dx = x - mx, dy = y - my, Ln = Math.hypot(dx, dy) || 1; return [(x + dx / Ln * 1.5) / w, (y + dy / Ln * 1.5) / h]; });
+  }
   const [screen, ...rest] = comps.slice(0, 3);
   rest.sort((a, b) => a.cx - b.cx);
-  return { screen: screen && norm(screen), left: rest[0] && norm(rest[0]), right: rest[1] && norm(rest[1]) };
+  return { screen: screen && quad(screen), left: rest[0] && quad(rest[0]), right: rest[1] && quad(rest[1]) };
 }
 
 /* ---------- the renderer ---------- */
