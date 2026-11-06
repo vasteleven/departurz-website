@@ -20,7 +20,8 @@ import { morningEmail } from './_lib/digest.js';
 import { loadStored } from './_lib/setupcore.js';
 
 const OVERDUE = [1, 3, 7, 14, 21, 28];
-const portal = () => env('PORTAL_URL', 'https://www.departurz.com').replace(/\/$/, '') + '/portal-app.html';
+const site = () => env('PORTAL_URL', 'https://www.departurz.com').replace(/\/$/, '');
+const portal = () => site() + '/portal-app.html';
 const when = (d, td) => { const n = daysBetween(td, d); return n === 0 ? 'today' : n === 1 ? 'tomorrow' : n > 1 ? `in ${n} days` : `${-n} day${n === -1 ? '' : 's'} ago`; };
 const pretty = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
 
@@ -103,7 +104,7 @@ async function clientLetters(td, log) {
       if (!isOff(lead.thanks)) {
         await send({
           to, subject: `Thank you, ${firstName(lead.name)}`, heading: 'It landed. Thank you.',
-          html: hi + `<p>${esc(p.title || 'Your project')} is delivered, and we loved making it with you. Everything is in your portal and stays there for you to download any time.</p><p>If it made you proud, the best thank-you is telling someone who needs a story told. And when you're ready for the next one, you're first in line${isOff(lead.offers) ? '' : ': returning clients get 10% off and first pick of dates'}.</p><p>With gratitude,<br>Nate and the DEPARTURZ crew</p>`,
+          html: hi + `<p>${esc(p.title || 'Your project')} is delivered, and we loved making it with you. Everything is in your portal and stays there for you to download any time.</p><p>If it made you proud, the best thank-you is telling someone who needs a story told. And when you're ready for the next one, you're first in line${isOff(lead.offers) ? '' : ': returning clients get 10% off and first pick of dates'}.</p><p>We wrote you a proper thank-you, too. <a href="${site()}/docs/DEPARTURZ-Thank-You.pdf" style="color:#1C7FB0">Read our letter</a>. It also stays in your portal under Documents.</p><p>With gratitude,<br>Nate and the DEPARTURZ crew</p>`,
           cta: { label: 'Book your next date', url: portal() + '#/client/calendar' }
         });
       }

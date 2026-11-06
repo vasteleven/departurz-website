@@ -237,7 +237,7 @@ button{cursor:pointer}
 .th span{display:block;font-size:12.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .th .hash{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--ink);color:#fff;font-weight:800}
 .th .un{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--violet);color:var(--ink);font-size:11px;font-weight:800;display:grid;place-items:center}
-.convo{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0}
+.convo{display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);min-width:0}
 .convo-h{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .convo-h b{display:block}
 .convo-h span{font-size:12.5px;color:var(--mute)}
@@ -256,7 +256,7 @@ button{cursor:pointer}
 .att{display:flex;align-items:center;gap:8px;margin:4px 0;padding:8px 10px;border-radius:10px;background:rgba(128,128,128,.12);font-size:13px}
 .att svg{width:16px;height:16px;flex:none}
 .compose{display:flex;align-items:flex-end;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--card)}
-.compose textarea{flex:1;min-height:44px;max-height:140px;padding:11px 14px;border:1px solid var(--line2);border-radius:22px;resize:none;outline:none;font-size:14.5px;background:var(--paper)}
+.compose textarea{flex:1;min-width:0;min-height:44px;max-height:140px;padding:11px 14px;border:1px solid var(--line2);border-radius:22px;resize:none;outline:none;font-size:14.5px;background:var(--paper)}
 .compose .round{flex:none;width:44px;height:44px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--stone)}
 .compose .round.send{background:var(--grad)}
 .compose svg{width:19px;height:19px}
@@ -759,8 +759,8 @@ function pageOverview(){
   ${recordsCard()}`;
 }
 /* documents and payments share the project's confirmation number */
-const KINDNAME = { contract: 'Contract', proposal: 'Proposal', guide: 'Guide', brief: 'Brief', 'call sheet': 'Call sheet', 'shot list': 'Shot list', release: 'Release', invoice: 'Invoice', other: 'Document' };
-const docIco = k => ({ contract: 'pen', release: 'pen', guide: 'list2', 'shot list': 'list2', 'call sheet': 'cal', invoice: 'card' })[k] || 'doc';
+const KINDNAME = { contract: 'Contract', proposal: 'Proposal', guide: 'Guide', brief: 'Brief', 'call sheet': 'Call sheet', 'shot list': 'Shot list', release: 'Release', invoice: 'Invoice', letter: 'Letter', other: 'Document' };
+const docIco = k => ({ contract: 'pen', release: 'pen', guide: 'list2', 'shot list': 'list2', 'call sheet': 'cal', invoice: 'card', letter: 'heart' })[k] || 'doc';
 const isNew = d => d.date && daysTo(d.date) >= -7 && d.status === 'info';
 const docChip = d => d.status === 'to sign' ? '<span class="chip due">Sign</span>' : d.status === 'signed' ? '<span class="chip ok">Signed</span>' : isNew(d) ? '<span class="chip now">New</span>' : '';
 const payChip = i => i.status === 'paid' ? '<span class="chip ok">Paid</span>' : i.status === 'sent' ? '<span class="chip info">Confirming</span>' : '<span class="chip due">Due</span>';
@@ -775,7 +775,7 @@ function recordsCard(){
 function docCard(d){
   const short = String(d.ref).replace(String(C.project.code) + '-', '');
   return `<article class="doc${d.status === 'to sign' ? ' sign' : ''}">
-    <div class="doc-stub"><span class="ico">${ic(docIco(d.kind))}</span><b>${esc(short)}</b></div>
+    <div class="doc-stub"><span class="ico">${ic(docIco(d.kind))}</span><b${short.length > 5 ? ' style="font-size:21px"' : ''}>${esc(short)}</b></div>
     <div class="doc-body"><div class="doc-top"><span class="mono mute">${esc(d.ref)}</span>${docChip(d)}</div>
       <b class="doc-title">${esc(d.title)}</b>${d.note ? `<p>${esc(d.note)}</p>` : ''}
       <span class="doc-meta mute">${esc(KINDNAME[d.kind] || 'Document')} · ${d.status === 'signed' ? 'accepted' + (d.acceptedAt ? ' ' + fmt(d.acceptedAt, { month: 'short', day: 'numeric', year: 'numeric' }) : '') : 'added ' + fmt(d.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>

@@ -228,15 +228,21 @@ await ok('documents are numbered under the confirmation and can be accepted', as
   const guide = mock.addFile('Domain setup guide.pdf', docs, 1000, 'application/pdf');
   const r = await call('GET', 'portal', null, C);
   const d = r.data.data.documents;
-  assert.deepEqual(d.map(x => x.ref), ['DPZ-0142-D1', 'DPZ-0142-D2', 'DPZ-0142-D3', 'DPZ-0142-D4', 'DPZ-0142-D5']);
-  assert.equal(d[4].kind, 'guide');
+  // the portal guide is always first; the thank-you letter only comes once the project is delivered
+  assert.deepEqual(d.map(x => x.ref), ['DPZ-0142-GUIDE', 'DPZ-0142-D1', 'DPZ-0142-D2', 'DPZ-0142-D3', 'DPZ-0142-D4', 'DPZ-0142-D5']);
+  assert.equal(d[0].url, '/docs/DEPARTURZ-Portal-Guide.pdf');
+  assert.equal(d[5].kind, 'guide');
+  assert.ok(!d.some(x => x.ref.endsWith('-THANKS')), 'no thank-you letter before delivery');
+  const { delivered } = await import('../api/_lib/client.js');
+  assert.ok(delivered({ status: 'Delivered' }) && !delivered({ status: 'In the edit' }));
+  assert.notEqual((await call('POST', 'docs/accept', { ref: 'DPZ-0142-GUIDE', name: 'Jordan Rivera', agree: true }, C)).status, 200, 'the guide is not a sheet row');
   assert.equal((await call('GET', 'file?id=' + guide, null, C)).status, 200);
   assert.equal((await call('POST', 'docs/accept', { ref: 'DPZ-0142-D4', name: 'Jordan Rivera' }, C)).status, 400, 'must tick the box');
   assert.equal((await call('POST', 'docs/accept', { ref: 'DPZ-0142-D4', name: 'Jordan Rivera', agree: true }, C)).status, 200);
   assert.equal((await call('POST', 'docs/accept', { ref: 'DPZ-0142-D1', name: 'Jordan Rivera', agree: true }, C)).status, 409);
   const again = await call('GET', 'portal', null, C);
-  assert.equal(again.data.data.documents.length, 5, 'no duplicates on the next load');
-  assert.equal(again.data.data.documents[3].status, 'signed');
+  assert.equal(again.data.data.documents.length, 6, 'no duplicates on the next load');
+  assert.equal(again.data.data.documents[4].status, 'signed');
 });
 await ok('crew actions and admin pay', async () => {
   assert.equal((await call('POST', 'tasks/toggle', { id: 't2' }, T)).data.status, 'done');

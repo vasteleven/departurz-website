@@ -71,6 +71,10 @@ export async function clientData(email, pick) {
   out.thread = t.msgs; out.unread = t.unread;
   out.documents = (await syncDocs(c, project).catch(e => { console.log('[docs]', e.message); return c.Documents.filter(d => String(d.project_code) === code); }))
     .map(docShape).sort((a, b) => docNo(a.ref) - docNo(b.ref));
+  // every client also gets the portal guide, and the thank-you letter once the project has landed
+  const since = [day(project.start_date), ...ms.map(m => day(m.date))].filter(Boolean).sort()[0];
+  out.documents = [houseDoc('guide', code, since && since < today() ? since : today()), ...out.documents];
+  if (delivered(project)) out.documents.push(houseDoc('thanks', code, day(project.delivered_date) || day(project.thanked_at) || today()));
   out.deliverables = files.map(f => ({ id: f.id, name: f.name, size: Number(f.size || 0), date: String(f.createdTime || '').slice(0, 10), kind: kindOf(f.mimeType, f.name), tag: f.id === project.review_file_id ? 'Review' : 'Final' }));
   return out;
 }
@@ -78,6 +82,13 @@ export async function clientData(email, pick) {
 /* ---------- documents: everything filed under the project's confirmation number ----------
    Files dropped into the project's Documents folder in Drive are added to the Documents tab with the next number
    (DPZ-0142-D1, D2…). Rows can also be added by hand, with a link instead of a file. */
+// the two PDFs that live on the site (built from docs_src in the site folder), shown in every client's Documents
+export const HOUSE_DOCS = {
+  guide: { ref: 'GUIDE', title: 'Your portal, step by step', kind: 'guide', note: 'How to sign in, set up your profile and find your way around.', url: '/docs/DEPARTURZ-Portal-Guide.pdf' },
+  thanks: { ref: 'THANKS', title: 'Thank you from DEPARTURZ', kind: 'letter', note: 'A note from Nate and the crew, for working with us.', url: '/docs/DEPARTURZ-Thank-You.pdf' }
+};
+const houseDoc = (k, code, date) => ({ ...HOUSE_DOCS[k], ref: `${code}-${HOUSE_DOCS[k].ref}`, date, status: 'info', fileId: '', acceptedAt: '', acceptedBy: '' });
+export const delivered = p => (day(p.delivered_date) && p.delivered_date <= today()) || /deliver|landed|complete/i.test(String(p.status || ''));
 const docNo = r => { const m = String(r || '').match(/-D(\d+)$/i); return m ? +m[1] : 0; };
 export function guessKind(name) {
   const n = String(name || '').toLowerCase();

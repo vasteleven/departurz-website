@@ -178,6 +178,7 @@ The portal's API already supports the apps: they sign in the same way (Google, o
 
 ## Good to know
 
+- Every client's Documents shows two house PDFs from `public/docs/`: **Your portal, step by step** (always) and **Thank you from DEPARTURZ** (once the project is Delivered). The sign-in page links the guide too, and the thank-you email links the letter. To change either, edit the HTML in the site's `docs_src` folder and run `node docs_src/build.js`.
 - The Terms of Use and Privacy text lives in `public/legal.js`, one place for every page: it's the pop-up, and the pack step also builds it into the standalone `/terms` and `/privacy` pages that Google's Branding page links to (`legal_pages.mjs`). It's a plain-language starting point; have an attorney review it, and update the date at the top whenever it changes.
 
 - When someone opens a file from the portal, Drive makes that one file viewable by anyone with its link, so the link works for them without a Google account. The links are long and unguessable, and folders stay private.
