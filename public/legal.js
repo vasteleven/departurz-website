@@ -4,7 +4,7 @@
    because Google's sign-in setup needs real links to them. */
 (function(){
   "use strict";
-  const UPDATED = 'November 5, 2026';
+  const UPDATED = 'November 6, 2026';
   const CONTACT = 'through the <a href="contact.html">contact page</a>, or by mail at DEPARTURZ, 3311 La Cienega Blvd., Los Angeles, CA 90016';
 
   const TERMS = `
@@ -17,6 +17,7 @@
 <p>The videos, photos, designs, text, characters, logos and the rest of the Site belong to DEPARTURZ or to the people who licensed them to us. Don't copy, reuse or redistribute them without written permission. Some work shown belongs to our clients and appears with their permission.</p>
 <h3>4. Projects and services</h3>
 <p>Anything on the Site, and any quote or proposal, is an estimate until we both sign a service agreement or you pay an invoice that references one. Each project is governed by its service agreement. If that agreement and these terms ever disagree, the agreement wins. Timelines are our best estimate and depend on getting what we need from you on time.</p>
+<p>Websites, portals and online stores run on outside services such as hosting, email delivery, payments and online stores. Their fees, including usage that grows with your traffic, are yours to pay and aren't part of our price unless your service agreement says so. Your service agreement explains how those accounts are set up and billed.</p>
 <h3>5. The portal</h3>
 <p>Portal access is by invitation. You sign in with Google or a one-time email link, so keep your email account secure and don't forward sign-in links. We may pause or end access to protect the Site, our clients or our crew. You must be 18 or older (or the age of majority where you live) to accept documents or make payments in the portal.</p>
 <p>When you accept a document in the portal by ticking the box and typing your name, that counts as your electronic signature, and we record your name, email and the time. It has the same effect as signing on paper, to the extent the law allows.</p>
