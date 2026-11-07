@@ -15,7 +15,8 @@
     full: $('roomFull'), prev: $('roomPrev'), next: $('roomNext') };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  let cur = -1, soundOn = false, token = 0, wasPlaying = false, holding = false;
+  // sound is on by default: picking a file is a click, which lets the browser play the film with its sound
+  let cur = -1, soundOn = true, token = 0, wasPlaying = false, holding = false;
   let visible = (() => { const r = room.getBoundingClientRect(); return r.top < window.innerHeight && r.bottom > 0; })();
   let G = null;            // the 3D room, once it's built
   const clock = () => (window.__roomClock ? window.__roomClock() : performance.now()) / 1000;
@@ -58,14 +59,14 @@
     const my = ++token; const first = cur < 0; cur = k;
     showFile(f);
     if (f.video){
-      video.loop = false; video.muted = !(soundOn && f.sound); video.volume = 0;
+      video.loop = false; video.muted = true; video.volume = 1;   // silent while the cube powers on; this click-time play unlocks the sound for later
       if (video.getAttribute('src') !== f.video){ video.src = f.video; if (f.thumb) video.poster = f.thumb; }
       try { video.currentTime = 0; } catch (e) {}
       const p = video.play();
       // hold the picture until the cube has powered on (the play above is what unlocks it)
       holding = !!G && !RM;
       const hold = () => { if (my === token && holding) { video.pause(); try { video.currentTime = 0; } catch (e) {} } };
-      if (p && p.then) p.then(hold, () => { video.muted = true; soundOn = false; paintControls(); video.play().then(hold, () => {}); }); else hold();
+      if (p && p.then) p.then(hold, () => {}); else hold();
     } else { video.pause(); video.removeAttribute('src'); video.load(); }
     const go = () => {
       if (my !== token) return;
@@ -83,9 +84,10 @@
   function roll(f){
     holding = false;
     if (!f.video) return paintControls();
-    video.volume = 1; video.muted = !(soundOn && f.sound);
+    video.volume = 1; video.muted = !(soundOn && f.sound);   // the cube is on: the film starts, with its sound
     try { if (video.currentTime > 0.5) video.currentTime = 0; } catch (e) {}
-    const p = video.play(); if (p && p.catch) p.catch(() => { video.muted = true; soundOn = false; video.play().catch(() => {}); paintControls(); });
+    // if a browser still refuses sound, play silently and show Sound off, so one tap turns it on
+    const p = video.play(); if (p && p.catch) p.catch(e => { if (!e || e.name !== 'NotAllowedError') return paintControls(); video.muted = true; soundOn = false; video.play().catch(() => {}); paintControls(); });
     paintControls();
   }
   const withVideo = (from, dir) => { for (let n = 1; n <= FILES.length; n++){ const k = (from + dir * n + FILES.length * 2) % FILES.length; if (FILES[k].video) return k; } return from; };
