@@ -15,7 +15,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <style>
 /* Colour blocks: a light sky-to-lilac opening, then ink, violet, sky and ink bands, black type, one letter cube,
-   a poster, a letter maze, and small hand-made title marks.
+   a poster, a band of drifting ink blobs, and small hand-made title marks.
    Type does the work: a loud condensed headline, a quieter line you read next, fine body copy, a bold aside. */
 :root{
   --paper:#FAFAF8;
@@ -92,10 +92,10 @@ img{max-width:100%}
 .t-sky{background:var(--sky);--mute:rgba(10,10,10,.7);--rule:rgba(10,10,10,.2)}
 .t-ink{background:var(--ink);color:var(--paper);--mute:rgba(250,250,248,.62);--rule:rgba(250,250,248,.16)}
 
-/* 1b. the letter maze: DEPARTURZ STUDIOS over and over in fat interlocking letters, painted by about-maze.js */
-.maze{position:relative;height:clamp(300px,54vh,580px);background:var(--ink);overflow:hidden;touch-action:pan-y}
-.maze canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
-.maze.live canvas{opacity:1}
+/* 1b. the blob band: ink shapes drifting over sky and violet, painted by about-blobs.js (the gradient alone without WebGL) */
+.blobs{position:relative;height:clamp(300px,54vh,580px);background:linear-gradient(110deg,var(--sky),var(--violet));overflow:hidden;touch-action:pan-y}
+.blobs canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
+.blobs.live canvas{opacity:1}
 
 /* 2. the founder: the Directors poster beside his story */
 .founder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px)}
@@ -151,7 +151,7 @@ img{max-width:100%}
 
 /* 4. the close: a bunch of balloons in the site colours, with the way in under them */
 .bunch-sec{position:relative;height:clamp(560px,92vh,880px);overflow:hidden;border-top:1px solid var(--rule);
-  background:radial-gradient(120% 90% at 50% 40%,#FFF8E1 0%,#FCE7A4 58%,#F7D46A 100%)}
+  background:radial-gradient(120% 90% at 50% 40%,#FFFFFF 0%,#F4F5FA 55%,#ECEEF5 100%)}
 .bunch{position:absolute;inset:0;touch-action:pan-y}
 .bunch img,.bunch canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .bunch img{object-fit:cover}
@@ -164,7 +164,7 @@ img{max-width:100%}
 .bunch.hover .ring{opacity:1}
 .b-ui{position:absolute;inset:0;pointer-events:none;max-width:1320px;margin:0 auto;padding:clamp(22px,3vw,40px) max(22px, env(safe-area-inset-right, 0px)) clamp(22px,3vw,36px) max(22px, env(safe-area-inset-left, 0px))}
 .b-ui a{pointer-events:auto}
-.b-tl,.b-bl{position:absolute;margin:0;font-size:13px;line-height:1.45;color:rgba(10,10,10,.66)}
+.b-tl,.b-bl{position:absolute;margin:0;font-size:13px;line-height:1.45;color:var(--mute)}
 .b-tl b,.b-bl b{color:var(--ink);font-weight:600}
 .b-tl{left:inherit;top:clamp(22px,3vw,40px)}
 .b-bl{left:inherit;bottom:clamp(22px,3vw,36px)}
@@ -255,8 +255,8 @@ footer .home i{background:currentColor}
     </div>
   </section>
 
-  <div class="maze" id="maze" role="img" aria-label="DEPARTURZ STUDIOS, spelled out over and over in fat interlocking letters">
-    <canvas aria-hidden="true"></canvas>
+  <div class="blobs" id="blobs" aria-hidden="true">
+    <canvas></canvas>
   </div>
 
   <section class="tone t-violet" aria-labelledby="founderTitle">
@@ -860,7 +860,7 @@ footer .home i{background:currentColor}
   top(); window.addEventListener('load', top, { once: true });
 })();
 </script>
-<script src="about-maze.js" defer></script>
+<script src="about-blobs.js" defer></script>
 <script src="legal.js" defer></script>
 </body>
 </html>
