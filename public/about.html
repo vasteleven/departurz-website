@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>About DEPARTURZ</title>
 <meta name="description" content="DEPARTURZ is a storytelling studio in Los Angeles and Houston, founded by Nathan Olu: web design, production, post-production and sound under one roof.">
-<meta name="theme-color" content="#FAFAF8">
+<meta name="theme-color" content="#EAF6FD">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
 <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
@@ -14,7 +14,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <style>
-/* Minimal: a white page, black type, one letter cube, a poster, and small hand-made title marks.
+/* Colour blocks: a light sky-to-lilac opening, then ink, violet, sky and ink bands, black type, one letter cube,
+   a poster, a letter maze, and small hand-made title marks.
    Type does the work: a loud condensed headline, a quieter line you read next, fine body copy, a bold aside. */
 :root{
   --paper:#FAFAF8;
@@ -30,7 +31,12 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+body{margin:0;color:var(--ink);
+  /* the opening sits on a soft wash: pale sky at the top, a violet glow behind the cube, pale lilac lower down */
+  background:radial-gradient(560px 460px at 80% 420px,rgba(158,128,242,.20),rgba(158,128,242,0) 70%) no-repeat,
+             radial-gradient(520px 420px at 6% 120px,rgba(63,184,238,.16),rgba(63,184,238,0) 70%) no-repeat,
+             linear-gradient(180deg,#EAF6FD 0,#F5F6FB 560px,#EEE9FD 1300px) 0 0 / 100% 1300px no-repeat,
+             #EEE9FD;font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
 a{color:inherit}
 img{max-width:100%}
 :focus-visible{outline:2px solid var(--violet);outline-offset:4px}
@@ -80,8 +86,19 @@ img{max-width:100%}
 .stage .nate.live img{visibility:hidden}
 .stage .nate video{position:absolute;inset:0;z-index:-1;width:100%;height:100%;opacity:.002;pointer-events:none}
 
+/* the colour bands, full width; each one sets its own quiet text colour and rule colour */
+.tone{position:relative}
+.t-violet{background:var(--violet);--mute:rgba(10,10,10,.68);--rule:rgba(10,10,10,.2)}
+.t-sky{background:var(--sky);--mute:rgba(10,10,10,.7);--rule:rgba(10,10,10,.2)}
+.t-ink{background:var(--ink);color:var(--paper);--mute:rgba(250,250,248,.62);--rule:rgba(250,250,248,.16)}
+
+/* 1b. the letter maze: DEPARTURZ STUDIOS over and over in fat interlocking letters, painted by about-maze.js */
+.maze{position:relative;height:clamp(300px,54vh,580px);background:var(--ink);overflow:hidden;touch-action:pan-y}
+.maze canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
+.maze.live canvas{opacity:1}
+
 /* 2. the founder: the Directors poster beside his story */
-.founder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule)}
+.founder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px)}
 .poster{position:relative;width:100%}
 .poster img{position:relative;z-index:1;display:block;width:100%;height:auto}
 .sun{position:absolute;z-index:0;left:37.28%;top:29.28%;width:25.77%;aspect-ratio:1;border-radius:50%;background:var(--sun)}
@@ -93,7 +110,7 @@ img{max-width:100%}
 .bio .pull{margin-top:6px}
 
 /* 2b. the crew: no profiles, just the promise. Nate on the giant hand, pointing at every role he calls in. */
-.crew{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule)}
+.crew{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px)}
 .crew-title{margin:.1em 0 0;font-weight:900;font-stretch:72%;text-transform:uppercase;font-size:clamp(54px,7.2vw,112px);line-height:.86}
 .crew-title span{background:linear-gradient(100deg,var(--sky) 8%,var(--violet) 88%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .crew .fine{margin-top:clamp(16px,2vw,24px)}
@@ -105,13 +122,16 @@ img{max-width:100%}
 .roster li:hover b{color:transparent;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text}
 .handshot{position:relative;margin:0}
 .handshot::before{content:"";position:absolute;left:23%;top:11%;width:44%;aspect-ratio:1;border-radius:50%;background:linear-gradient(140deg,var(--sky),var(--violet))}
+.t-sky .crew-title span{background:none;color:var(--paper)}
+.t-sky .handshot::before{background:var(--sun)}
+.t-sky .roster li:hover b{background:none;color:var(--paper)}
 .handshot img{position:relative;display:block;width:100%;height:auto}
 .js .handshot::before{transform:scale(.2);opacity:0;transition:transform 1.1s cubic-bezier(.2,.8,.2,1) .25s,opacity .5s ease-out .25s}
 .js .handshot.in::before{transform:none;opacity:1}
 @media (max-width:760px){ .crew{grid-template-columns:minmax(0,1fr)} .roster{grid-template-columns:minmax(0,1fr)} }
 
 /* 3. what we do */
-.svc{display:grid;justify-items:center;gap:clamp(26px,3.6vw,46px);padding-block:clamp(50px,7vw,96px);border-top:1px solid var(--rule);text-align:center}
+.svc{display:grid;justify-items:center;gap:clamp(26px,3.6vw,46px);padding-block:clamp(50px,7vw,96px);text-align:center}
 /* the cube in the middle, two services either side of it */
 .svc-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch;gap:clamp(22px,4vw,64px);width:100%}
 .svc-grid .cube{align-self:center}
@@ -131,7 +151,7 @@ img{max-width:100%}
 
 /* 4. the close: a bunch of balloons in the site colours, with the way in under them */
 .bunch-sec{position:relative;height:clamp(560px,92vh,880px);overflow:hidden;border-top:1px solid var(--rule);
-  background:radial-gradient(120% 90% at 50% 40%,#FFFFFF 0%,#F4F5FA 55%,#ECEEF5 100%)}
+  background:radial-gradient(120% 90% at 50% 40%,#FFF8E1 0%,#FCE7A4 58%,#F7D46A 100%)}
 .bunch{position:absolute;inset:0;touch-action:pan-y}
 .bunch img,.bunch canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .bunch img{object-fit:cover}
@@ -144,7 +164,7 @@ img{max-width:100%}
 .bunch.hover .ring{opacity:1}
 .b-ui{position:absolute;inset:0;pointer-events:none;max-width:1320px;margin:0 auto;padding:clamp(22px,3vw,40px) max(22px, env(safe-area-inset-right, 0px)) clamp(22px,3vw,36px) max(22px, env(safe-area-inset-left, 0px))}
 .b-ui a{pointer-events:auto}
-.b-tl,.b-bl{position:absolute;margin:0;font-size:13px;line-height:1.45;color:var(--mute)}
+.b-tl,.b-bl{position:absolute;margin:0;font-size:13px;line-height:1.45;color:rgba(10,10,10,.66)}
 .b-tl b,.b-bl b{color:var(--ink);font-weight:600}
 .b-tl{left:inherit;top:clamp(22px,3vw,40px)}
 .b-bl{left:inherit;bottom:clamp(22px,3vw,36px)}
@@ -159,12 +179,13 @@ img{max-width:100%}
 .btn{display:inline-flex;align-items:center;gap:12px;padding:17px 26px;border-radius:999px;background:var(--ink);color:var(--paper);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;transition:transform .2s,background-color .2s}
 .btn:hover{background:#26262A}
 
-footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
+footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px));background:var(--ink);color:var(--paper)}
+footer .home i{background:currentColor}
 .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 30px}
 .foot nav{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
 .foot nav a{text-decoration:none;padding-block:6px}
-.foot nav a:hover{color:var(--violet)}
-.legal{margin:0;font-size:12px;color:var(--mute)}
+.foot nav a:hover{color:var(--sky)}
+.legal{margin:0;font-size:12px;color:rgba(250,250,248,.6)}
 
 /* things settle in as they arrive */
 .js .rise{opacity:0;transform:translateY(18px);transition:opacity .8s ease-out,transform .9s cubic-bezier(.2,.7,.2,1)}
@@ -234,7 +255,12 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
     </div>
   </section>
 
-  <section class="founder wrap" aria-labelledby="founderTitle">
+  <div class="maze" id="maze" role="img" aria-label="DEPARTURZ STUDIOS, spelled out over and over in fat interlocking letters">
+    <canvas aria-hidden="true"></canvas>
+  </div>
+
+  <section class="tone t-violet" aria-labelledby="founderTitle">
+  <div class="founder wrap">
     <div class="poster rise">
       <span class="sun" aria-hidden="true"></span>
       <img src="about/directors-1400.webp" srcset="about/directors-900.webp 900w, about/directors-1400.webp 1400w" sizes="(max-width:760px) 94vw, 760px"
@@ -247,9 +273,11 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
       <p class="pull rise">Lights. Camera.<br>Nate.</p>
       <p class="fine rise">Nathan Olu, Nate to most people, is the director behind DEPARTURZ and usually the one holding the camera. He brings a decade of live events and DJing, from House of Blues to KBXX 97.9 The Box in Houston, and he's an FAA-certified drone pilot, so the aerials stay in-house too.</p>
     </div>
+  </div>
   </section>
 
-  <section class="crew wrap" id="crew" aria-labelledby="crewTitle">
+  <section class="tone t-sky" id="crew" aria-labelledby="crewTitle">
+  <div class="crew wrap">
     <div class="crew-copy">
       <p class="kick rise">The crew</p>
       <h2 class="crew-title rise" id="crewTitle">One call.<br><span>A whole crew.</span></h2>
@@ -267,9 +295,11 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
       <img src="about/founder-hand-900.webp" srcset="about/founder-hand-600.webp 600w, about/founder-hand-900.webp 900w" sizes="(max-width:760px) 94vw, 560px"
            width="900" height="1129" alt="Nate in a black three-piece suit and leather gloves, sitting on a giant black leather glove that points at the crew list." loading="lazy" decoding="async">
     </figure>
+  </div>
   </section>
 
-  <section class="svc wrap" aria-labelledby="svcTitle">
+  <section class="tone t-ink" aria-labelledby="svcTitle">
+  <div class="svc wrap">
     <h2 class="kick rise" id="svcTitle">What we do</h2>
     <div class="svc-grid">
       <ol class="list side-l rise">
@@ -277,7 +307,7 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
         <li><a href="work.html#production"><span class="n">02</span><span class="name">Production</span><span class="desc">Films, documentaries, commercials, events and branded content, from concept to final delivery.</span></a></li>
       </ol>
       <svg class="mark cube rise" viewBox="0 0 300 322" role="img" aria-label="Shoot it. Cut it. Ship it.">
-        <g fill="#0A0A0A" font-family="Anton, Impact, 'Arial Narrow', sans-serif" font-weight="400">
+        <g fill="currentColor" font-family="Anton, Impact, 'Arial Narrow', sans-serif" font-weight="400">
           <g transform="matrix(0.8667,-0.5,0.8667,0.5,20,86)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">SHOOT</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
           <g transform="matrix(0.8667,0.5,0,1,20,86)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">CUT</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
           <g transform="matrix(0.8667,-0.5,0,1,150,161)"><text x="4" y="68" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">SHIP</text><text x="4" y="142" font-size="80" textLength="142" lengthAdjust="spacingAndGlyphs">IT.</text></g>
@@ -289,6 +319,7 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
       </ol>
     </div>
     <p class="based rise">Based in Los Angeles and Houston, with full production crews and dedicated editors for clients anywhere.</p>
+  </div>
   </section>
 
   <section class="bunch-sec" aria-labelledby="endTitle">
@@ -829,6 +860,7 @@ footer{padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
   top(); window.addEventListener('load', top, { once: true });
 })();
 </script>
+<script src="about-maze.js" defer></script>
 <script src="legal.js" defer></script>
 </body>
 </html>
