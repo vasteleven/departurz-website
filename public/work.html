@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DEPARTURZ Work</title>
 <meta name="description" content="The DEPARTURZ files: web design, production, post-production and sound. Pick a file and it plays in the viewing room.">
-<meta name="theme-color" content="#FAFAF8">
+<meta name="theme-color" content="#050506">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
 <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
@@ -16,14 +16,15 @@
 /* The work, filed like a cabinet: each service is a drawer of folders standing side by side, tabs staggered.
    Pick a folder and it plays in the viewing room at the top, on a cube hanging in a dark room (work-room.js). Colours are the site's: paper, stone, ink, sky, violet. */
 :root{
-  --paper:#FAFAF8; --ink:#0A0A0A; --mute:#6B6A66; --rule:#E3E1DC; --sky:#3FB8EE; --violet:#9E80F2;
+  --paper:#FAFAF8; --ink:#0A0A0A; --mute:#8F8D87; --rule:rgba(242,240,235,.14); --sky:#3FB8EE; --violet:#9E80F2;
+  --pg:#050506; --fg:#F2F0EB;            /* the page is black, like the viewing room; the folders keep their own colours */
   --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
   --f-cond:"Anton",Impact,"Arial Narrow",sans-serif; --f-mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace;
-  color-scheme:light;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+body{margin:0;background:var(--pg);color:var(--fg);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
 a{color:inherit}
 img{max-width:100%}
 button{font:inherit;color:inherit}
@@ -36,12 +37,12 @@ button{font:inherit;color:inherit}
 /* top bar */
 .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
 .home{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-mark);font-weight:900;font-size:22px;letter-spacing:.06em;line-height:1}
-.home i{width:26px;height:26px;background:var(--ink);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.home i{width:26px;height:26px;background:currentColor;-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
 .wm{display:block;flex:none;height:.68em;aspect-ratio:1280 / 107;background:currentColor;-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
 @media (max-width:520px){ .home .wm{height:12px} }
 .bar nav{display:flex;gap:22px;font-size:13px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
 .bar nav a{text-decoration:none;padding-bottom:3px;border-bottom:1.5px solid transparent}
-.bar nav a[aria-current="page"],.bar nav a:hover{border-color:var(--ink)}
+.bar nav a[aria-current="page"],.bar nav a:hover{border-color:var(--fg)}
 
 /* intro */
 .intro{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:20px 40px;padding-block:clamp(26px,5vw,64px) clamp(26px,4vw,48px)}
@@ -110,7 +111,10 @@ button{font:inherit;color:inherit}
 .room-video{position:absolute;left:0;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none;background:#000}
 .room-video:fullscreen{opacity:1;width:100%;height:100%;object-fit:contain;pointer-events:auto}
 .room-video:-webkit-full-screen{opacity:1;width:100%;height:100%;object-fit:contain;pointer-events:auto}
-.room-ui{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding-block:22px calc(22px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.room::before,.room::after{content:"";position:absolute;left:0;right:0;z-index:1;pointer-events:none}
+.room::before{top:0;height:90px;background:linear-gradient(var(--pg),rgba(5,5,6,0))}      /* the room melts into the black page above and below */
+.room::after{bottom:0;height:70px;background:linear-gradient(rgba(5,5,6,0),var(--pg))}
+.room-ui{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding-block:22px calc(22px + env(safe-area-inset-bottom,0px));pointer-events:none}
 .room-ui > *{pointer-events:auto}
 .room-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .room-k{margin:0;display:inline-flex;align-items:center;gap:10px;font-weight:500;color:var(--rf)}
@@ -272,7 +276,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 72 14" aria-hidden="true"><rect x="0" width="2" height="14"/><rect x="4" width="1" height="14"/><rect x="6.5" width="3" height="14"/><rect x="10.5" width="1" height="14"/><rect x="12.5" width="1.5" height="14"/><rect x="15.0" width="2" height="14"/><rect x="18.5" width="2" height="14"/><rect x="22.5" width="1" height="14"/><rect x="25.5" width="2" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="33.0" width="2" height="14"/><rect x="37.0" width="1" height="14"/><rect x="39.5" width="2" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.5" width="1" height="14"/><rect x="48.0" width="1" height="14"/><rect x="51.0" width="3" height="14"/><rect x="55.0" width="1" height="14"/><rect x="57.5" width="1" height="14"/><rect x="59.5" width="1" height="14"/><rect x="62.5" width="3" height="14"/><rect x="67.5" width="2" height="14"/></svg></span>
         <span class="sr">Play file WEB_003: Digital Civil Rights Coalition, Organization site</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:5;--tab:84px" data-d="0" data-i="3" aria-controls="room">
+      <button class="folder f-file dark" type="button" style="--bg:#1E1E23;--z:5;--tab:84px" data-d="0" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_004 //</b> GINAYLE MOSS</span></span>
         <span class="f-meta"><span>One-page site</span></span>
@@ -320,7 +324,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 73 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="3" height="14"/><rect x="6.5" width="2" height="14"/><rect x="10.0" width="2" height="14"/><rect x="13.0" width="3" height="14"/><rect x="17.0" width="1" height="14"/><rect x="19.0" width="3" height="14"/><rect x="23.0" width="3" height="14"/><rect x="27.5" width="1" height="14"/><rect x="30.5" width="3" height="14"/><rect x="34.5" width="1" height="14"/><rect x="37.5" width="1.5" height="14"/><rect x="41.0" width="1" height="14"/><rect x="43.5" width="1.5" height="14"/><rect x="47.0" width="1" height="14"/><rect x="50.0" width="1" height="14"/><rect x="53.0" width="2" height="14"/><rect x="56.5" width="1" height="14"/><rect x="59.0" width="1.5" height="14"/><rect x="61.5" width="3" height="14"/><rect x="66.5" width="1.5" height="14"/><rect x="70.0" width="1" height="14"/></svg></span>
         <span class="sr">Play file WEB_009: DEPARTURZ, This site</span>
       </button>
-      <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:11;--tab:52px">
+      <a class="folder f-yours" href="contact.html" style="--bg:#1E1E23;--z:11;--tab:52px">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_010 //</b> YOURS</span></span>
         <span class="y-word">Your story here</span>
@@ -342,7 +346,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">Films · Documentaries · Events</p>
         <p class="ix-file">DRAWER_02//</p>
       </div>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:2;--tab:118px" data-d="1" data-i="0" aria-controls="room">
+      <button class="folder f-file dark" type="button" style="--bg:#1E1E23;--z:2;--tab:118px" data-d="1" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_001 //</b> BESLA</span></span>
         <span class="f-meta"><span>Event coverage</span></span>
@@ -374,7 +378,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 74 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="3" height="14"/><rect x="7.5" width="3" height="14"/><rect x="12.5" width="3" height="14"/><rect x="17.5" width="1" height="14"/><rect x="20.0" width="2" height="14"/><rect x="24.0" width="3" height="14"/><rect x="28.5" width="1.5" height="14"/><rect x="31.5" width="1.5" height="14"/><rect x="34.0" width="3" height="14"/><rect x="38.5" width="1" height="14"/><rect x="41.5" width="2" height="14"/><rect x="45.0" width="1" height="14"/><rect x="48.0" width="1" height="14"/><rect x="50.0" width="3" height="14"/><rect x="54.0" width="1" height="14"/><rect x="57.0" width="1" height="14"/><rect x="59.0" width="1.5" height="14"/><rect x="62.0" width="1.5" height="14"/><rect x="64.5" width="1.5" height="14"/><rect x="68.0" width="1" height="14"/><rect x="71.0" width="1" height="14"/></svg></span>
         <span class="sr">Play file PRD_004: Right My Wrongs, Short film</span>
       </button>
-      <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
+      <a class="folder f-yours" href="contact.html" style="--bg:#1E1E23;--z:6;--tab:176px">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_005 //</b> YOURS</span></span>
         <span class="y-word">Your story here</span>
@@ -436,7 +440,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="1" height="14"/><rect x="4.5" width="1" height="14"/><rect x="7.5" width="1.5" height="14"/><rect x="11.0" width="1" height="14"/><rect x="13.0" width="1" height="14"/><rect x="15.5" width="1" height="14"/><rect x="18.5" width="3" height="14"/><rect x="23.0" width="3" height="14"/><rect x="28.0" width="2" height="14"/><rect x="32.0" width="3" height="14"/><rect x="37.0" width="1" height="14"/><rect x="39.0" width="1" height="14"/><rect x="41.0" width="1" height="14"/><rect x="44.0" width="1" height="14"/><rect x="46.0" width="1" height="14"/><rect x="49.0" width="2" height="14"/><rect x="52.5" width="1" height="14"/><rect x="54.5" width="2" height="14"/><rect x="58.5" width="1.5" height="14"/><rect x="62.0" width="2" height="14"/><rect x="65.5" width="1" height="14"/></svg></span>
         <span class="sr">Play file DRN_005: Los Angeles, Drone edit</span>
       </button>
-      <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:7;--tab:38px">
+      <a class="folder f-yours" href="contact.html" style="--bg:#1E1E23;--z:7;--tab:38px">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_006 //</b> YOURS</span></span>
         <span class="y-word">Your story here</span>
@@ -474,7 +478,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 69 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="1.5" height="14"/><rect x="6.0" width="1" height="14"/><rect x="8.0" width="1" height="14"/><rect x="10.5" width="1.5" height="14"/><rect x="13.5" width="1" height="14"/><rect x="15.5" width="2" height="14"/><rect x="19.5" width="2" height="14"/><rect x="23.0" width="2" height="14"/><rect x="27.0" width="1" height="14"/><rect x="29.5" width="3" height="14"/><rect x="34.5" width="1.5" height="14"/><rect x="38.0" width="3" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.0" width="1" height="14"/><rect x="48.0" width="3" height="14"/><rect x="52.0" width="1.5" height="14"/><rect x="54.5" width="1.5" height="14"/><rect x="57.0" width="2" height="14"/><rect x="61.0" width="1" height="14"/><rect x="64.0" width="1" height="14"/><rect x="67.0" width="1" height="14"/></svg></span>
         <span class="sr">Play file PST_002: Boiling Point, Narrative film</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:4;--tab:150px" data-d="3" data-i="2" aria-controls="room">
+      <button class="folder f-file dark" type="button" style="--bg:#1E1E23;--z:4;--tab:150px" data-d="3" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_003 //</b> NYC MIX</span></span>
         <span class="f-meta"><span>Edit</span></span>
@@ -490,7 +494,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 71 14" aria-hidden="true"><rect x="0" width="3" height="14"/><rect x="5" width="2" height="14"/><rect x="8.5" width="1.5" height="14"/><rect x="11.0" width="1" height="14"/><rect x="13.5" width="1.5" height="14"/><rect x="16.0" width="1" height="14"/><rect x="19.0" width="2" height="14"/><rect x="22.5" width="1" height="14"/><rect x="25.0" width="3" height="14"/><rect x="29.5" width="2" height="14"/><rect x="33.0" width="1" height="14"/><rect x="36.0" width="1" height="14"/><rect x="39.0" width="1.5" height="14"/><rect x="41.5" width="1" height="14"/><rect x="43.5" width="1" height="14"/><rect x="45.5" width="3" height="14"/><rect x="50.5" width="2" height="14"/><rect x="54.0" width="1" height="14"/><rect x="56.0" width="1" height="14"/><rect x="58.5" width="2" height="14"/><rect x="62.5" width="2" height="14"/><rect x="66.5" width="3" height="14"/></svg></span>
         <span class="sr">Play file PST_004: Go Again, Short film</span>
       </button>
-      <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
+      <a class="folder f-yours" href="contact.html" style="--bg:#1E1E23;--z:6;--tab:176px">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_005 //</b> YOURS</span></span>
         <span class="y-word">Your story here</span>
@@ -544,7 +548,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <span class="f-foot"><span class="play" aria-hidden="true">◆</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="3" height="14"/><rect x="4" width="2" height="14"/><rect x="7" width="3" height="14"/><rect x="11" width="3" height="14"/><rect x="16" width="3" height="14"/><rect x="20.5" width="3" height="14"/><rect x="24.5" width="1" height="14"/><rect x="27.0" width="1.5" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="32.0" width="1" height="14"/><rect x="34.0" width="1" height="14"/><rect x="37.0" width="3" height="14"/><rect x="42.0" width="1" height="14"/><rect x="45.0" width="2" height="14"/><rect x="48.5" width="1.5" height="14"/><rect x="51.0" width="2" height="14"/><rect x="54.0" width="1.5" height="14"/><rect x="57.5" width="1" height="14"/><rect x="60.0" width="1" height="14"/><rect x="62.0" width="1" height="14"/><rect x="64.0" width="2" height="14"/><rect x="67.0" width="2" height="14"/></svg></span>
         <span class="sr">Play file SND_004: Mix &amp; Master, Studio</span>
       </button>
-      <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
+      <a class="folder f-yours" href="contact.html" style="--bg:#1E1E23;--z:6;--tab:176px">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>SND_005 //</b> YOURS</span></span>
         <span class="y-word">Your story here</span>
