@@ -1,5 +1,5 @@
 /* The DEPARTURZ viewing room (work.html).
-   A cube hangs on one corner in a dark room, above a lone figure. Pick any file and the cube powers on:
+   A cube hangs on one corner in a dark room. Pick any file and the cube powers on:
    its edges light up from the bottom corner, a web of triangles spreads over the faces, then the video
    fills every face while the cube turns slowly and lights the room around it.
    Needs three.js r128 (loaded before this file). Without WebGL the video plays flat in the same dark room. */
@@ -163,7 +163,7 @@
     const camera = new T.PerspectiveCamera(42, 1, 0.1, 220);
 
     const S = 6, H = S / 2, DIAG = S * Math.sqrt(3);
-    const BOTTOM = 3.3;                                  // how high the lowest corner hangs, just over the figure's head
+    const BOTTOM = 3.3;                                  // how high the lowest corner hangs over the floor
     const LIFT = BOTTOM + H * Math.sqrt(3);              // the cube's centre
 
     // soft round glow, used for flares, light pools and haze
@@ -251,7 +251,7 @@
     const mirror = new T.Group(); mirror.scale.y = -1; const rigM = rig.clone(); mirror.add(rigM); scene.add(mirror);
     rigM.traverse(o => { o.renderOrder = -2; });
 
-    /* the room: a glossy floor, a pool of light under the cube, a lit square on the floor, haze, and someone looking up */
+    /* the room: a glossy floor, a pool of light under the cube, a lit square on the floor, and haze */
     const floor = new T.Mesh(new T.PlaneGeometry(160, 160), new T.MeshStandardMaterial({ color: 0x0b0b0e, roughness: 0.3, metalness: 0.55, transparent: true, opacity: 0.8 }));
     floor.rotation.x = -Math.PI / 2; floor.renderOrder = -1; scene.add(floor);
     const pool = new T.Mesh(new T.PlaneGeometry(36, 36), new T.MeshBasicMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
@@ -265,21 +265,6 @@
     const haze = [[-7, 9, -6, 18], [8, 12, -9, 22], [0, 16, -14, 30], [0, 5, 1, 14]].map(([x, y, z, s]) => {
       const h = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
       h.position.set(x, y, z); h.scale.set(s, s * 0.7, 1); scene.add(h); return h; });
-    // the figure, from behind, looking up
-    const who = (() => { const c = document.createElement('canvas'); c.width = 256; c.height = 640; const x = c.getContext('2d');
-      const shape = (ctx) => { ctx.beginPath(); ctx.ellipse(128, 70, 36, 44, 0, 0, Math.PI * 2);
-        ctx.moveTo(84, 128); ctx.quadraticCurveTo(128, 112, 172, 128); ctx.quadraticCurveTo(204, 140, 206, 190); ctx.lineTo(214, 350); ctx.quadraticCurveTo(212, 372, 196, 370);
-        ctx.lineTo(186, 300); ctx.lineTo(178, 380); ctx.lineTo(170, 616); ctx.lineTo(138, 616); ctx.lineTo(130, 410); ctx.lineTo(126, 410); ctx.lineTo(118, 616); ctx.lineTo(86, 616);
-        ctx.lineTo(78, 380); ctx.lineTo(70, 300); ctx.lineTo(60, 370); ctx.quadraticCurveTo(44, 372, 42, 350); ctx.lineTo(50, 190); ctx.quadraticCurveTo(52, 140, 84, 128); ctx.closePath(); };
-      x.shadowColor = 'rgba(255,255,255,1)'; x.shadowBlur = 10; x.fillStyle = '#fff'; shape(x); x.fill();
-      const rim = new T.CanvasTexture(c);
-      const c2 = document.createElement('canvas'); c2.width = 256; c2.height = 640; const y = c2.getContext('2d'); y.fillStyle = '#030304'; shape(y); y.fill();
-      const body = new T.CanvasTexture(c2);
-      const g = new T.Group();
-      const rs = new T.Sprite(new T.SpriteMaterial({ map: rim, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
-      const bs = new T.Sprite(new T.SpriteMaterial({ map: body, transparent: true, fog: false }));
-      [rs, bs].forEach((s, n) => { s.center.set(0.5, 0); s.scale.set(0.74 * (n ? 1 : 1.04), 1.85 * (n ? 1 : 1.02), 1); g.add(s); });
-      rs.position.z = -0.02; g.position.set(0.1, 0.03, 1.9); scene.add(g); return { rim: rs }; })();
     const amb = new T.AmbientLight(0x16161c, 0.6); scene.add(amb);
     const lamp = new T.PointLight(0xffffff, 0, 70, 1.6); lamp.position.set(0, LIFT - 2, 1); scene.add(lamp);
 
@@ -398,7 +383,6 @@
       pool.material.color.copy(tint); pool.material.opacity = 0.1 * edgeLight + 0.62 * bright;
       wall.material.color.copy(tint); wall.material.opacity = 0.04 * edgeLight + 0.32 * bright;
       haze.forEach((h, n) => { h.material.color.copy(tint); h.material.opacity = (0.015 * edgeLight + 0.08 * bright) * (n === 3 ? 0.6 : 1); });
-      who.rim.material.color.copy(tint).lerp(new T.Color(0xffffff), 0.4); who.rim.material.opacity = 0.18 * edgeLight + 0.75 * bright;
       stageRim.material.opacity = 0.08 + 0.1 * edgeLight + 0.25 * bright;
       // the viewer's eye drifts a little with the mouse
       cx += ((RM ? 0 : mx) - cx) * 0.04; cy += ((RM ? 0 : my) - cy) * 0.04;
