@@ -1,5 +1,5 @@
 /* The DEPARTURZ viewing room (work.html).
-   A big cube hangs in a black marble hall with one corner pointing at you, so you look up at its underside.
+   A big cube hangs in a dark hall (matte charcoal walls, a black marble floor) with one corner pointing at you, so you look up at its underside.
    Pick any file and the cube powers on: its edges light up from that corner, a web of triangles spreads over
    the faces, then the video fills the faces while the cube turns slowly, lighting the marble and mirrored in the floor.
    Needs three.js r128 (loaded before this file). Without WebGL the video plays flat in the same dark room. */
@@ -296,14 +296,27 @@
       baseQ.setFromRotationMatrix(W.multiply(LB)); axis.copy(v);
     }
 
-    /* the hall: polished black marble floor and walls, lit only by the cube */
+    /* the hall: a polished black marble floor and matte charcoal walls, lit only by the cube */
     const big = small ? 1024 : 2048;
     const floorTex = new T.CanvasTexture(marble(big, big, 11, { big: 7, thin: 44, tiles: [6, 6] }));
     floorTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    const wallTex = new T.CanvasTexture(marble(1024, 1024, 29, { big: 3, thin: 12, tiles: [4, 2] }));
+    // the walls: matte charcoal panels, floor to ceiling, with thin seams, a fine plaster grain and a shadow gap at the floor
+    const wallTex = new T.CanvasTexture((() => {
+      const c = document.createElement('canvas'); c.width = 512; c.height = 2048; const x = c.getContext('2d');
+      let sd = 41; const rnd = () => (sd = sd * 16807 % 2147483647) / 2147483647;
+      x.fillStyle = '#26262a'; x.fillRect(0, 0, 512, 2048);
+      for (let n = 0; n < 60; n++){ const r = 60 + rnd() * 260, px = rnd() * 512, py = rnd() * 2048, g = x.createRadialGradient(px, py, 0, px, py, r);
+        const v = rnd() < 0.5 ? '0,0,0' : '60,60,64'; g.addColorStop(0, 'rgba(' + v + ',' + (0.05 + rnd() * 0.07).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + v + ',0)');
+        x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r); }
+      const im = x.getImageData(0, 0, 512, 2048), d = im.data;   // a fine plaster grain
+      for (let n = 0; n < d.length; n += 4){ const g = (rnd() - 0.5) * 14; d[n] += g; d[n + 1] += g; d[n + 2] += g; }
+      x.putImageData(im, 0, 0);
+      [0, 256].forEach(X => { x.fillStyle = 'rgba(8,8,9,.95)'; x.fillRect(X, 0, 3, 2048); x.fillStyle = 'rgba(255,255,255,.05)'; x.fillRect(X + 3, 0, 1, 2048); });
+      x.fillStyle = 'rgba(8,8,9,.95)'; x.fillRect(0, 2032, 512, 16);
+      return c; })());
     wallTex.encoding = T.sRGBEncoding; wallTex.anisotropy = floorTex.anisotropy;
-    const wallMat = (w, h) => { const t = wallTex.clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(w / 16, h / 16);
-      return new T.MeshStandardMaterial({ map: t, roughness: 0.5, metalness: 0.0 }); };   // a soft sheen; a tight highlight from a light inside the cube would read as a stray dot
+    const wallMat = (w, h) => { const t = wallTex.clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(w / 9, 1);
+      return new T.MeshStandardMaterial({ map: t, roughness: 0.88, metalness: 0.0 }); };
     const WH = 44, BACK = -20, SIDE = 22, FRONT = 30;
     const back = new T.Mesh(new T.PlaneGeometry(SIDE * 2, WH), wallMat(SIDE * 2, WH)); back.position.set(0, WH / 2, BACK); scene.add(back);
     const left = new T.Mesh(new T.PlaneGeometry(FRONT - BACK, WH), wallMat(FRONT - BACK, WH)); left.rotation.y = Math.PI / 2; left.position.set(-SIDE, WH / 2, (FRONT + BACK) / 2); scene.add(left);
