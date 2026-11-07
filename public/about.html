@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>About DEPARTURZ</title>
 <meta name="description" content="DEPARTURZ is a storytelling studio in Los Angeles and Houston, founded by Nathan Olu: web design, production, post-production and sound under one roof.">
-<meta name="theme-color" content="#EAF6FD">
+<meta name="theme-color" content="#F0EFFB">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
 <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
@@ -14,8 +14,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <style>
-/* Colour blocks: a light sky-to-lilac opening, then ink, violet, sky and ink bands, black type, one letter cube,
-   a poster, a band of drifting ink blobs, and small hand-made title marks.
+/* Colour blocks: an opening over a live line maze, then white, sky and ink bands, black type, one letter cube,
+   a poster, and small hand-made title marks.
    Type does the work: a loud condensed headline, a quieter line you read next, fine body copy, a bold aside. */
 :root{
   --paper:#FAFAF8;
@@ -25,6 +25,9 @@
   --sky:#3FB8EE;
   --violet:#9E80F2;
   --sun:#F7C21B;
+  --maze-ground:#F0EFFB;
+  --maze-ink:#3FB8EE;
+  --maze-ink2:#9E80F2;
   --f:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
   color-scheme:light;
@@ -32,11 +35,7 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;color:var(--ink);
-  /* the opening sits on a soft wash: pale sky at the top, a violet glow behind the cube, pale lilac lower down */
-  background:radial-gradient(560px 460px at 80% 420px,rgba(158,128,242,.20),rgba(158,128,242,0) 70%) no-repeat,
-             radial-gradient(520px 420px at 6% 120px,rgba(63,184,238,.16),rgba(63,184,238,0) 70%) no-repeat,
-             linear-gradient(180deg,#EAF6FD 0,#F5F6FB 560px,#EEE9FD 1300px) 0 0 / 100% 1300px no-repeat,
-             #EEE9FD;font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+  background:var(--maze-ground);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
 a{color:inherit}
 img{max-width:100%}
 :focus-visible{outline:2px solid var(--violet);outline-offset:4px}
@@ -88,14 +87,16 @@ img{max-width:100%}
 
 /* the colour bands, full width; each one sets its own quiet text colour and rule colour */
 .tone{position:relative}
-.t-violet{background:var(--violet);--mute:rgba(10,10,10,.68);--rule:rgba(10,10,10,.2)}
+.t-paper{background:var(--paper)}
 .t-sky{background:var(--sky);--mute:rgba(10,10,10,.7);--rule:rgba(10,10,10,.2)}
 .t-ink{background:var(--ink);color:var(--paper);--mute:rgba(250,250,248,.62);--rule:rgba(250,250,248,.16)}
 
-/* 1b. the blob band: ink shapes drifting over sky and violet, painted by about-blobs.js (the gradient alone without WebGL) */
-.blobs{position:relative;height:clamp(300px,54vh,580px);background:linear-gradient(110deg,var(--sky),var(--violet));overflow:hidden;touch-action:pan-y}
-.blobs canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
-.blobs.live canvas{opacity:1}
+/* 1b. behind the opening: a live organic maze, made the same way as the story background on the Ginyale Moss site
+   (about-flow.js). Sky-to-violet lines on a pale lilac ground; the story sits on a frosted panel so it reads. */
+.open-wrap{position:relative;isolation:isolate;overflow:hidden;background:var(--maze-ground)}
+.open-bg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;display:block}
+.open .read{position:relative;padding:clamp(20px,2.4vw,32px);border-radius:24px;background:rgba(240,239,251,.9);
+  box-shadow:0 0 0 1px rgba(158,128,242,.10);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 
 /* 2. the founder: the Directors poster beside his story */
 .founder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(28px,5vw,72px);padding-block:clamp(50px,7vw,96px)}
@@ -229,6 +230,8 @@ footer .home i{background:currentColor}
     </div>
   </div>
 
+  <div class="open-wrap">
+  <canvas class="open-bg" aria-hidden="true"></canvas>
   <section class="open wrap" aria-labelledby="readTitle">
     <div class="read">
       <p class="kick rise">Start here</p>
@@ -254,12 +257,9 @@ footer .home i{background:currentColor}
       </figure>
     </div>
   </section>
-
-  <div class="blobs" id="blobs" aria-hidden="true">
-    <canvas></canvas>
   </div>
 
-  <section class="tone t-violet" aria-labelledby="founderTitle">
+  <section class="tone t-paper" aria-labelledby="founderTitle">
   <div class="founder wrap">
     <div class="poster rise">
       <span class="sun" aria-hidden="true"></span>
@@ -860,7 +860,7 @@ footer .home i{background:currentColor}
   top(); window.addEventListener('load', top, { once: true });
 })();
 </script>
-<script src="about-blobs.js" defer></script>
+<script src="about-flow.js" defer></script>
 <script src="legal.js" defer></script>
 </body>
 </html>
