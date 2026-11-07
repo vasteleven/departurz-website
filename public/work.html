@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DEPARTURZ Work</title>
-<meta name="description" content="The DEPARTURZ files: web design, production, post-production and sound. Pick a file and it slides out.">
+<meta name="description" content="The DEPARTURZ files: web design, production, post-production and sound. Pick a file and it plays in the viewing room.">
 <meta name="theme-color" content="#FAFAF8">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&family=Martian+Mono:wght@400;500&display=swap">
 <style>
 /* The work, filed like a cabinet: each service is a drawer of folders standing side by side, tabs staggered.
-   Pick a folder and it slides up out of the drawer and opens to its video. Colours are the site's: paper, stone, ink, sky, violet. */
+   Pick a folder and it plays in the viewing room at the top, on a cube hanging in a dark room (work-room.js). Colours are the site's: paper, stone, ink, sky, violet. */
 :root{
   --paper:#FAFAF8; --ink:#0A0A0A; --mute:#6B6A66; --rule:#E3E1DC; --sky:#3FB8EE; --violet:#9E80F2;
   --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
@@ -102,42 +102,54 @@ button{font:inherit;color:inherit}
   background:linear-gradient(180deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
 .y-go{position:relative;font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
 
-/* the opened file */
-.viewer{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:clamp(12px,3vw,40px)}
-.viewer[hidden]{display:none}
-.scrim{position:absolute;inset:0;background:rgba(250,250,248,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .35s}
-.viewer.on .scrim{opacity:1}
-.sheet{position:relative;width:min(1120px,100%);max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);margin-top:28px;background:var(--bg);border-radius:4px 12px 12px 12px;
-  box-shadow:0 40px 80px -30px rgba(10,10,10,.45);display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:clamp(16px,2.4vw,30px);padding:clamp(16px,2.4vw,28px);opacity:0}
-.sheet.ink{color:var(--ink)} .sheet.paper{color:#F2F0EB}
-.sheet .paper-g{position:absolute;inset:0;border-radius:inherit;background:url(work/paper.webp);background-size:220px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
-.s-tab{position:absolute;left:0;bottom:100%;height:30px;padding:0 18px;display:flex;align-items:center;gap:10px;border-radius:10px 10px 0 0;background:var(--bg);font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;white-space:nowrap}
-.s-tab::after{content:"";position:absolute;left:100%;bottom:0;width:10px;height:10px;background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--bg) 10px)}
-.screen{position:relative;align-self:start;aspect-ratio:16 / 9;border-radius:4px;overflow:hidden;background:#0A0A0A}
-.screen video,.screen iframe,.screen img{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
-.screen img{object-fit:cover}
-.sound{position:absolute;left:12px;top:12px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:0;border-radius:999px;background:rgba(10,10,10,.72);color:#F2F0EB;cursor:pointer;
-  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.sound:hover{background:rgba(10,10,10,.88)}
-.sound svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.soon{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;color:#F2F0EB;background:radial-gradient(120% 120% at 50% 0%,#26262B,#0A0A0A)}
-.soon b{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(34px,5vw,64px);line-height:.9;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.soon span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
-.info{position:relative;display:flex;flex-direction:column;gap:14px;min-width:0;overflow:auto}
-.info .k{margin:0;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
-.info h3{margin:0;font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(38px,4.4vw,64px);line-height:.92}
-.info p.d{margin:0;font-size:15px;line-height:1.55}
-.info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;border-top:1px solid color-mix(in srgb, currentColor 22%, transparent);padding-top:12px}
-.info dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;padding-top:2px}
-.info dd{margin:0}
-.acts{margin-top:auto;display:flex;flex-wrap:wrap;gap:10px}
-.pill{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;border:1.5px solid currentColor;background:transparent;text-decoration:none;cursor:pointer;
-  font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
-.pill.solid{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.sheet.paper .pill.solid{background:#F2F0EB;border-color:#F2F0EB;color:var(--ink)}
-.x{position:absolute;right:10px;top:10px;z-index:2;width:38px;height:38px;border-radius:50%;border:1.5px solid currentColor;background:transparent;cursor:pointer;font-size:18px;line-height:1}
-.nav{display:flex;gap:8px}
-.ghost{position:fixed;z-index:60;border-radius:4px 10px 10px 4px;pointer-events:none;box-shadow:0 30px 60px -24px rgba(10,10,10,.45)}
+/* the viewing room: a dark room under the title, where a cube plays whatever file you pick */
+.room{--rf:#F2F0EB;position:relative;height:clamp(560px,88vh,940px);background:#050506;color:var(--rf);overflow:hidden;isolation:isolate;scroll-margin-top:0}
+.room-stage{position:absolute;inset:0;touch-action:pan-y;background:radial-gradient(70% 60% at 50% 38%,#121216,#050506 70%)}
+.room-stage canvas{display:block;width:100%;height:100%;cursor:grab}
+.room-stage canvas:active{cursor:grabbing}
+.room-video{position:absolute;left:0;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none;background:#000}
+.room-video:fullscreen{opacity:1;width:100%;height:100%;object-fit:contain;pointer-events:auto}
+.room-video:-webkit-full-screen{opacity:1;width:100%;height:100%;object-fit:contain;pointer-events:auto}
+.room-ui{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding-block:22px calc(22px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.room-ui > *{pointer-events:auto}
+.room-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.room-k{margin:0;display:inline-flex;align-items:center;gap:10px;font-weight:500;color:var(--rf)}
+.room-k i{width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 12px 2px rgba(63,184,238,.7)}
+.room-now{margin:0;color:rgba(242,240,235,.6);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-idle{max-width:460px}
+.room-idle .big{margin:0 0 12px;font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(46px,6vw,86px);line-height:.9;width:fit-content;
+  background:linear-gradient(100deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.room-idle .sub{margin:0 0 18px;font-size:14px;line-height:1.5;color:rgba(242,240,235,.7);max-width:36ch}
+.room-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 24px;flex-wrap:wrap}
+.room-title{min-width:0}
+.room-title .mono{margin:0;color:rgba(242,240,235,.62)}
+.room-name{margin:6px 0 0;font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(36px,4.8vw,68px);line-height:.92;max-width:16ch}
+.room-ctl{display:flex;flex-wrap:wrap;gap:8px}
+.rbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;min-width:44px;padding:0 15px;border-radius:999px;border:1px solid rgba(242,240,235,.3);
+  background:rgba(10,10,12,.55);color:var(--rf);cursor:pointer;text-decoration:none;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;line-height:1;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .2s,background .2s}
+.rbtn:hover{border-color:var(--rf);background:rgba(30,30,34,.7)}
+.rbtn:disabled{opacity:.35;cursor:default}
+.rbtn.solid{background:var(--rf);border-color:var(--rf);color:var(--ink)}
+.rbtn.solid:hover{background:#fff}
+.rbtn svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rbtn[aria-pressed="true"]{border-color:var(--sky);color:#fff}
+.room-details{position:absolute;right:max(22px,env(safe-area-inset-right,0px));bottom:96px;z-index:2;width:min(380px,calc(100% - 44px));max-height:calc(100% - 180px);overflow:auto;
+  padding:20px 20px 18px;border-radius:14px;background:rgba(14,14,17,.86);border:1px solid rgba(242,240,235,.14);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.room-details .d{margin:0 26px 14px 0;font-size:14px;line-height:1.55}
+.room-details dl{margin:0 0 16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;border-top:1px solid rgba(242,240,235,.16);padding-top:12px}
+.room-details dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;padding-top:2px}
+.room-details dd{margin:0}
+.rx{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(242,240,235,.3);background:transparent;color:var(--rf);cursor:pointer;font-size:17px;line-height:1}
+.room-soon{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);display:none;place-items:center;gap:10px;text-align:center}
+.room-soon b{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(40px,6vw,76px);line-height:.9;background:linear-gradient(90deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.room-soon span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+/* no WebGL: the film plays flat on a glowing screen in the same dark room */
+.room.flat .room-video{left:50%;top:42%;width:min(880px,88%);height:auto;aspect-ratio:16 / 9;transform:translate(-50%,-50%);opacity:1;border-radius:6px;box-shadow:0 0 140px 20px rgba(158,128,242,.22)}
+.room.flat.no-video .room-video{display:none}
+.room.flat.no-video .room-soon{display:grid}
+.f-file.showing{transform:translateY(-14px)}
+.f-file.showing .play{color:var(--violet)}
 
 footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-area-inset-bottom, 0px))}
 .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 30px}
@@ -172,13 +184,18 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
   .f-file:hover,.f-file:focus-visible,.f-yours:hover{transform:translateY(-6px)}
   .f-yours{flex-direction:row;align-items:center;min-height:96px;margin-top:4px;border-radius:0 10px 10px 10px}
   .y-word{writing-mode:horizontal-tb;font-size:34px}
-  .viewer{padding:0;place-items:end stretch}
-  .sheet{grid-template-columns:minmax(0,1fr);width:100%;max-height:92vh;max-height:92dvh;border-radius:4px 14px 0 0;margin-top:0;overflow:auto;padding:16px 16px calc(18px + env(safe-area-inset-bottom, 0px))}
-  .info{overflow:visible}
+  .room{height:clamp(600px,90svh,860px)}
+  .room-now{display:none}
+  .room-bar{align-items:stretch;flex-direction:column}
+  .room-ctl{flex-wrap:nowrap}
+  .room-bar .room-ctl{justify-content:space-between}
+  .rbtn{padding:0 13px}
+  .room-bar .rbtn span{display:none}
+  .room-details{left:16px;right:16px;width:auto;bottom:150px}
 }
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
-  .folder,.scrim,.cover{transition:none}
+  .folder,.cover{transition:none}
 }
 </style>
 </head>
@@ -204,6 +221,37 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
     </ol>
   </section>
 
+  <section class="room" id="room" aria-labelledby="roomH">
+    <div class="room-stage" id="roomStage"></div>
+    <video class="room-video" id="roomVideo" playsinline webkit-playsinline muted preload="none" aria-hidden="true" tabindex="-1"></video>
+    <div class="room-soon" id="roomSoon" aria-hidden="true"></div>
+    <div class="room-ui wrap">
+      <div class="room-top"><h2 class="mono room-k" id="roomH"><i aria-hidden="true"></i>Viewing room</h2><p class="mono room-now" id="roomNow" aria-live="polite">Pick a file to start</p></div>
+      <div class="room-idle" id="roomIdle">
+        <p class="big">Pick any file.<br>It plays here.</p>
+        <p class="sub">Every folder below opens in this room, on all six sides of the cube. Drag the cube to turn it.</p>
+        <div class="room-ctl"><button class="rbtn solid" type="button" id="roomStart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor" stroke="none"/></svg>Start the screening</button><a class="rbtn" href="#web-design">See the files ↓</a></div>
+      </div>
+      <div class="room-bar" id="roomBar" hidden>
+        <div class="room-title"><p class="mono" id="roomKind"></p><p class="room-name" id="roomTitle"></p></div>
+        <div class="room-ctl" role="group" aria-label="Viewing room controls">
+          <button class="rbtn" type="button" id="roomPrev" aria-label="Previous file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="rbtn" type="button" id="roomPlay" aria-label="Play"></button>
+          <button class="rbtn" type="button" id="roomSound" aria-label="Sound" aria-pressed="false"></button>
+          <button class="rbtn" type="button" id="roomFull" aria-label="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><span>Full screen</span></button>
+          <button class="rbtn" type="button" id="roomInfo" aria-label="Details" aria-expanded="false" aria-controls="roomDetails"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg><span>Details</span></button>
+          <button class="rbtn" type="button" id="roomNext" aria-label="Next file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="room-details" id="roomDetails" hidden>
+      <button class="rx" type="button" id="roomDetailsX" aria-label="Close details">×</button>
+      <p class="d" id="roomDesc"></p>
+      <dl id="roomList"></dl>
+      <div class="room-ctl"><a class="rbtn solid" id="roomLink" rel="noopener" hidden>Visit site ↗</a><a class="rbtn" href="contact.html">Start a project</a></div>
+    </div>
+  </section>
+
   <section class="drawer" id="web-design" aria-labelledby="t-web-design">
     <header class="d-head wrap">
       <p class="d-no">DRAWER_01 //</p>
@@ -217,77 +265,77 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">Sites · Shops · Landing pages</p>
         <p class="ix-file">DRAWER_01//</p>
       </div>
-      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:2;--tab:118px" data-d="0" data-i="0" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:2;--tab:118px" data-d="0" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_001 //</b> NOLAN WELLS</span></span>
         <span class="f-meta"><span>Foundation site + shop</span><span class="stat">Launching soon</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">NOLAN WELLS</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="3" height="14"/><rect x="7.0" width="1" height="14"/><rect x="9.0" width="2" height="14"/><rect x="12.5" width="2" height="14"/><rect x="16.5" width="1" height="14"/><rect x="19.5" width="1" height="14"/><rect x="22.0" width="1" height="14"/><rect x="25.0" width="1" height="14"/><rect x="28.0" width="1.5" height="14"/><rect x="30.5" width="2" height="14"/><rect x="33.5" width="1" height="14"/><rect x="36.5" width="2" height="14"/><rect x="39.5" width="1.5" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.5" width="1.5" height="14"/><rect x="49.0" width="1.5" height="14"/><rect x="52.5" width="1" height="14"/><rect x="55.5" width="2" height="14"/><rect x="59.5" width="1.5" height="14"/><rect x="62.0" width="1.5" height="14"/><rect x="64.5" width="3" height="14"/></svg></span>
-        <span class="sr">Open file WEB_001: Nolan Xavier Wells Foundation, Foundation site + shop</span>
+        <span class="sr">Play file WEB_001: Nolan Xavier Wells Foundation, Foundation site + shop</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:3;--tab:52px" data-d="0" data-i="1" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:3;--tab:52px" data-d="0" data-i="1" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_002 //</b> JULIE WENAH</span></span>
         <span class="f-meta"><span>Personal brand site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">JULIE WENAH</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 76 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="1.5" height="14"/><rect x="5.0" width="3" height="14"/><rect x="9.0" width="1" height="14"/><rect x="11.5" width="1" height="14"/><rect x="14.5" width="1" height="14"/><rect x="17.0" width="3" height="14"/><rect x="21.5" width="3" height="14"/><rect x="26.5" width="1.5" height="14"/><rect x="30.0" width="2" height="14"/><rect x="34.0" width="1.5" height="14"/><rect x="37.5" width="1" height="14"/><rect x="39.5" width="1.5" height="14"/><rect x="43.0" width="3" height="14"/><rect x="48.0" width="2" height="14"/><rect x="52.0" width="1" height="14"/><rect x="54.5" width="3" height="14"/><rect x="58.5" width="2" height="14"/><rect x="62.0" width="3" height="14"/><rect x="66.5" width="1.5" height="14"/><rect x="69.5" width="1" height="14"/><rect x="72.0" width="1.5" height="14"/></svg></span>
-        <span class="sr">Open file WEB_002: Julie Wenah, Personal brand site</span>
+        <span class="sr">Play file WEB_002: Julie Wenah, Personal brand site</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:4;--tab:150px" data-d="0" data-i="2" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:4;--tab:150px" data-d="0" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_003 //</b> DCRC</span></span>
         <span class="f-meta"><span>Organization site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">DCRC</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 72 14" aria-hidden="true"><rect x="0" width="2" height="14"/><rect x="4" width="1" height="14"/><rect x="6.5" width="3" height="14"/><rect x="10.5" width="1" height="14"/><rect x="12.5" width="1.5" height="14"/><rect x="15.0" width="2" height="14"/><rect x="18.5" width="2" height="14"/><rect x="22.5" width="1" height="14"/><rect x="25.5" width="2" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="33.0" width="2" height="14"/><rect x="37.0" width="1" height="14"/><rect x="39.5" width="2" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.5" width="1" height="14"/><rect x="48.0" width="1" height="14"/><rect x="51.0" width="3" height="14"/><rect x="55.0" width="1" height="14"/><rect x="57.5" width="1" height="14"/><rect x="59.5" width="1" height="14"/><rect x="62.5" width="3" height="14"/><rect x="67.5" width="2" height="14"/></svg></span>
-        <span class="sr">Open file WEB_003: Digital Civil Rights Coalition, Organization site</span>
+        <span class="sr">Play file WEB_003: Digital Civil Rights Coalition, Organization site</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:5;--tab:84px" data-d="0" data-i="3" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:5;--tab:84px" data-d="0" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_004 //</b> GINAYLE MOSS</span></span>
         <span class="f-meta"><span>One-page site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">GINAYLE MOSS</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 71 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.5" width="1" height="14"/><rect x="5.5" width="1" height="14"/><rect x="7.5" width="2" height="14"/><rect x="11.5" width="3" height="14"/><rect x="16.0" width="1.5" height="14"/><rect x="19.5" width="3" height="14"/><rect x="24.5" width="1" height="14"/><rect x="27.5" width="1" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="33.0" width="1" height="14"/><rect x="36.0" width="1" height="14"/><rect x="38.0" width="2" height="14"/><rect x="41.0" width="1.5" height="14"/><rect x="44.5" width="1" height="14"/><rect x="47.0" width="2" height="14"/><rect x="51.0" width="1.5" height="14"/><rect x="54.0" width="1" height="14"/><rect x="56.5" width="1" height="14"/><rect x="59.5" width="1" height="14"/><rect x="62.0" width="2" height="14"/><rect x="66.0" width="3" height="14"/></svg></span>
-        <span class="sr">Open file WEB_004: Ginayle Moss, One-page site</span>
+        <span class="sr">Play file WEB_004: Ginayle Moss, One-page site</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:6;--tab:176px" data-d="0" data-i="4" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:6;--tab:176px" data-d="0" data-i="4" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_005 //</b> GORILLA</span></span>
         <span class="f-meta"><span>Business site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">GORILLA</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 72 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.5" width="1" height="14"/><rect x="6.5" width="1" height="14"/><rect x="8.5" width="3" height="14"/><rect x="13.5" width="1.5" height="14"/><rect x="16.0" width="2" height="14"/><rect x="19.0" width="1" height="14"/><rect x="22.0" width="1.5" height="14"/><rect x="24.5" width="1.5" height="14"/><rect x="27.0" width="1.5" height="14"/><rect x="30.5" width="1" height="14"/><rect x="33.5" width="3" height="14"/><rect x="38.0" width="1.5" height="14"/><rect x="41.0" width="1.5" height="14"/><rect x="44.5" width="1.5" height="14"/><rect x="48.0" width="1" height="14"/><rect x="50.5" width="1" height="14"/><rect x="53.0" width="1" height="14"/><rect x="56.0" width="1.5" height="14"/><rect x="58.5" width="3" height="14"/><rect x="63.0" width="2" height="14"/><rect x="67.0" width="3" height="14"/></svg></span>
-        <span class="sr">Open file WEB_005: Gorilla LED Trucks, Business site</span>
+        <span class="sr">Play file WEB_005: Gorilla LED Trucks, Business site</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:7;--tab:38px" data-d="0" data-i="5" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:7;--tab:38px" data-d="0" data-i="5" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_006 //</b> LOYOLA</span></span>
         <span class="f-meta"><span>School site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">LOYOLA</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 67 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.0" width="1" height="14"/><rect x="5.5" width="1.5" height="14"/><rect x="8.5" width="1.5" height="14"/><rect x="11.5" width="1" height="14"/><rect x="13.5" width="3" height="14"/><rect x="17.5" width="1" height="14"/><rect x="20.5" width="1" height="14"/><rect x="23.5" width="1.5" height="14"/><rect x="26.0" width="1" height="14"/><rect x="28.0" width="1.5" height="14"/><rect x="30.5" width="2" height="14"/><rect x="34.0" width="3" height="14"/><rect x="39.0" width="1" height="14"/><rect x="41.0" width="3" height="14"/><rect x="45.5" width="1" height="14"/><rect x="47.5" width="1.5" height="14"/><rect x="50.5" width="2" height="14"/><rect x="54.5" width="1.5" height="14"/><rect x="57.5" width="1" height="14"/><rect x="60.5" width="1.5" height="14"/><rect x="64.0" width="1" height="14"/></svg></span>
-        <span class="sr">Open file WEB_006: Loyola High School, School site</span>
+        <span class="sr">Play file WEB_006: Loyola High School, School site</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:8;--tab:132px" data-d="0" data-i="6" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:8;--tab:132px" data-d="0" data-i="6" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_007 //</b> FORJ LA</span></span>
         <span class="f-meta"><span>Gym site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">FORJ LA</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.5" width="1" height="14"/><rect x="5.5" width="1.5" height="14"/><rect x="8.0" width="1.5" height="14"/><rect x="10.5" width="1" height="14"/><rect x="13.5" width="2" height="14"/><rect x="16.5" width="1.5" height="14"/><rect x="20.0" width="3" height="14"/><rect x="24.0" width="1" height="14"/><rect x="26.5" width="3" height="14"/><rect x="31.0" width="1" height="14"/><rect x="33.5" width="1" height="14"/><rect x="36.0" width="1" height="14"/><rect x="38.0" width="2" height="14"/><rect x="41.5" width="2" height="14"/><rect x="45.0" width="3" height="14"/><rect x="50.0" width="1" height="14"/><rect x="52.0" width="2" height="14"/><rect x="55.0" width="3" height="14"/><rect x="59.5" width="2" height="14"/><rect x="63.0" width="3" height="14"/><rect x="67.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file WEB_007: Forj LA, Gym site</span>
+        <span class="sr">Play file WEB_007: Forj LA, Gym site</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:9;--tab:26px" data-d="0" data-i="7" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:9;--tab:26px" data-d="0" data-i="7" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_008 //</b> ELLIMAN</span></span>
         <span class="f-meta"><span>Real estate site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">ELLIMAN</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 75 14" aria-hidden="true"><rect x="0" width="2" height="14"/><rect x="4" width="2" height="14"/><rect x="8" width="2" height="14"/><rect x="11" width="1" height="14"/><rect x="13" width="1" height="14"/><rect x="15.5" width="1" height="14"/><rect x="18.0" width="1.5" height="14"/><rect x="21.5" width="1" height="14"/><rect x="23.5" width="3" height="14"/><rect x="28.0" width="1" height="14"/><rect x="31.0" width="3" height="14"/><rect x="35.5" width="3" height="14"/><rect x="40.5" width="3" height="14"/><rect x="45.0" width="3" height="14"/><rect x="50.0" width="1" height="14"/><rect x="52.5" width="1" height="14"/><rect x="55.0" width="1" height="14"/><rect x="58.0" width="1" height="14"/><rect x="60.0" width="3" height="14"/><rect x="64.0" width="3" height="14"/><rect x="68.5" width="3" height="14"/><rect x="72.5" width="1.5" height="14"/></svg></span>
-        <span class="sr">Open file WEB_008: Douglas Elliman, Real estate site</span>
+        <span class="sr">Play file WEB_008: Douglas Elliman, Real estate site</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:10;--tab:118px" data-d="0" data-i="8" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:10;--tab:118px" data-d="0" data-i="8" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>WEB_009 //</b> DEPARTURZ</span></span>
         <span class="f-meta"><span>This site</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">DEPARTURZ</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 73 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="3" height="14"/><rect x="6.5" width="2" height="14"/><rect x="10.0" width="2" height="14"/><rect x="13.0" width="3" height="14"/><rect x="17.0" width="1" height="14"/><rect x="19.0" width="3" height="14"/><rect x="23.0" width="3" height="14"/><rect x="27.5" width="1" height="14"/><rect x="30.5" width="3" height="14"/><rect x="34.5" width="1" height="14"/><rect x="37.5" width="1.5" height="14"/><rect x="41.0" width="1" height="14"/><rect x="43.5" width="1.5" height="14"/><rect x="47.0" width="1" height="14"/><rect x="50.0" width="1" height="14"/><rect x="53.0" width="2" height="14"/><rect x="56.5" width="1" height="14"/><rect x="59.0" width="1.5" height="14"/><rect x="61.5" width="3" height="14"/><rect x="66.5" width="1.5" height="14"/><rect x="70.0" width="1" height="14"/></svg></span>
-        <span class="sr">Open file WEB_009: DEPARTURZ, This site</span>
+        <span class="sr">Play file WEB_009: DEPARTURZ, This site</span>
       </button>
       <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:11;--tab:52px">
         <span class="paper"></span>
@@ -311,37 +359,37 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">Films · Documentaries · Events</p>
         <p class="ix-file">DRAWER_02//</p>
       </div>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:2;--tab:118px" data-d="1" data-i="0" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:2;--tab:118px" data-d="1" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_001 //</b> BESLA</span></span>
         <span class="f-meta"><span>Event coverage</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">BESLA</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 66 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.5" width="1.5" height="14"/><rect x="7.0" width="1" height="14"/><rect x="9.5" width="1.5" height="14"/><rect x="13.0" width="2" height="14"/><rect x="17.0" width="1" height="14"/><rect x="20.0" width="1.5" height="14"/><rect x="22.5" width="2" height="14"/><rect x="26.0" width="1.5" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="32.5" width="1" height="14"/><rect x="35.5" width="1" height="14"/><rect x="38.0" width="1.5" height="14"/><rect x="40.5" width="1.5" height="14"/><rect x="44.0" width="1" height="14"/><rect x="46.5" width="1" height="14"/><rect x="49.5" width="1" height="14"/><rect x="52.0" width="1.5" height="14"/><rect x="55.0" width="1.5" height="14"/><rect x="57.5" width="1" height="14"/><rect x="59.5" width="1.5" height="14"/><rect x="62.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file PRD_001: BESLA, Event coverage</span>
+        <span class="sr">Play file PRD_001: BESLA, Event coverage</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:3;--tab:52px" data-d="1" data-i="1" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:3;--tab:52px" data-d="1" data-i="1" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_002 //</b> SAPPHIRE</span></span>
         <span class="f-meta"><span>Event coverage</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">SAPPHIRE</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="2" height="14"/><rect x="6" width="1" height="14"/><rect x="9" width="2" height="14"/><rect x="12" width="1" height="14"/><rect x="14.5" width="1.5" height="14"/><rect x="17.0" width="1" height="14"/><rect x="19.5" width="1.5" height="14"/><rect x="23.0" width="1" height="14"/><rect x="25.5" width="3" height="14"/><rect x="30.5" width="3" height="14"/><rect x="35.5" width="1" height="14"/><rect x="38.5" width="2" height="14"/><rect x="41.5" width="1.5" height="14"/><rect x="45.0" width="1.5" height="14"/><rect x="48.0" width="1.5" height="14"/><rect x="51.0" width="1" height="14"/><rect x="53.5" width="1" height="14"/><rect x="56.5" width="1" height="14"/><rect x="59.5" width="1" height="14"/><rect x="62.5" width="1" height="14"/><rect x="65.0" width="3" height="14"/></svg></span>
-        <span class="sr">Open file PRD_002: Sapphire Golf, Event coverage</span>
+        <span class="sr">Play file PRD_002: Sapphire Golf, Event coverage</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:4;--tab:150px" data-d="1" data-i="2" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:4;--tab:150px" data-d="1" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_003 //</b> MORNING COFFEE</span></span>
         <span class="f-meta"><span>Short film</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">MORNING COFFEE</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 66 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="1.5" height="14"/><rect x="6.0" width="1" height="14"/><rect x="8.0" width="2" height="14"/><rect x="11.0" width="1" height="14"/><rect x="14.0" width="1" height="14"/><rect x="16.5" width="3" height="14"/><rect x="21.5" width="1" height="14"/><rect x="23.5" width="3" height="14"/><rect x="27.5" width="1.5" height="14"/><rect x="30.0" width="1.5" height="14"/><rect x="33.0" width="1.5" height="14"/><rect x="35.5" width="1" height="14"/><rect x="38.0" width="2" height="14"/><rect x="41.0" width="2" height="14"/><rect x="45.0" width="1" height="14"/><rect x="48.0" width="1" height="14"/><rect x="50.0" width="2" height="14"/><rect x="54.0" width="1" height="14"/><rect x="56.0" width="3" height="14"/><rect x="60.5" width="2" height="14"/><rect x="64.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file PRD_003: Morning Coffee, Short film</span>
+        <span class="sr">Play file PRD_003: Morning Coffee, Short film</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:5;--tab:84px" data-d="1" data-i="3" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:5;--tab:84px" data-d="1" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PRD_004 //</b> RIGHT MY WRONGS</span></span>
         <span class="f-meta"><span>Short film</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">RIGHT MY WRONGS</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 74 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="3" height="14"/><rect x="7.5" width="3" height="14"/><rect x="12.5" width="3" height="14"/><rect x="17.5" width="1" height="14"/><rect x="20.0" width="2" height="14"/><rect x="24.0" width="3" height="14"/><rect x="28.5" width="1.5" height="14"/><rect x="31.5" width="1.5" height="14"/><rect x="34.0" width="3" height="14"/><rect x="38.5" width="1" height="14"/><rect x="41.5" width="2" height="14"/><rect x="45.0" width="1" height="14"/><rect x="48.0" width="1" height="14"/><rect x="50.0" width="3" height="14"/><rect x="54.0" width="1" height="14"/><rect x="57.0" width="1" height="14"/><rect x="59.0" width="1.5" height="14"/><rect x="62.0" width="1.5" height="14"/><rect x="64.5" width="1.5" height="14"/><rect x="68.0" width="1" height="14"/><rect x="71.0" width="1" height="14"/></svg></span>
-        <span class="sr">Open file PRD_004: Right My Wrongs, Short film</span>
+        <span class="sr">Play file PRD_004: Right My Wrongs, Short film</span>
       </button>
       <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
         <span class="paper"></span>
@@ -365,45 +413,45 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">Aerials · FAA Part 107 certified</p>
         <p class="ix-file">DRAWER_03//</p>
       </div>
-      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:2;--tab:118px" data-d="2" data-i="0" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:2;--tab:118px" data-d="2" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_001 //</b> GHANA</span></span>
         <span class="f-meta"><span>Drone edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">GHANA</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 73 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="2" height="14"/><rect x="6.5" width="1.5" height="14"/><rect x="9.5" width="1" height="14"/><rect x="11.5" width="3" height="14"/><rect x="16.5" width="2" height="14"/><rect x="20.5" width="1" height="14"/><rect x="23.5" width="3" height="14"/><rect x="28.5" width="3" height="14"/><rect x="33.0" width="1.5" height="14"/><rect x="36.0" width="3" height="14"/><rect x="40.5" width="2" height="14"/><rect x="43.5" width="1" height="14"/><rect x="46.5" width="2" height="14"/><rect x="49.5" width="1.5" height="14"/><rect x="52.5" width="1.5" height="14"/><rect x="55.0" width="2" height="14"/><rect x="58.0" width="1.5" height="14"/><rect x="60.5" width="1" height="14"/><rect x="62.5" width="1" height="14"/><rect x="65.0" width="2" height="14"/><rect x="69.0" width="2" height="14"/></svg></span>
-        <span class="sr">Open file DRN_001: Ghana, Drone edit</span>
+        <span class="sr">Play file DRN_001: Ghana, Drone edit</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:3;--tab:52px" data-d="2" data-i="1" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:3;--tab:52px" data-d="2" data-i="1" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_002 //</b> TOKYO</span></span>
         <span class="f-meta"><span>Drone edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">TOKYO</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2" width="1.5" height="14"/><rect x="5.0" width="2" height="14"/><rect x="9.0" width="1" height="14"/><rect x="12.0" width="1" height="14"/><rect x="14.0" width="1" height="14"/><rect x="16.5" width="2" height="14"/><rect x="19.5" width="1" height="14"/><rect x="21.5" width="1" height="14"/><rect x="24.5" width="3" height="14"/><rect x="29.5" width="1" height="14"/><rect x="31.5" width="3" height="14"/><rect x="36.5" width="1" height="14"/><rect x="39.5" width="1.5" height="14"/><rect x="42.0" width="1.5" height="14"/><rect x="44.5" width="1" height="14"/><rect x="47.5" width="3" height="14"/><rect x="51.5" width="2" height="14"/><rect x="55.0" width="2" height="14"/><rect x="59.0" width="2" height="14"/><rect x="62.5" width="2" height="14"/><rect x="66.5" width="3" height="14"/></svg></span>
-        <span class="sr">Open file DRN_002: Tokyo, Drone edit</span>
+        <span class="sr">Play file DRN_002: Tokyo, Drone edit</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:4;--tab:150px" data-d="2" data-i="2" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#F2F0EB;--z:4;--tab:150px" data-d="2" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_003 //</b> HOUSTON</span></span>
         <span class="f-meta"><span>Drone edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">HOUSTON</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="3.0" width="1" height="14"/><rect x="5.5" width="2" height="14"/><rect x="9.5" width="3" height="14"/><rect x="14.5" width="3" height="14"/><rect x="19.0" width="1" height="14"/><rect x="21.0" width="1" height="14"/><rect x="23.0" width="2" height="14"/><rect x="26.5" width="2" height="14"/><rect x="29.5" width="1" height="14"/><rect x="32.5" width="1.5" height="14"/><rect x="36.0" width="3" height="14"/><rect x="41.0" width="1.5" height="14"/><rect x="43.5" width="1" height="14"/><rect x="45.5" width="1" height="14"/><rect x="48.0" width="3" height="14"/><rect x="52.5" width="1.5" height="14"/><rect x="55.0" width="1" height="14"/><rect x="58.0" width="1" height="14"/><rect x="60.0" width="1" height="14"/><rect x="62.5" width="2" height="14"/><rect x="65.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file DRN_003: Houston, Drone edit</span>
+        <span class="sr">Play file DRN_003: Houston, Drone edit</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:5;--tab:84px" data-d="2" data-i="3" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:5;--tab:84px" data-d="2" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_004 //</b> NEW YORK</span></span>
         <span class="f-meta"><span>Drone edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">NEW YORK</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="2" height="14"/><rect x="5.5" width="1" height="14"/><rect x="8.0" width="1.5" height="14"/><rect x="11.5" width="2" height="14"/><rect x="15.5" width="1" height="14"/><rect x="18.5" width="1.5" height="14"/><rect x="21.0" width="1" height="14"/><rect x="23.0" width="2" height="14"/><rect x="26.5" width="1.5" height="14"/><rect x="29.5" width="1" height="14"/><rect x="32.0" width="1.5" height="14"/><rect x="34.5" width="3" height="14"/><rect x="39.5" width="3" height="14"/><rect x="43.5" width="2" height="14"/><rect x="46.5" width="1" height="14"/><rect x="49.5" width="1" height="14"/><rect x="52.0" width="1" height="14"/><rect x="54.5" width="1" height="14"/><rect x="56.5" width="2" height="14"/><rect x="60.5" width="2" height="14"/><rect x="64.5" width="2" height="14"/></svg></span>
-        <span class="sr">Open file DRN_004: New York, Drone edit</span>
+        <span class="sr">Play file DRN_004: New York, Drone edit</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:6;--tab:176px" data-d="2" data-i="4" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:6;--tab:176px" data-d="2" data-i="4" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>DRN_005 //</b> LOS ANGELES</span></span>
         <span class="f-meta"><span>Drone edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">LOS ANGELES</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="2.5" width="1" height="14"/><rect x="4.5" width="1" height="14"/><rect x="7.5" width="1.5" height="14"/><rect x="11.0" width="1" height="14"/><rect x="13.0" width="1" height="14"/><rect x="15.5" width="1" height="14"/><rect x="18.5" width="3" height="14"/><rect x="23.0" width="3" height="14"/><rect x="28.0" width="2" height="14"/><rect x="32.0" width="3" height="14"/><rect x="37.0" width="1" height="14"/><rect x="39.0" width="1" height="14"/><rect x="41.0" width="1" height="14"/><rect x="44.0" width="1" height="14"/><rect x="46.0" width="1" height="14"/><rect x="49.0" width="2" height="14"/><rect x="52.5" width="1" height="14"/><rect x="54.5" width="2" height="14"/><rect x="58.5" width="1.5" height="14"/><rect x="62.0" width="2" height="14"/><rect x="65.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file DRN_005: Los Angeles, Drone edit</span>
+        <span class="sr">Play file DRN_005: Los Angeles, Drone edit</span>
       </button>
       <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:7;--tab:38px">
         <span class="paper"></span>
@@ -427,37 +475,37 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">Edit · Color · Sound design</p>
         <p class="ix-file">DRAWER_04//</p>
       </div>
-      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:2;--tab:118px" data-d="3" data-i="0" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#D8D5CE;--z:2;--tab:118px" data-d="3" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_001 //</b> BEN CRUMP</span></span>
         <span class="f-meta"><span>Documentary</span><span class="stat">In the edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">BEN CRUMP</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 68 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="2" height="14"/><rect x="6.5" width="1.5" height="14"/><rect x="9.5" width="1" height="14"/><rect x="11.5" width="3" height="14"/><rect x="16.5" width="1.5" height="14"/><rect x="19.5" width="3" height="14"/><rect x="24.5" width="1" height="14"/><rect x="26.5" width="3" height="14"/><rect x="31.0" width="2" height="14"/><rect x="35.0" width="1" height="14"/><rect x="38.0" width="1" height="14"/><rect x="40.5" width="1.5" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.5" width="1" height="14"/><rect x="48.5" width="2" height="14"/><rect x="52.0" width="1.5" height="14"/><rect x="55.0" width="1" height="14"/><rect x="57.5" width="1" height="14"/><rect x="60.0" width="1.5" height="14"/><rect x="62.5" width="1" height="14"/><rect x="65.5" width="2" height="14"/></svg></span>
-        <span class="sr">Open file PST_001: Ben Crump in Ghana, Documentary</span>
+        <span class="sr">Play file PST_001: Ben Crump in Ghana, Documentary</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:3;--tab:52px" data-d="3" data-i="1" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#3FB8EE;--z:3;--tab:52px" data-d="3" data-i="1" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_002 //</b> BOILING POINT</span></span>
         <span class="f-meta"><span>Narrative film</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">BOILING POINT</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 69 14" aria-hidden="true"><rect x="0" width="1" height="14"/><rect x="3" width="1.5" height="14"/><rect x="6.0" width="1" height="14"/><rect x="8.0" width="1" height="14"/><rect x="10.5" width="1.5" height="14"/><rect x="13.5" width="1" height="14"/><rect x="15.5" width="2" height="14"/><rect x="19.5" width="2" height="14"/><rect x="23.0" width="2" height="14"/><rect x="27.0" width="1" height="14"/><rect x="29.5" width="3" height="14"/><rect x="34.5" width="1.5" height="14"/><rect x="38.0" width="3" height="14"/><rect x="43.0" width="1" height="14"/><rect x="45.0" width="1" height="14"/><rect x="48.0" width="3" height="14"/><rect x="52.0" width="1.5" height="14"/><rect x="54.5" width="1.5" height="14"/><rect x="57.0" width="2" height="14"/><rect x="61.0" width="1" height="14"/><rect x="64.0" width="1" height="14"/><rect x="67.0" width="1" height="14"/></svg></span>
-        <span class="sr">Open file PST_002: Boiling Point, Narrative film</span>
+        <span class="sr">Play file PST_002: Boiling Point, Narrative film</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:4;--tab:150px" data-d="3" data-i="2" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#151517;--z:4;--tab:150px" data-d="3" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_003 //</b> NYC MIX</span></span>
         <span class="f-meta"><span>Edit</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">NYC MIX</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 74 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="1.5" height="14"/><rect x="5.0" width="1" height="14"/><rect x="7.5" width="1" height="14"/><rect x="10.5" width="1.5" height="14"/><rect x="13.5" width="3" height="14"/><rect x="18.0" width="3" height="14"/><rect x="23.0" width="2" height="14"/><rect x="27.0" width="1.5" height="14"/><rect x="30.0" width="1.5" height="14"/><rect x="33.0" width="2" height="14"/><rect x="36.5" width="2" height="14"/><rect x="40.0" width="2" height="14"/><rect x="44.0" width="2" height="14"/><rect x="47.0" width="3" height="14"/><rect x="51.0" width="1.5" height="14"/><rect x="54.0" width="1" height="14"/><rect x="57.0" width="2" height="14"/><rect x="60.0" width="1.5" height="14"/><rect x="63.0" width="1" height="14"/><rect x="65.0" width="3" height="14"/><rect x="70.0" width="3" height="14"/></svg></span>
-        <span class="sr">Open file PST_003: NYC Mix, Edit</span>
+        <span class="sr">Play file PST_003: NYC Mix, Edit</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:5;--tab:84px" data-d="3" data-i="3" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:5;--tab:84px" data-d="3" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>PST_004 //</b> GO AGAIN</span></span>
         <span class="f-meta"><span>Short film</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">GO AGAIN</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">▶</span><svg class="bars" viewBox="0 0 71 14" aria-hidden="true"><rect x="0" width="3" height="14"/><rect x="5" width="2" height="14"/><rect x="8.5" width="1.5" height="14"/><rect x="11.0" width="1" height="14"/><rect x="13.5" width="1.5" height="14"/><rect x="16.0" width="1" height="14"/><rect x="19.0" width="2" height="14"/><rect x="22.5" width="1" height="14"/><rect x="25.0" width="3" height="14"/><rect x="29.5" width="2" height="14"/><rect x="33.0" width="1" height="14"/><rect x="36.0" width="1" height="14"/><rect x="39.0" width="1.5" height="14"/><rect x="41.5" width="1" height="14"/><rect x="43.5" width="1" height="14"/><rect x="45.5" width="3" height="14"/><rect x="50.5" width="2" height="14"/><rect x="54.0" width="1" height="14"/><rect x="56.0" width="1" height="14"/><rect x="58.5" width="2" height="14"/><rect x="62.5" width="2" height="14"/><rect x="66.5" width="3" height="14"/></svg></span>
-        <span class="sr">Open file PST_004: Go Again, Short film</span>
+        <span class="sr">Play file PST_004: Go Again, Short film</span>
       </button>
       <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
         <span class="paper"></span>
@@ -481,37 +529,37 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
         <p class="ix-sub">DJs · Live sound · Mixing</p>
         <p class="ix-file">DRAWER_05//</p>
       </div>
-      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:2;--tab:118px" data-d="4" data-i="0" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#CBBEF7;--z:2;--tab:118px" data-d="4" data-i="0" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>SND_001 //</b> EVENT DJS</span></span>
         <span class="f-meta"><span>DJ sets</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">EVENT DJS</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">◆</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="3" height="14"/><rect x="4.5" width="2" height="14"/><rect x="8.5" width="3" height="14"/><rect x="13.5" width="1.5" height="14"/><rect x="16.0" width="2" height="14"/><rect x="19.5" width="1" height="14"/><rect x="21.5" width="1" height="14"/><rect x="24.5" width="3" height="14"/><rect x="28.5" width="1.5" height="14"/><rect x="31.0" width="1" height="14"/><rect x="33.0" width="2" height="14"/><rect x="36.5" width="2" height="14"/><rect x="40.5" width="2" height="14"/><rect x="43.5" width="1" height="14"/><rect x="46.0" width="1" height="14"/><rect x="48.0" width="2" height="14"/><rect x="52.0" width="1" height="14"/><rect x="54.0" width="1.5" height="14"/><rect x="56.5" width="3" height="14"/><rect x="61.0" width="1.5" height="14"/><rect x="64.0" width="1.5" height="14"/><rect x="66.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file SND_001: Event DJs, DJ sets</span>
+        <span class="sr">Play file SND_001: Event DJs, DJ sets</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:3;--tab:52px" data-d="4" data-i="1" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#BFE3F6;--z:3;--tab:52px" data-d="4" data-i="1" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>SND_002 //</b> LIVE SOUND</span></span>
         <span class="f-meta"><span>Events</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">LIVE SOUND</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">◆</span><svg class="bars" viewBox="0 0 72 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="1.5" height="14"/><rect x="5.0" width="2" height="14"/><rect x="8.5" width="1" height="14"/><rect x="10.5" width="2" height="14"/><rect x="13.5" width="3" height="14"/><rect x="18.5" width="2" height="14"/><rect x="22.5" width="1.5" height="14"/><rect x="25.5" width="1" height="14"/><rect x="27.5" width="1" height="14"/><rect x="29.5" width="2" height="14"/><rect x="33.0" width="1" height="14"/><rect x="35.5" width="3" height="14"/><rect x="40.0" width="1" height="14"/><rect x="43.0" width="3" height="14"/><rect x="47.5" width="3" height="14"/><rect x="52.5" width="1" height="14"/><rect x="54.5" width="2" height="14"/><rect x="57.5" width="3" height="14"/><rect x="62.0" width="2" height="14"/><rect x="66.0" width="1.5" height="14"/><rect x="68.5" width="2" height="14"/></svg></span>
-        <span class="sr">Open file SND_002: Live Sound, Events</span>
+        <span class="sr">Play file SND_002: Live Sound, Events</span>
       </button>
-      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:4;--tab:150px" data-d="4" data-i="2" aria-haspopup="dialog">
+      <button class="folder f-file ink" type="button" style="--bg:#9E80F2;--z:4;--tab:150px" data-d="4" data-i="2" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>SND_003 //</b> ON-SET AUDIO</span></span>
         <span class="f-meta"><span>Production sound</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">ON-SET AUDIO</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">◆</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="1.5" height="14"/><rect x="2.5" width="3" height="14"/><rect x="7.0" width="1" height="14"/><rect x="9.0" width="1.5" height="14"/><rect x="12.0" width="2" height="14"/><rect x="15.5" width="1" height="14"/><rect x="18.5" width="2" height="14"/><rect x="22.0" width="1" height="14"/><rect x="25.0" width="1.5" height="14"/><rect x="27.5" width="2" height="14"/><rect x="31.0" width="2" height="14"/><rect x="34.5" width="2" height="14"/><rect x="37.5" width="1" height="14"/><rect x="39.5" width="1" height="14"/><rect x="42.5" width="1" height="14"/><rect x="44.5" width="3" height="14"/><rect x="48.5" width="3" height="14"/><rect x="53.5" width="3" height="14"/><rect x="58.5" width="1" height="14"/><rect x="61.0" width="2" height="14"/><rect x="65.0" width="1" height="14"/><rect x="67.5" width="1" height="14"/></svg></span>
-        <span class="sr">Open file SND_003: On-Set Audio, Production sound</span>
+        <span class="sr">Play file SND_003: On-Set Audio, Production sound</span>
       </button>
-      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:5;--tab:84px" data-d="4" data-i="3" aria-haspopup="dialog">
+      <button class="folder f-file dark" type="button" style="--bg:#2B2B30;--z:5;--tab:84px" data-d="4" data-i="3" aria-controls="room">
         <span class="paper"></span>
         <span class="tab"><span class="tab-t"><b>SND_004 //</b> MIX &amp; MASTER</span></span>
         <span class="f-meta"><span>Studio</span></span>
         <span class="f-art"><span class="f-word" aria-hidden="true">MIX &amp; MASTER</span></span>
         <span class="f-foot"><span class="play" aria-hidden="true">◆</span><svg class="bars" viewBox="0 0 70 14" aria-hidden="true"><rect x="0" width="3" height="14"/><rect x="4" width="2" height="14"/><rect x="7" width="3" height="14"/><rect x="11" width="3" height="14"/><rect x="16" width="3" height="14"/><rect x="20.5" width="3" height="14"/><rect x="24.5" width="1" height="14"/><rect x="27.0" width="1.5" height="14"/><rect x="29.5" width="1.5" height="14"/><rect x="32.0" width="1" height="14"/><rect x="34.0" width="1" height="14"/><rect x="37.0" width="3" height="14"/><rect x="42.0" width="1" height="14"/><rect x="45.0" width="2" height="14"/><rect x="48.5" width="1.5" height="14"/><rect x="51.0" width="2" height="14"/><rect x="54.0" width="1.5" height="14"/><rect x="57.5" width="1" height="14"/><rect x="60.0" width="1" height="14"/><rect x="62.0" width="1" height="14"/><rect x="64.0" width="2" height="14"/><rect x="67.0" width="2" height="14"/></svg></span>
-        <span class="sr">Open file SND_004: Mix &amp; Master, Studio</span>
+        <span class="sr">Play file SND_004: Mix &amp; Master, Studio</span>
       </button>
       <a class="folder f-yours" href="contact.html" style="--bg:#151517;--z:6;--tab:176px">
         <span class="paper"></span>
@@ -522,27 +570,6 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
     </div></div>
   </section>
 </main>
-
-<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vTitle" hidden>
-  <div class="scrim" data-close></div>
-  <article class="sheet" id="sheet">
-    <span class="paper-g"></span>
-    <span class="s-tab" id="vTab"></span>
-    <button class="x" type="button" data-close aria-label="Close file">×</button>
-    <div class="screen" id="vScreen"></div>
-    <div class="info">
-      <p class="k" id="vKind"></p>
-      <h3 id="vTitle" tabindex="-1"></h3>
-      <p class="d" id="vDesc"></p>
-      <dl id="vList"></dl>
-      <div class="acts">
-        <a class="pill solid" id="vLink" target="_blank" rel="noopener" hidden>Visit site ↗</a>
-        <a class="pill" href="contact.html">Start a project</a>
-        <div class="nav"><button class="pill" type="button" id="vPrev" aria-label="Previous file">←</button><button class="pill" type="button" id="vNext" aria-label="Next file">→</button></div>
-      </div>
-    </div>
-  </article>
-</div>
 
 <footer>
   <div class="wrap foot">
@@ -561,138 +588,12 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
 (function(){
   "use strict";
   const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DATA = JSON.parse(document.getElementById('files').textContent);
   // a cover that can't load gives way to the typeset cover underneath
   document.querySelectorAll('img.cover').forEach(img => {
     const gone = () => img.remove();
     if (img.complete && !img.naturalWidth) gone(); else img.addEventListener('error', gone);
   });
 
-  const viewer = document.getElementById('viewer'), sheet = document.getElementById('sheet'), screen = document.getElementById('vScreen');
-  const $ = id => document.getElementById(id);
-  let cur = null, opener = null, busy = false;
-
-  function yt(u){
-    const m = String(u).match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
-    return m ? m[1] : null;
-  }
-  function fill(d, i){
-    const f = DATA[d].files[i];
-    cur = { d, i };
-    sheet.style.setProperty('--bg', f.bg);
-    sheet.classList.toggle('ink', f.fg === 'ink'); sheet.classList.toggle('paper', f.fg !== 'ink');
-    $('vTab').innerHTML = '<b>' + f.code + ' //</b> ' + DATA[d].name.toUpperCase();
-    $('vKind').textContent = f.kind + (f.status ? ' · ' + f.status : '');
-    $('vTitle').textContent = f.title;
-    $('vDesc').textContent = f.desc;
-    const rows = [['File', f.code], ['Service', DATA[d].name]];
-    if (f.client) rows.push(['Client', f.client]);
-    $('vList').innerHTML = rows.map(r => '<dt>' + r[0] + '</dt><dd>' + r[1].replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</dd>').join('');
-    const link = $('vLink');
-    if (f.link){ link.hidden = false; link.href = f.link; link.textContent = f.link === './' ? 'Back to the home page' : 'Visit site ↗'; link.target = f.link.startsWith('http') ? '_blank' : '_self'; }
-    else link.hidden = true;
-    // the video, a YouTube link, or a "coming soon" slate
-    screen.innerHTML = '';
-    const id = f.video && yt(f.video);
-    if (id){
-      const fr = document.createElement('iframe');
-      fr.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1';
-      fr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; fr.allowFullscreen = true; fr.title = f.title;
-      screen.appendChild(fr);
-    } else if (f.video){
-      const v = document.createElement('video');
-      v.src = f.video; v.controls = true; v.playsInline = true; v.autoplay = !RM; v.loop = true; v.muted = true; v.preload = 'metadata'; if (f.thumb) v.poster = f.thumb;
-      screen.appendChild(v);
-      // browsers only autoplay without sound, so edits with music get a button to turn it on
-      if (f.sound){
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'sound';
-        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Sound on';
-        b.addEventListener('click', () => { v.muted = false; v.volume = 1; v.play().catch(() => {}); b.remove(); v.focus(); });
-        v.addEventListener('volumechange', () => { if (!v.muted) b.remove(); });
-        screen.appendChild(b);
-      }
-    } else {
-      if (f.thumb){ const im = new Image(); im.src = f.thumb; im.alt = ''; im.addEventListener('error', () => im.remove()); screen.appendChild(im); }
-      const s = document.createElement('div'); s.className = 'soon';
-      s.innerHTML = '<b>' + (f.status || 'Video coming soon') + '</b><span>' + f.code + ' // ' + f.title.toUpperCase().replace(/</g, '') + '</span>';
-      if (f.thumb) s.style.background = 'linear-gradient(180deg,rgba(10,10,10,.25),rgba(10,10,10,.75))';
-      screen.appendChild(s);
-    }
-    const n = DATA[d].files.length;
-    $('vPrev').disabled = n < 2; $('vNext').disabled = n < 2;
-  }
-
-  // the file slides up out of the drawer, then opens into the sheet
-  function open(btn){
-    if (busy) return;
-    const d = +btn.dataset.d, i = +btn.dataset.i;
-    opener = btn; fill(d, i);
-    viewer.hidden = false; document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => viewer.classList.add('on'));
-    const to = sheet.getBoundingClientRect(), from = btn.getBoundingClientRect();
-    if (RM || !sheet.animate){ sheet.style.opacity = 1; $('vTitle').focus({ preventScroll: true }); return; }
-    busy = true;
-    const g = document.createElement('div'); g.className = 'ghost';
-    g.style.background = getComputedStyle(btn).backgroundColor;
-    Object.assign(g.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
-    document.body.appendChild(g); btn.style.visibility = 'hidden';
-    const lift = Math.min(from.height*0.55, from.top + from.height*0.4);
-    g.animate([
-      { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' },
-      { left: from.left + 'px', top: (from.top - lift) + 'px', width: from.width + 'px', height: from.height + 'px', offset: .38 },
-      { left: to.left + 'px', top: to.top + 'px', width: to.width + 'px', height: to.height + 'px' }
-    ], { duration: 820, easing: 'cubic-bezier(.6,0,.2,1)', fill: 'forwards' }).onfinish = () => {
-      sheet.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, fill: 'forwards' }).onfinish = () => { sheet.style.opacity = 1; };
-      screen.animate([{ transform: 'translateY(22%)', clipPath: 'inset(0 0 100% 0)' }, { transform: 'none', clipPath: 'inset(0 0 0 0)' }], { duration: 640, delay: 60, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
-      setTimeout(() => { g.remove(); busy = false; }, 120);
-      $('vTitle').focus({ preventScroll: true });
-    };
-  }
-  function close(){
-    if (busy || viewer.hidden) return;
-    const btn = opener; const vid = screen.querySelector('video'); if (vid) vid.pause();
-    const done = () => {
-      viewer.hidden = true; viewer.classList.remove('on'); sheet.style.opacity = 0; screen.innerHTML = '';
-      document.body.style.overflow = ''; if (btn){ btn.style.visibility = ''; btn.focus({ preventScroll: true }); } busy = false;
-    };
-    if (RM || !sheet.animate || !btn){ done(); return; }
-    busy = true;
-    const from = sheet.getBoundingClientRect(), to = btn.getBoundingClientRect();
-    const g = document.createElement('div'); g.className = 'ghost'; g.style.background = getComputedStyle(sheet).backgroundColor;
-    document.body.appendChild(g); sheet.style.opacity = 0; viewer.classList.remove('on');
-    const lift = Math.min(to.height*0.55, to.top + to.height*0.4);
-    g.animate([
-      { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' },
-      { left: to.left + 'px', top: (to.top - lift) + 'px', width: to.width + 'px', height: to.height + 'px', offset: .62 },
-      { left: to.left + 'px', top: to.top + 'px', width: to.width + 'px', height: to.height + 'px' }
-    ], { duration: 720, easing: 'cubic-bezier(.6,0,.2,1)', fill: 'forwards' }).onfinish = () => { g.remove(); done(); };
-  }
-  function step(dir){
-    if (!cur) return;
-    const n = DATA[cur.d].files.length, i = (cur.i + dir + n) % n;
-    if (opener) opener.style.visibility = '';
-    opener = document.querySelector('.f-file[data-d="' + cur.d + '"][data-i="' + i + '"]');
-    if (opener) opener.style.visibility = 'hidden';
-    fill(cur.d, i);
-    if (!RM && screen.animate) screen.animate([{ transform: 'translateY(14%)', clipPath: 'inset(0 0 100% 0)' }, { transform: 'none', clipPath: 'inset(0 0 0 0)' }], { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)' });
-  }
-  document.querySelectorAll('.f-file').forEach(b => b.addEventListener('click', () => open(b)));
-  viewer.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
-  $('vPrev').addEventListener('click', () => step(-1));
-  $('vNext').addEventListener('click', () => step(1));
-  document.addEventListener('keydown', e => {
-    if (viewer.hidden) return;
-    if (e.key === 'Escape') close();
-    else if (e.key === 'ArrowRight') step(1);
-    else if (e.key === 'ArrowLeft') step(-1);
-    else if (e.key === 'Tab'){
-      const f = Array.from(sheet.querySelectorAll('button:not([disabled]),a[href]:not([hidden]),video,iframe,[tabindex]')).filter(el => el.offsetParent !== null);
-      if (!f.length) return;
-      const a = f[0], z = f[f.length - 1];
-      if (e.shiftKey && document.activeElement === a){ e.preventDefault(); z.focus(); }
-      else if (!e.shiftKey && document.activeElement === z){ e.preventDefault(); a.focus(); }
-    }
-  });
   // arriving from a service pop-up (work.html#production): that drawer's first file pulses once
   function hint(){
     const id = (location.hash || '').slice(1);
@@ -713,6 +614,8 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
   top(); window.addEventListener('load', top, { once: true });
 })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script src="work-room.js" defer></script>
 <script src="legal.js" defer></script>
 </body>
 </html>
