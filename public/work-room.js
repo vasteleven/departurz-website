@@ -12,7 +12,7 @@
   const $ = id => document.getElementById(id);
   const room = $('room'), stage = $('roomStage'), video = $('roomVideo');
   const ui = { idle: $('roomIdle'), bar: $('roomBar'), now: $('roomNow'), kind: $('roomKind'), title: $('roomTitle'), play: $('roomPlay'), sound: $('roomSound'),
-    full: $('roomFull'), info: $('roomInfo'), prev: $('roomPrev'), next: $('roomNext'), details: $('roomDetails'), desc: $('roomDesc'), list: $('roomList'), link: $('roomLink') };
+    full: $('roomFull'), prev: $('roomPrev'), next: $('roomNext') };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   let cur = -1, soundOn = false, token = 0, wasPlaying = false, holding = false;
@@ -46,11 +46,6 @@
     ui.now.textContent = 'Now showing · ' + f.code + ' // ' + f.title.toUpperCase();
     ui.kind.textContent = f.code + ' // ' + f.drawer + ' · ' + f.kind + (f.status ? ' · ' + f.status : '');
     ui.title.textContent = f.title;
-    ui.desc.textContent = f.desc || '';
-    const rows = [['File', f.code], ['Service', f.drawer]]; if (f.client) rows.push(['Client', f.client]);
-    ui.list.innerHTML = rows.map(r => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>').join('');
-    if (f.link){ ui.link.hidden = false; ui.link.href = f.link; ui.link.textContent = f.link === './' ? 'Back to the home page' : 'Visit site ↗'; ui.link.target = f.link.startsWith('http') ? '_blank' : '_self'; }
-    else ui.link.hidden = true;
     document.querySelectorAll('.f-file.showing').forEach(b => b.classList.remove('showing'));
     const btn = document.querySelector('.f-file[data-d="' + f.d + '"][data-i="' + f.i + '"]'); if (btn) btn.classList.add('showing');
     paintControls();
@@ -106,8 +101,6 @@
   ui.next.addEventListener('click', () => step(1));
   ui.play.addEventListener('click', () => { if (!FILES[cur] || !FILES[cur].video) return; if (video.paused) video.play().catch(() => {}); else video.pause(); });
   ui.sound.addEventListener('click', () => { soundOn = !soundOn; video.muted = !soundOn; video.volume = 1; if (soundOn && video.paused && !holding) video.play().catch(() => {}); paintControls(); });
-  ui.info.addEventListener('click', () => { const open = ui.details.hidden; ui.details.hidden = !open; ui.info.setAttribute('aria-expanded', open ? 'true' : 'false'); });
-  $('roomDetailsX').addEventListener('click', () => { ui.details.hidden = true; ui.info.setAttribute('aria-expanded', 'false'); ui.info.focus(); });
   // full screen: the film on its own, with the browser's controls
   ui.full.addEventListener('click', () => {
     if (!FILES[cur] || !FILES[cur].video) return;
