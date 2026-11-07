@@ -117,9 +117,8 @@ button{font:inherit;color:inherit}
 .room-k i{width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 12px 2px rgba(63,184,238,.7)}
 .room-now{margin:0;color:rgba(242,240,235,.6);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .room-idle{max-width:460px}
-.room-idle .big{margin:0 0 12px;font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(46px,6vw,86px);line-height:.9;width:fit-content;
+.room-idle .big{margin:0 0 18px;font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(46px,6vw,86px);line-height:.9;width:fit-content;
   background:linear-gradient(100deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.room-idle .sub{margin:0 0 18px;font-size:14px;line-height:1.5;color:rgba(242,240,235,.7);max-width:36ch}
 .room-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 24px;flex-wrap:wrap}
 .room-title{min-width:0}
 .room-title .mono{margin:0;color:rgba(242,240,235,.62)}
@@ -220,8 +219,7 @@ footer{border-top:1px solid var(--rule);padding-block:28px calc(28px + env(safe-
     <div class="room-ui wrap">
       <div class="room-top"><h2 class="mono room-k" id="roomH"><i aria-hidden="true"></i>Viewing room</h2><p class="mono room-now" id="roomNow" aria-live="polite">Pick a file to start</p></div>
       <div class="room-idle" id="roomIdle">
-        <p class="big">Pick any file.<br>It plays here.</p>
-        <p class="sub">Every folder below opens in this room, on all six sides of the cube. Drag the cube to turn it.</p>
+        <p class="big">Pick any file.</p>
         <div class="room-ctl"><button class="rbtn solid" type="button" id="roomStart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor" stroke="none"/></svg>Start the screening</button><a class="rbtn" href="#web-design">See the files ↓</a></div>
       </div>
       <div class="room-bar" id="roomBar" hidden>
