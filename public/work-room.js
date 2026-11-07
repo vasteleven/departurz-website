@@ -1,7 +1,7 @@
 /* The DEPARTURZ viewing room (work.html).
-   A cube hangs on one corner in a dark room. Pick any file and the cube powers on:
-   its edges light up from the bottom corner, a web of triangles spreads over the faces, then the video
-   fills every face while the cube turns slowly and lights the room around it.
+   A big cube hangs in a black marble hall with one corner pointing at you, so you look up at its underside.
+   Pick any file and the cube powers on: its edges light up from that corner, a web of triangles spreads over
+   the faces, then the video fills the faces while the cube turns slowly, lighting the marble and mirrored in the floor.
    Needs three.js r128 (loaded before this file). Without WebGL the video plays flat in the same dark room. */
 (function(){
   'use strict';
@@ -149,29 +149,71 @@
   }
 
   /* ---------------- the 3D room ---------------- */
+  // black marble with white veins, drawn once: jagged cracks that branch, a little depth in the stone, slab seams
+  function marble(w, h, seed, o){
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+    let s = seed; const rnd = () => (s = s * 16807 % 2147483647) / 2147483647;
+    const U = w / 1024;
+    x.fillStyle = '#0a0a0b'; x.fillRect(0, 0, w, h);
+    for (let n = 0; n < 150; n++){
+      const r = (0.03 + rnd() * 0.16) * w, px = rnd() * w, py = rnd() * h, g = x.createRadialGradient(px, py, 0, px, py, r);
+      const v = rnd() < 0.55 ? '30,30,34' : '0,0,0';
+      g.addColorStop(0, 'rgba(' + v + ',' + (0.1 + rnd() * 0.14).toFixed(2) + ')'); g.addColorStop(1, 'rgba(' + v + ',0)');
+      x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r);
+    }
+    for (let n = 0; n < w * h / 220; n++){ x.fillStyle = 'rgba(210,210,215,' + (rnd() * 0.07).toFixed(3) + ')'; x.fillRect(rnd() * w, rnd() * h, 1.3 * U, 1.3 * U); }
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    function vein(px, py, a, wid, len, depth){
+      const dir = a;
+      for (let k = 0; k < len; k++){
+        a += (rnd() - 0.5) * 1.15; a = a * 0.72 + dir * 0.28;
+        const step = (5 + rnd() * 13) * U, nx = px + Math.cos(a) * step, ny = py + Math.sin(a) * step;
+        const lw = Math.max(0.7 * U, wid * (0.5 + rnd() * 0.95));
+        x.strokeStyle = 'rgba(244,244,240,' + (depth ? 0.5 + 0.2 / depth : 0.95) + ')'; x.lineWidth = lw;
+        if (depth < 1){ x.shadowColor = 'rgba(255,255,255,.4)'; x.shadowBlur = lw * 1.6; } else x.shadowBlur = 0;
+        x.beginPath(); x.moveTo(px, py); x.lineTo(nx, ny); x.stroke();
+        px = nx; py = ny;
+        if (px < -80 * U || py < -80 * U || px > w + 80 * U || py > h + 80 * U) break;
+        if (depth < 3 && rnd() < 0.055) vein(px, py, a + (rnd() < 0.5 ? -1 : 1) * (0.45 + rnd() * 0.85), wid * 0.48, len * 0.42, depth + 1);
+        wid *= 0.997;
+      }
+    }
+    for (let n = 0; n < o.big; n++){
+      const side = rnd(); let px, py, a;
+      if (side < 0.5){ px = rnd() * w; py = -10; a = Math.PI / 2 + (rnd() - 0.5) * 1.5; } else { px = -10; py = rnd() * h; a = (rnd() - 0.5) * 1.5; }
+      vein(px, py, a, (3.2 + rnd() * 5.5) * U, 300, 0);
+    }
+    for (let n = 0; n < o.thin; n++) vein(rnd() * w, rnd() * h, rnd() * Math.PI * 2, (0.8 + rnd() * 1.3) * U, 50 + rnd() * 90, 2);
+    x.shadowBlur = 0;
+    if (o.tiles){
+      x.strokeStyle = 'rgba(0,0,0,.9)'; x.lineWidth = 3 * U;
+      for (let i = 0; i <= o.tiles[0]; i++){ const X = i * w / o.tiles[0]; x.beginPath(); x.moveTo(X, 0); x.lineTo(X, h); x.stroke(); }
+      for (let j = 0; j <= o.tiles[1]; j++){ const Y = j * h / o.tiles[1]; x.beginPath(); x.moveTo(0, Y); x.lineTo(w, Y); x.stroke(); }
+    }
+    return c;
+  }
+
   function build(){
     const T = window.THREE; if (!T) throw new Error('no three');
     const renderer = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     if (!renderer.getContext()) throw new Error('no webgl');
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.5 : 1.75));
+    const small = window.innerWidth < 760;
+    const DPR = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75);
+    renderer.setPixelRatio(DPR);
     renderer.outputEncoding = T.sRGBEncoding;
     renderer.setClearColor(0x050506, 1);
     stage.appendChild(renderer.domElement);
     renderer.domElement.setAttribute('aria-hidden', 'true');
     const scene = new T.Scene();
-    scene.fog = new T.FogExp2(0x050506, 0.024);
-    const camera = new T.PerspectiveCamera(42, 1, 0.1, 220);
+    const FOG = new T.Color(0x060607), FOGD = 0.015;
+    scene.fog = new T.FogExp2(FOG, FOGD);
+    const camera = new T.PerspectiveCamera(54, 1, 0.1, 260);
 
     const S = 6, H = S / 2, DIAG = S * Math.sqrt(3);
-    const BOTTOM = 3.3;                                  // how high the lowest corner hangs over the floor
-    const LIFT = BOTTOM + H * Math.sqrt(3);              // the cube's centre
+    const LIFT = 5.4;                                    // the cube's centre, hanging just over the floor
+    const center = new T.Vector3(0, LIFT, 0);
 
-    // soft round glow, used for flares, light pools and haze
-    const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
-      const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.25, 'rgba(255,255,255,.45)'); g.addColorStop(.6, 'rgba(255,255,255,.08)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-      x.fillStyle = g; x.fillRect(0, 0, 128, 128); const t = new T.CanvasTexture(c); return t; })();
-
-    /* the faces: the film (or a slate), a web of triangles, and a reveal that spreads from the bottom corner */
+    /* the faces: the film (or a slate), a web of triangles, and a reveal that spreads from the near corner */
     const black = new T.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1, T.RGBAFormat); black.needsUpdate = true;
     const vtex = new T.VideoTexture(video); vtex.minFilter = T.LinearFilter; vtex.magFilter = T.LinearFilter; vtex.generateMipmaps = false;
     const faceU = {
@@ -189,7 +231,6 @@
         float lineAA(float d, float w){ return 1.0 - smoothstep(w * 0.55, w * 1.6, d); }
         void main(){
           float seed = dot(floor(vN + 0.5), vec3(3.0, 7.0, 13.0));
-          // a slightly warped triangle lattice, shown triangle by triangle
           vec2 q = vUv * 4.6 + vec2(sin(vUv.y * 6.0 + seed) * 0.16, cos(vUv.x * 5.0 + seed * 1.7) * 0.16);
           vec2 p = vec2(q.x + q.y * 0.5, q.y);
           vec2 c = floor(p), f = fract(p); float up = step(1.0, f.x + f.y);
@@ -198,7 +239,6 @@
           float l = max(max(lineAA(min(f.x, 1.0 - f.x), fwidth(p.x)), lineAA(min(f.y, 1.0 - f.y), fwidth(p.y))), lineAA(min(fs, 1.0 - fs), fwidth(s)));
           float shown = step(r, max(uWire, uIdle));
           float twinkle = 0.55 + 0.45 * sin(uTime * 2.3 + r * 40.0);
-          // the reveal spreads out from the bottom corner
           float d = distance(vPos, uStart) / uDiag;
           float rev = 1.0 - smoothstep(uReveal - 0.09, uReveal, d);
           float front = exp(-pow((d - uReveal + 0.02) * 30.0, 2.0)) * smoothstep(0.06, 0.3, uReveal) * (1.0 - smoothstep(1.0, 1.12, uReveal));
@@ -206,71 +246,130 @@
           vec3 film = texture2D(uTex, vUv * uCrop.xy + uCrop.zw).rgb;
           float fres = pow(1.0 - abs(dot(normalize(vWN), vV)), 3.0);
           vec3 glass = vec3(0.010, 0.010, 0.013) + vec3(0.045, 0.047, 0.055) * fres;
-          vec3 col = mix(glass, film * (0.78 + 0.22 * smoothstep(0.0, 0.14, edge)), rev * uOn);
+          vec3 col = mix(glass, film * (0.8 + 0.2 * smoothstep(0.0, 0.12, edge)), rev * uOn);
           vec3 wireCol = mix(vec3(0.86, 0.9, 1.0), film * 0.9 + 0.18, rev);
-          float wireI = mix(uWireGlow * twinkle, 0.22 * uWireGlow, rev) + uIdle * 0.09 * twinkle;
+          float wireI = mix(uWireGlow * twinkle, 0.2 * uWireGlow, rev) + uIdle * 0.09 * twinkle;
           col += wireCol * l * shown * wireI;
-          col += vec3(1.0) * front * 1.1;
+          col += vec3(1.0) * front * 0.6;
           gl_FragColor = vec4(col, 1.0);
         }`
     });
     const box = new T.Mesh(new T.BoxGeometry(S, S, S), faceMat);
 
-    /* the edges: a bright core and a soft glow, each drawn out from the corner nearer the bottom */
+    /* the edges: clean bright lines, drawn out from the near corner when the cube powers on */
     const corners = []; for (let n = 0; n < 8; n++) corners.push(new T.Vector3(n & 1 ? H : -H, n & 2 ? H : -H, n & 4 ? H : -H));
     const depth = n => (n & 1 ? 1 : 0) + (n & 2 ? 1 : 0) + (n & 4 ? 1 : 0);
     const edges = [];
-    const coreGeo = new T.CylinderGeometry(0.045, 0.045, 1, 6, 1, true), glowGeo = new T.CylinderGeometry(0.42, 0.42, 1, 14, 1, true);
-    const edgeVS = `varying float vY; varying vec3 vWN; varying vec3 vV; void main(){ vY = uv.y; vec4 wp = modelMatrix * vec4(position, 1.0); vWN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - wp.xyz); gl_Position = projectionMatrix * viewMatrix * wp; }`;
-    const coreFS = `uniform float uProg, uI; uniform vec3 uColor; varying float vY; varying vec3 vWN; varying vec3 vV;
-      void main(){ if (vY > uProg) discard; float head = smoothstep(uProg - 0.16, uProg, vY) * (1.0 - step(0.999, uProg)); gl_FragColor = vec4(uColor * (uI + head * 2.2), 1.0); }`;
-    const glowFS = `uniform float uProg, uI; uniform vec3 uColor; varying float vY; varying vec3 vWN; varying vec3 vV;
-      void main(){ float on = 1.0 - smoothstep(uProg - 0.02, uProg + 0.02, vY); float head = smoothstep(uProg - 0.2, uProg, vY) * on * (1.0 - step(0.999, uProg));
-        float a = pow(abs(dot(normalize(vWN), vV)), 3.0) * (uI * 0.55 + head * 1.4) * on; gl_FragColor = vec4(uColor * a, a); }`;
+    const coreGeo = new T.CylinderGeometry(0.036, 0.036, 1, 8, 1, true);
+    const edgeVS = `varying float vY; void main(){ vY = uv.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+    const coreFS = `uniform float uProg, uI; uniform vec3 uColor; varying float vY;
+      void main(){ if (vY > uProg) discard; float head = smoothstep(uProg - 0.16, uProg, vY) * (1.0 - step(0.999, uProg)); gl_FragColor = vec4(uColor * (uI + head * 1.6), 1.0); }`;
     const up = new T.Vector3(0, 1, 0);
     for (let a = 0; a < 8; a++) for (let b = a + 1; b < 8; b++) {
       const x = a ^ b; if (x !== 1 && x !== 2 && x !== 4) continue;
       const [lo, hi] = depth(a) < depth(b) ? [a, b] : [b, a];
       const A = corners[lo], B = corners[hi], mid = A.clone().add(B).multiplyScalar(0.5), dir = B.clone().sub(A).normalize();
-      const mk = (geo, fs, extra) => { const m = new T.Mesh(geo, new T.ShaderMaterial(Object.assign({ uniforms: { uProg: { value: 0 }, uI: { value: 0 }, uColor: { value: new T.Color(0xEEF4FF) } }, vertexShader: edgeVS, fragmentShader: fs }, extra)));
-        m.position.copy(mid); m.quaternion.setFromUnitVectors(up, dir); m.scale.set(1, S, 1); return m; };
-      const core = mk(coreGeo, coreFS, {});
-      const glow = mk(glowGeo, glowFS, { transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide });
-      edges.push({ core, glow, level: depth(lo), to: hi, p: 0, i: 0 });
+      const core = new T.Mesh(coreGeo, new T.ShaderMaterial({ uniforms: { uProg: { value: 0 }, uI: { value: 0 }, uColor: { value: new T.Color(0xF4F7FF) } }, vertexShader: edgeVS, fragmentShader: coreFS }));
+      core.position.copy(mid); core.quaternion.setFromUnitVectors(up, dir); core.scale.set(1, S, 1);
+      edges.push({ core, level: depth(lo), to: hi, p: 0, i: 0 });
     }
-    // flares at the corners: the bottom one starts it all, the rest catch the light as the edges arrive
-    const flares = corners.map((c, n) => { const s = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xEEF4FF, blending: T.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 }));
-      s.position.copy(c); s.scale.setScalar(n === 0 ? 3 : 1.6); return s; });
+    // one small spark where it starts, at the near corner; it only shows while the cube powers on
+    const sparkTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+      const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new T.CanvasTexture(c); })();
+    const spark = new T.Sprite(new T.SpriteMaterial({ map: sparkTex, blending: T.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 }));
+    spark.position.copy(corners[0]); spark.scale.setScalar(0.9);
 
-    const cube = new T.Group();                         // the cube in its own coordinates
-    cube.add(box); edges.forEach(e => cube.add(e.core, e.glow)); flares.forEach(f => cube.add(f));
-    const tilt = new T.Group(); tilt.quaternion.setFromUnitVectors(new T.Vector3(1, 1, 1).normalize(), up); tilt.add(cube);   // balanced on a corner
-    const rig = new T.Group(); rig.position.y = LIFT; rig.add(tilt); scene.add(rig);
+    const cube = new T.Group(); cube.add(box); edges.forEach(e => cube.add(e.core)); cube.add(spark);
+    const rig = new T.Group(); rig.position.copy(center); rig.add(cube); scene.add(rig);
 
-    // its reflection in the floor
-    const mirror = new T.Group(); mirror.scale.y = -1; const rigM = rig.clone(); mirror.add(rigM); scene.add(mirror);
-    rigM.traverse(o => { o.renderOrder = -2; });
+    // turn the cube so its nearest corner points at the viewer, with its underside showing (like the reference):
+    // from that corner one edge runs up, the other two run down to the left and right
+    const dL = new T.Vector3(-1, -1, -1).normalize();
+    const eL = new T.Vector3(0, 1, 0).sub(dL.clone().multiplyScalar(dL.y)).normalize();
+    const LB = new T.Matrix4().makeBasis(dL, eL, new T.Vector3().crossVectors(dL, eL)).transpose();
+    const baseQ = new T.Quaternion(), spinQ = new T.Quaternion(), axis = new T.Vector3(0, 0, 1);
+    function aim(eye){
+      const v = eye.clone().sub(center).normalize();
+      const u = new T.Vector3(0, 1, 0).sub(v.clone().multiplyScalar(v.y)).normalize();
+      const W = new T.Matrix4().makeBasis(v, u, new T.Vector3().crossVectors(v, u));
+      baseQ.setFromRotationMatrix(W.multiply(LB)); axis.copy(v);
+    }
 
-    /* the room: a glossy floor, a pool of light under the cube, a lit square on the floor, and haze */
-    const floor = new T.Mesh(new T.PlaneGeometry(160, 160), new T.MeshStandardMaterial({ color: 0x0b0b0e, roughness: 0.3, metalness: 0.55, transparent: true, opacity: 0.8 }));
-    floor.rotation.x = -Math.PI / 2; floor.renderOrder = -1; scene.add(floor);
-    const pool = new T.Mesh(new T.PlaneGeometry(36, 36), new T.MeshBasicMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
-    pool.rotation.x = -Math.PI / 2; pool.position.y = 0.02; scene.add(pool);
-    const rimTex = (() => { const c = document.createElement('canvas'); c.width = 512; c.height = 344; const x = c.getContext('2d');
-      x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 5; x.shadowColor = '#fff'; x.shadowBlur = 16; x.strokeRect(14, 14, 484, 316); return new T.CanvasTexture(c); })();
-    const stageRim = new T.Mesh(new T.PlaneGeometry(3.4, 2.4), new T.MeshBasicMaterial({ map: rimTex, transparent: true, opacity: 0.12, blending: T.AdditiveBlending, depthWrite: false }));
-    stageRim.rotation.x = -Math.PI / 2; stageRim.position.set(0, 0.03, 1.7); scene.add(stageRim);
-    const wall = new T.Mesh(new T.PlaneGeometry(150, 70), new T.MeshBasicMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, fog: false }));
-    wall.position.set(0, 14, -46); scene.add(wall);
-    const haze = [[-7, 9, -6, 18], [8, 12, -9, 22], [0, 16, -14, 30], [0, 5, 1, 14]].map(([x, y, z, s]) => {
-      const h = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
-      h.position.set(x, y, z); h.scale.set(s, s * 0.7, 1); scene.add(h); return h; });
-    const amb = new T.AmbientLight(0x16161c, 0.6); scene.add(amb);
-    const lamp = new T.PointLight(0xffffff, 0, 70, 1.6); lamp.position.set(0, LIFT - 2, 1); scene.add(lamp);
+    /* the hall: polished black marble floor and walls, lit only by the cube */
+    const big = small ? 1024 : 2048;
+    const floorTex = new T.CanvasTexture(marble(big, big, 11, { big: 7, thin: 44, tiles: [6, 6] }));
+    floorTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    const wallTex = new T.CanvasTexture(marble(1024, 1024, 29, { big: 3, thin: 12, tiles: [4, 2] }));
+    wallTex.encoding = T.sRGBEncoding; wallTex.anisotropy = floorTex.anisotropy;
+    const wallMat = (w, h) => { const t = wallTex.clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(w / 16, h / 16);
+      return new T.MeshStandardMaterial({ map: t, roughness: 0.5, metalness: 0.0 }); };   // a soft sheen; a tight highlight from a light inside the cube would read as a stray dot
+    const WH = 44, BACK = -20, SIDE = 22, FRONT = 30;
+    const back = new T.Mesh(new T.PlaneGeometry(SIDE * 2, WH), wallMat(SIDE * 2, WH)); back.position.set(0, WH / 2, BACK); scene.add(back);
+    const left = new T.Mesh(new T.PlaneGeometry(FRONT - BACK, WH), wallMat(FRONT - BACK, WH)); left.rotation.y = Math.PI / 2; left.position.set(-SIDE, WH / 2, (FRONT + BACK) / 2); scene.add(left);
+    const right = new T.Mesh(new T.PlaneGeometry(FRONT - BACK, WH), wallMat(FRONT - BACK, WH)); right.rotation.y = -Math.PI / 2; right.position.set(SIDE, WH / 2, (FRONT + BACK) / 2); scene.add(right);
+    const ceil = new T.Mesh(new T.PlaneGeometry(SIDE * 2, FRONT - BACK), new T.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.7 }));
+    ceil.rotation.x = Math.PI / 2; ceil.position.set(0, WH, (FRONT + BACK) / 2); scene.add(ceil);
+    const amb = new T.AmbientLight(0x14141a, 0.35); scene.add(amb);
+    const lamp = new T.PointLight(0xffffff, 0, 90, 1.2); lamp.position.copy(center); scene.add(lamp);
+
+    // the floor is a mirror: each frame the room is drawn again from below the floor, then blended into the marble
+    const rt = new T.WebGLRenderTarget(512, 512, { minFilter: T.LinearFilter, magFilter: T.LinearFilter, format: T.RGBFormat });
+    rt.texture.generateMipmaps = false;
+    const floorU = { tDiffuse: { value: rt.texture }, textureMatrix: { value: new T.Matrix4() }, uMarble: { value: floorTex }, uTexel: { value: new T.Vector2(1 / 512, 1 / 512) },
+      uLightPos: { value: center.clone() }, uLightCol: { value: new T.Color(0, 0, 0) }, uAmb: { value: new T.Color(0, 0, 0) }, uFog: { value: FOG }, uFogD: { value: FOGD } };
+    const floor = new T.Mesh(new T.PlaneGeometry(SIDE * 2, FRONT - BACK), new T.ShaderMaterial({ uniforms: floorU,
+      vertexShader: `uniform mat4 textureMatrix; varying vec4 vR; varying vec3 vW;
+        void main(){ vR = textureMatrix * vec4(position, 1.0); vec4 wp = modelMatrix * vec4(position, 1.0); vW = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`,
+      fragmentShader: `uniform sampler2D tDiffuse, uMarble; uniform vec2 uTexel; uniform vec3 uLightPos, uLightCol, uAmb, uFog; uniform float uFogD;
+        varying vec4 vR; varying vec3 vW;
+        vec3 lin(vec3 c){ return pow(c, vec3(2.2)); }
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+        void main(){
+          // big marble tiles; neighbouring blocks are flipped so the stone never visibly repeats
+          vec2 uv = vW.xz / 12.0; vec2 cell = floor(uv); vec2 f = fract(uv); float h = hash(cell);
+          if (h > 0.5) f.x = 1.0 - f.x; if (fract(h * 7.13) > 0.5) f.y = 1.0 - f.y;
+          vec3 m = lin(texture2D(uMarble, f).rgb);
+          vec3 V = normalize(cameraPosition - vW);
+          vec3 L = uLightPos - vW; float dl = length(L); L /= dl;
+          float diff = max(L.y, 0.0) / (1.0 + dl * dl * 0.012);
+                    vec2 pr = vR.xy / vR.w;
+          vec3 refl = (lin(texture2D(tDiffuse, pr).rgb) * 2.0 + lin(texture2D(tDiffuse, pr + vec2(uTexel.x, 0.0)).rgb) + lin(texture2D(tDiffuse, pr - vec2(uTexel.x, 0.0)).rgb)
+            + lin(texture2D(tDiffuse, pr + vec2(0.0, uTexel.y)).rgb) + lin(texture2D(tDiffuse, pr - vec2(0.0, uTexel.y)).rgb)) / 6.0;
+          float fres = 0.14 + 0.7 * pow(1.0 - max(V.y, 0.0), 5.0);
+          float vein = smoothstep(0.06, 0.45, m.r);
+          vec3 col = m * (uAmb + uLightCol * diff * 2.2) + refl * fres * (1.0 - 0.75 * vein);
+          float d = length(cameraPosition - vW); col = mix(col, lin(uFog), 1.0 - exp(-pow(uFogD * d, 2.0)));
+          gl_FragColor = vec4(pow(col, vec3(1.0 / 2.2)), 1.0);
+        }` }));
+    floor.rotation.x = -Math.PI / 2; floor.position.z = (FRONT + BACK) / 2; scene.add(floor);
+    (() => {   // the mirror camera (after three.js's Reflector)
+      const vcam = new T.PerspectiveCamera(), plane = new T.Plane(), normal = new T.Vector3(), wp = new T.Vector3(), cp = new T.Vector3(), rot = new T.Matrix4();
+      const look = new T.Vector3(), view = new T.Vector3(), target = new T.Vector3(), clip = new T.Vector4(), q = new T.Vector4(), tm = floorU.textureMatrix.value;
+      floor.onBeforeRender = (r, sc, cam) => {
+        wp.setFromMatrixPosition(floor.matrixWorld); cp.setFromMatrixPosition(cam.matrixWorld);
+        rot.extractRotation(floor.matrixWorld); normal.set(0, 0, 1).applyMatrix4(rot);
+        view.subVectors(wp, cp); if (view.dot(normal) > 0) return;
+        view.reflect(normal).negate().add(wp);
+        rot.extractRotation(cam.matrixWorld); look.set(0, 0, -1).applyMatrix4(rot).add(cp);
+        target.subVectors(wp, look).reflect(normal).negate().add(wp);
+        vcam.position.copy(view); vcam.up.set(0, 1, 0).applyMatrix4(rot).reflect(normal); vcam.lookAt(target); vcam.far = cam.far;
+        vcam.updateMatrixWorld(); vcam.projectionMatrix.copy(cam.projectionMatrix);
+        tm.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1); tm.multiply(vcam.projectionMatrix); tm.multiply(vcam.matrixWorldInverse); tm.multiply(floor.matrixWorld);
+        plane.setFromNormalAndCoplanarPoint(normal, wp); plane.applyMatrix4(vcam.matrixWorldInverse);
+        clip.set(plane.normal.x, plane.normal.y, plane.normal.z, plane.constant);
+        const P = vcam.projectionMatrix.elements;
+        q.x = (Math.sign(clip.x) + P[8]) / P[0]; q.y = (Math.sign(clip.y) + P[9]) / P[5]; q.z = -1; q.w = (1 + P[10]) / P[14];
+        clip.multiplyScalar(2 / clip.dot(q)); P[2] = clip.x; P[6] = clip.y; P[10] = clip.z + 1; P[14] = clip.w;
+        rt.texture.encoding = r.outputEncoding;
+        floor.visible = false; const prev = r.getRenderTarget(); r.setRenderTarget(rt); r.state.buffers.depth.setMask(true);
+        if (r.autoClear === false) r.clear(); r.render(sc, vcam); r.setRenderTarget(prev); floor.visible = true;
+      };
+    })();
 
     /* the room's colour comes from the film: a tiny copy of each frame, averaged */
     const probe = document.createElement('canvas'); probe.width = 16; probe.height = 9; const px = probe.getContext('2d', { willReadFrequently: true });
-    const tint = new T.Color(0x9E80F2), want = new T.Color(0x9E80F2); let bright = 0, brightWant = 0, frame = 0;
+    const tint = new T.Color(0x9E80F2), want = new T.Color(0x9E80F2), white = new T.Color(0xEEF2FF); let bright = 0, brightWant = 0, frame = 0;
     function sample(){
       const f = FILES[cur];
       if (f && f.video && video.readyState >= 2 && faceU.uOn.value > 0.01){
@@ -283,7 +382,7 @@
     }
 
     /* the power-on sequence */
-    const st = { phase: 'off', t0: 0, dur: 2.6, idle: 0, onDone: null, spin: 0, vel: 0, drag: null, booted: false, awake: true, last: 0 };
+    const st = { phase: 'off', t0: 0, dur: 2.6, onDone: null, spin: 0, vel: 0, drag: null, booted: false, awake: true, last: 0, eye: new T.Vector3(), look: new T.Vector3() };
     const ease = t => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
     const seg = (t, a, b) => ease((t - a) / (b - a));
     function setTexture(f){
@@ -315,12 +414,9 @@
         return;
       }
       if (st.phase === 'boot' || st.phase === 'standby'){
-        const sb = st.phase === 'standby', D = st.dur;
-        const k = D / 2.6;                             // a switch runs a little quicker than the very first start
-        flares[0].material.opacity = Math.max(0, Math.sin(Math.min(1, t / (0.55 * k)) * Math.PI)) * 0.95;
-        flares[0].scale.setScalar(1.2 + 2.6 * seg(t, 0, 0.5 * k));
+        const sb = st.phase === 'standby', D = st.dur, k = D / 2.6;
+        spark.material.opacity = Math.max(0, Math.sin(Math.min(1, t / (0.5 * k)) * Math.PI));
         edges.forEach(e => { const a = (0.12 + e.level * 0.36) * k, b = a + 0.42 * k; e.p = seg(t, a, b); e.i = e.p > 0 ? 1.0 : 0; });
-        edges.forEach(e => { if (e.p > 0.98){ const fl = flares[e.to]; fl.material.opacity = Math.max(fl.material.opacity, 0.7); } });
         if (!sb){
           faceU.uWire.value = seg(t, 0.35 * k, 1.5 * k); faceU.uWireGlow.value = 0.95 * seg(t, 0.35 * k, 0.8 * k);
           faceU.uOn.value = 1; faceU.uReveal.value = 1.15 * seg(t, 1.25 * k, D);
@@ -328,26 +424,26 @@
           if (t >= D){ st.phase = 'on'; faceU.uReveal.value = 1.2; }
         } else {
           faceU.uWire.value = 0.55 * seg(t, 0.5, 1.6); faceU.uWireGlow.value = 0.6 * seg(t, 0.5, 1.0) * (1 - seg(t, 2.0, 3.2));
-          if (t > 3.2){ st.phase = 'idle'; }
+          if (t > 3.2) st.phase = 'idle';
         }
         return;
       }
+      spark.material.opacity *= 0.85;
       if (st.phase === 'idle' || st.phase === 'off'){
         const lit = st.phase === 'idle' ? 1 : 0;
-        edges.forEach(e => { e.p = lit; e.i += ((0.22 + 0.05 * Math.sin(now * 0.8 + e.level)) * lit - e.i) * 0.06; });
+        edges.forEach(e => { e.p = lit; e.i += ((0.3 + 0.05 * Math.sin(now * 0.8 + e.level)) * lit - e.i) * 0.06; });
         faceU.uIdle.value = 0.55 * lit;
       }
       if (st.phase === 'on'){
-        faceU.uWireGlow.value += (0.55 - faceU.uWireGlow.value) * 0.03;
-        const pulse = 0.82 + 0.18 * bright;
-        edges.forEach(e => { e.p = 1; e.i += (pulse - e.i) * 0.05; });
+        faceU.uWireGlow.value += (0.5 - faceU.uWireGlow.value) * 0.03;
+        edges.forEach(e => { e.p = 1; e.i += (0.85 - e.i) * 0.05; });
       }
     }
 
     /* drag to turn it; it keeps turning slowly on its own */
     const cv = renderer.domElement;
     cv.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, t: performance.now() }; st.vel = 0; });
-    window.addEventListener('pointermove', e => { if (!st.drag) return; const dx = e.clientX - st.drag.x; st.drag.x = e.clientX; const dt = Math.max(8, performance.now() - st.drag.t); st.drag.t = performance.now(); st.spin += dx * 0.006; st.vel = dx * 0.006 / (dt / 1000); });
+    window.addEventListener('pointermove', e => { if (!st.drag) return; const dx = e.clientX - st.drag.x; st.drag.x = e.clientX; const dt = Math.max(8, performance.now() - st.drag.t); st.drag.t = performance.now(); st.spin -= dx * 0.006; st.vel = -dx * 0.006 / (dt / 1000); });
     window.addEventListener('pointerup', () => { st.drag = null; });
     window.addEventListener('pointercancel', () => { st.drag = null; });
     let mx = 0, my = 0, cx = 0, cy = 0;
@@ -356,38 +452,44 @@
     function frameCamera(){
       const w = stage.clientWidth || 1, h = stage.clientHeight || 1, a = w / h;
       renderer.setSize(w, h, false); camera.aspect = a;
-      // tall screens step back so the whole cube fits across; wide ones get the low, looking-up view
-      camera.fov = a < 1 ? 66 : 54;
-      st.dist = a < 1 ? 12 + (1 - a) * 9 : 11.8;
+      // wide screens: the cube fills the height; tall phones: it fills the width, with the floor and its reflection below
+      const k = Math.max(0, Math.min(1, (1.25 - a) / 0.8));
+      camera.fov = 58 + 12 * k;
+      st.eye.set(0, 1.0, 14.1 + 1.0 * k);
+      st.look.set(0, 3.6 - 0.7 * k, 0);
       camera.updateProjectionMatrix();
+      const rw = Math.max(256, Math.round(w * DPR * 0.5)), rh = Math.max(256, Math.round(h * DPR * 0.5));
+      rt.setSize(rw, rh); floorU.uTexel.value.set(1 / rw, 1 / rh);
+      aim(st.eye);
     }
     frameCamera();
     if ('ResizeObserver' in window) new ResizeObserver(frameCamera).observe(stage); else window.addEventListener('resize', frameCamera);
 
-    function tick(ms){
+    const lampCol = new T.Color();
+    function tick(){
       st.raf = 0;
       if (!st.awake) return;
       st.raf = requestAnimationFrame(tick);
       const now = clock(), dt = Math.min(0.05, st.last ? Math.max(0, now - st.last) : 0.016); st.last = now;
       animate(now);
       faceU.uTime.value = now;
-      if (!st.drag){ st.vel *= Math.pow(0.04, dt); st.spin += (RM ? 0 : 0.13) * dt + st.vel * dt; }
-      rig.rotation.y = st.spin; rig.position.y = LIFT + (RM ? 0 : Math.sin(now * 0.45) * 0.12);
-      rigM.position.copy(rig.position); rigM.rotation.copy(rig.rotation);
-      edges.forEach(e => { [e.core, e.glow].forEach(m => { m.material.uniforms.uProg.value = e.p; m.material.uniforms.uI.value = e.i; m.visible = e.p > 0.001; }); });
-      flares.forEach((f, n) => { if (n || st.phase !== 'boot') f.material.opacity *= 0.93; });
+      if (!st.drag){ st.vel *= Math.pow(0.04, dt); st.spin += (RM ? 0 : 0.11) * dt + st.vel * dt; }
+      spinQ.setFromAxisAngle(axis, st.spin); rig.quaternion.copy(spinQ).multiply(baseQ);
+      rig.position.y = LIFT + (RM ? 0 : Math.sin(now * 0.45) * 0.1);
+      edges.forEach(e => { const m = e.core; m.material.uniforms.uProg.value = e.p; m.material.uniforms.uI.value = e.i; m.visible = e.p > 0.001; });
       if (++frame % 4 === 0) sample();
       bright += (brightWant * faceU.uOn.value * Math.min(1, faceU.uReveal.value) - bright) * 0.06; tint.lerp(want, 0.05);
       const edgeLight = edges.reduce((a, e) => a + e.i * e.p, 0) / edges.length;
-      lamp.color.copy(tint).lerp(new T.Color(0xEEF4FF), 0.35); lamp.intensity = 0.6 * edgeLight + 4.2 * bright;
-      pool.material.color.copy(tint); pool.material.opacity = 0.1 * edgeLight + 0.62 * bright;
-      wall.material.color.copy(tint); wall.material.opacity = 0.04 * edgeLight + 0.32 * bright;
-      haze.forEach((h, n) => { h.material.color.copy(tint); h.material.opacity = (0.015 * edgeLight + 0.08 * bright) * (n === 3 ? 0.6 : 1); });
-      stageRim.material.opacity = 0.08 + 0.1 * edgeLight + 0.25 * bright;
+      // the cube is the only light in the room: its edges a little, the film a lot
+      lampCol.copy(tint).lerp(white, 0.3);
+      lamp.color.copy(lampCol); lamp.intensity = 0.45 * edgeLight + 3.0 * bright; lamp.position.copy(rig.position);
+      floorU.uLightPos.value.copy(rig.position);
+      floorU.uLightCol.value.copy(lampCol).convertSRGBToLinear().multiplyScalar(lamp.intensity * 0.55);
+      floorU.uAmb.value.copy(amb.color).convertSRGBToLinear().multiplyScalar(amb.intensity);
       // the viewer's eye drifts a little with the mouse
       cx += ((RM ? 0 : mx) - cx) * 0.04; cy += ((RM ? 0 : my) - cy) * 0.04;
-      camera.position.set(cx * 2.2, 1.25 - cy * 0.6, st.dist);
-      camera.lookAt(0, camera.aspect < 1 ? 7.4 : 6.5, 0);
+      camera.position.set(st.eye.x + cx * 1.6, st.eye.y - cy * 0.4, st.eye.z);
+      camera.lookAt(st.look);
       renderer.render(scene, camera);
     }
     function awake(on){ st.awake = on; if (on){ if (!st.raf){ st.last = 0; st.raf = requestAnimationFrame(tick); } if (visible) standby(); } }
