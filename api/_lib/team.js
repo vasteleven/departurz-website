@@ -151,7 +151,7 @@ export async function teamData(email) {
   const kudos = t.Kudos.filter(k => lower(k.email) === email && k.text && (k.sent_at || (day(k.date) && day(k.date) <= today())))
     .sort((a, b) => (day(b.date) || '').localeCompare(day(a.date) || '')).map(k => ({ from: k.from || 'Nate', date: day(k.date) || day(k.sent_at) || today(), text: k.text }));
 
-  const out = { me, crew, channels, tasks, events, files, folders, projects, pay, kudos };
+  const out = { me, crew, channels, tasks, events, files, folders, projects, pay, kudos, docs: crewDocs(ctx) };
   // the editors room badge: cuts waiting on Nate (owner, managers), or notes back on your own cuts (crew)
   out.rooms = { cuts: ctx.staff ? t.Cuts.filter(x => x.file_id && !['approved', 'changes'].includes(lower(x.status))).length : 0, changes: t.Cuts.filter(x => lower(x.by) === email && lower(x.status) === 'changes').length };
   if (ctx.owner) {
@@ -163,6 +163,34 @@ export async function teamData(email) {
     };
   }
   return { out, ctx };
+}
+
+/* ---------- crew documents: the welcome letter and the Crew Agreement, signed in the portal ---------- */
+export const CREW_AGREEMENT = { ref: 'CREW-AGREEMENT', title: 'DEPARTURZ Crew Agreement', version: '2026-11' };
+function crewDocs(ctx) {
+  const mine = (ctx.t.Agreements || []).filter(a => lower(a.email) === ctx.email && String(a.ref) === CREW_AGREEMENT.ref)
+    .sort((a, b) => String(b.accepted_at).localeCompare(String(a.accepted_at)))[0];
+  const since = day(ctx.row.since) || '';
+  return [
+    { ref: 'CREW-WELCOME', title: 'Welcome to the crew', kind: 'letter', note: 'How we work, how you get paid, and the house rules.', url: '#letter:crew-welcome', status: 'info', date: since },
+    { ref: CREW_AGREEMENT.ref, title: CREW_AGREEMENT.title, kind: 'contract', note: 'The terms for every job you take on with DEPARTURZ.', url: '#letter:crew-agreement', pdf: '/docs/DEPARTURZ-Crew-Agreement.pdf',
+      status: ctx.owner ? 'info' : mine ? 'signed' : 'to sign', date: since, acceptedAt: mine ? day(mine.accepted_at) : '', acceptedBy: mine ? String(mine.accepted_by || '') : '' }
+  ];
+}
+export async function acceptCrewDoc(email, b) {
+  const ctx = await teamContext(email);
+  if (String(b.ref) !== CREW_AGREEMENT.ref) throw new HttpError(404, 'That document does not need your signature.');
+  if (ctx.owner) throw new HttpError(409, 'The owner signs on the DEPARTURZ side.');
+  const name = clean(b.name, 120);
+  if (name.length < 3 || !b.agree) throw new HttpError(400, 'Tick the box and type your full name to accept.');
+  if ((ctx.t.Agreements || []).some(a => lower(a.email) === email && String(a.ref) === CREW_AGREEMENT.ref)) return { ok: true, acceptedAt: today() };
+  const when = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  const by = `${name} <${email}> · ${when}`;
+  await add('team', 'Agreements', { email, ref: CREW_AGREEMENT.ref, title: CREW_AGREEMENT.title, version: CREW_AGREEMENT.version, accepted_at: today(), accepted_by: by });
+  const html = `<p><b>${esc(name)}</b> (${esc(email)}) accepted the <b>${esc(CREW_AGREEMENT.title)}</b> (version ${CREW_AGREEMENT.version}) on ${esc(when)}.</p>`;
+  await send({ to: NOTIFY(), replyTo: email, subject: `Signed: Crew Agreement · ${name}`, heading: 'Crew Agreement signed', html: html + '<p>It is logged on the Agreements tab of the Team sheet.</p>' });
+  await send({ to: email, subject: 'You signed the DEPARTURZ Crew Agreement', heading: 'Signed. Welcome aboard.', html: html + '<p>A copy stays in your portal under Documents.</p>' });
+  return { ok: true, acceptedAt: today(), acceptedBy: by };
 }
 
 /* ---------- actions ---------- */

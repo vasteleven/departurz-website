@@ -11,7 +11,18 @@ const TTL = 15000;
 export async function load(which, fresh) {
   const c = cache[which];
   if (!fresh && c && Date.now() - c.t < TTL) return c.v;
-  const v = await readTabs(SHEET[which](), TABS[which]);
+  let v;
+  try { v = await readTabs(SHEET[which](), TABS[which]); }
+  catch (e) {
+    // a sheet made before a tab was added to the schema: add the missing tabs and columns, then read again
+    if (!/parse range|not found|400/i.test(String(e.message))) throw e;
+    // (both sheets get checked, so new optional columns, like the invoice extras, show up too)
+    const { upgradeSheet } = await import('./setupcore.js');
+    await upgradeSheet(which, SHEET[which](), which === 'team' ? TEAM : CLIENTS);
+    const other = which === 'team' ? 'clients' : 'team';
+    try { await upgradeSheet(other, SHEET[other](), other === 'team' ? TEAM : CLIENTS); } catch (e2) {}
+    v = await readTabs(SHEET[which](), TABS[which]);
+  }
   for (const t of TABS[which]) v[t] = v[t] || [];
   cache[which] = { t: Date.now(), v };
   return v;

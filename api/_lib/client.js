@@ -55,7 +55,9 @@ export async function clientData(email, pick) {
     return { id: needId(n), kind, label: n.label || 'Item', detail: n.detail || '', due: day(n.due), status: lower(n.status) === 'received' ? 'received' : 'open', text: n.text === '' || n.text == null ? TEXT_KINDS.includes(kind) : yes(n.text) };
   });
   out.invoices = c.Invoices.filter(i => String(i.project_code) === code).map(i => ({
-    no: String(i.no || 'INV-' + i._row), label: i.label || 'Invoice', amount: num(i.amount), status: ['paid', 'sent'].includes(lower(i.status)) ? lower(i.status) : 'due', due: day(i.due), date: day(i.paid_date), via: i.via || ''
+    no: String(i.no || 'INV-' + i._row), label: i.label || 'Invoice', amount: num(i.amount), status: ['paid', 'sent'].includes(lower(i.status)) ? lower(i.status) : 'due', due: day(i.due), date: day(i.paid_date), via: i.via || '',
+    // for the printable invoice: issued date, line items ("Item | what it includes | $amount", one per line), a note, and lime / violet / sky
+    issued: day(i.issued), items: invItems(i.items), note: String(i.note || '').slice(0, 600), color: ['lime', 'violet', 'sky'].includes(lower(i.color)) ? lower(i.color) : ''
   }));
   // the client sees their own notes and requests, plus everything the team put on the project calendar
   const evs = c.Events.filter(e => String(e.project_code) === code && day(e.date) && (lower(e.type) !== 'note' || lower(e.by) === email) && lower(e.status) !== 'declined')
@@ -73,7 +75,8 @@ export async function clientData(email, pick) {
     .map(docShape).sort((a, b) => docNo(a.ref) - docNo(b.ref));
   // every client also gets the portal guide, and the thank-you letter once the project has landed
   const since = [day(project.start_date), ...ms.map(m => day(m.date))].filter(Boolean).sort()[0];
-  out.documents = [houseDoc('guide', code, since && since < today() ? since : today()), ...out.documents];
+  const first = since && since < today() ? since : today();
+  out.documents = [houseDoc('guide', code, first), houseDoc('welcome', code, first), ...startDocs(project, code, first), ...out.documents];
   if (delivered(project)) out.documents.push(houseDoc('thanks', code, day(project.delivered_date) || day(project.thanked_at) || today()));
   out.deliverables = files.map(f => ({ id: f.id, name: f.name, size: Number(f.size || 0), date: String(f.createdTime || '').slice(0, 10), kind: kindOf(f.mimeType, f.name), tag: f.id === project.review_file_id ? 'Review' : 'Final' }));
   return out;
@@ -83,10 +86,25 @@ export async function clientData(email, pick) {
    Files dropped into the project's Documents folder in Drive are added to the Documents tab with the next number
    (DPZ-0142-D1, D2…). Rows can also be added by hand, with a link instead of a file. */
 // the two PDFs that live on the site (built from docs_src in the site folder), shown in every client's Documents
+// an invoice's line items, typed in the sheet one per line (or split with ;) as "Item | what it includes | $amount"
+const invItems = v => String(v || '').split(/\n|;/).map(x => x.trim()).filter(Boolean).slice(0, 20).map(x => {
+  const [t, d = '', a = ''] = x.split('|').map(y => y.trim());
+  return { t: t.slice(0, 160), d: d.slice(0, 300), a: a.slice(0, 40) };
+});
 export const HOUSE_DOCS = {
   guide: { ref: 'GUIDE', title: 'Your portal, step by step', kind: 'guide', note: 'How to sign in, set up your profile and find your way around.', url: '/docs/DEPARTURZ-Portal-Guide.pdf' },
-  thanks: { ref: 'THANKS', title: 'Thank you from DEPARTURZ', kind: 'letter', note: 'A note from Nate and the crew, for working with us.', url: '/docs/DEPARTURZ-Thank-You.pdf' }
+  thanks: { ref: 'THANKS', title: 'Thank you from DEPARTURZ', kind: 'letter', note: 'A note from Nate and the crew, for working with us.', url: '/docs/DEPARTURZ-Thank-You.pdf' },
+  welcome: { ref: 'WELCOME', title: 'Welcome to DEPARTURZ', kind: 'letter', note: 'What happens next, and how we work together.', url: '#letter:client-welcome' },
+  start: { ref: 'START', title: 'Getting started', kind: 'guide', note: 'What we need from you, step by step.', url: '' }
 };
+// the "what we need from you" guides that match the project's service (a shoot plus an edit gets both)
+const START_GUIDES = [
+  ['WEB', s => /web|site|store|portal/i.test(s), 'Website', 'Getting started with your website'],
+  ['SHOOT', s => /produc|shoot|film|event|photo/i.test(s.replace(/post[\s-]*produc\w*/ig, '')), 'Production', 'Getting started with your shoot'],
+  ['EDIT', s => /post|edit/i.test(s), 'Post-Production', 'Getting started with your edit']
+];
+const startDocs = (p, code, date) => START_GUIDES.filter(([, hit]) => hit(String(p.service || '')))
+  .map(([k, , file, title]) => ({ ...houseDoc('start', code, date), ref: `${code}-${k}`, title, url: `/docs/DEPARTURZ-Getting-Started-${file}.pdf` }));
 const houseDoc = (k, code, date) => ({ ...HOUSE_DOCS[k], ref: `${code}-${HOUSE_DOCS[k].ref}`, date, status: 'info', fileId: '', acceptedAt: '', acceptedBy: '' });
 export const delivered = p => (day(p.delivered_date) && p.delivered_date <= today()) || /deliver|landed|complete/i.test(String(p.status || ''));
 const docNo = r => { const m = String(r || '').match(/-D(\d+)$/i); return m ? +m[1] : 0; };
@@ -119,7 +137,7 @@ export async function syncDocs(c, project) {
     const files = folderId ? await listFiles(folderId, 100).catch(() => []) : [];
     for (const f of [...files].reverse()) {                     // oldest first, so numbers follow the order they arrived
       if (rows.some(d => d.file_id === f.id) || added.some(d => d.file_id === f.id)) continue;
-      const row = { ref: `${code}-D${next++}`, project_code: code, title: String(f.name).replace(/\.[a-z0-9]{2,5}$/i, ''), kind: guessKind(f.name), file_id: f.id, date: String(f.createdTime || '').slice(0, 10) || today(), status: 'info' };
+      const row = { ref: `${code}-D${next++}`, project_code: code, title: String(f.name).replace(/\.[a-z0-9]{2,5}$/i, ''), kind: guessKind(f.name), file_id: f.id, date: String(f.createdTime || '').slice(0, 10) || today(), status: ['contract', 'release'].includes(guessKind(f.name)) ? 'to sign' : 'info' };
       await add('clients', 'Documents', row);
       added.push(row);
     }

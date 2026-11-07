@@ -44,7 +44,11 @@ function sheets(url, opts) {
     store.files[sid] = { id: sid, name: b.properties.title, mimeType: 'application/vnd.google-apps.spreadsheet', parents: ['root'], createdTime: new Date().toISOString() };
     return ok({ spreadsheetId: sid, sheets: b.sheets.map((x, i) => ({ properties: { title: x.properties.title, sheetId: i } })) });
   }
-  if (/^\/v4\/spreadsheets\/[^/]+:batchUpdate$/.test(url.pathname)) { store.calls.push('format ' + JSON.parse(opts.body).requests.length); return ok({ replies: [] }); }
+  if (/^\/v4\/spreadsheets\/[^/]+:batchUpdate$/.test(url.pathname)) {
+    const reqs = JSON.parse(opts.body).requests, book = store.sheets[url.pathname.split('/')[3].split(':')[0]];
+    reqs.forEach(r => { if (r.addSheet && book) book[r.addSheet.properties.title] = book[r.addSheet.properties.title] || [[]]; });   // like Google: addSheet makes a new, empty tab
+    store.calls.push('format ' + reqs.length); return ok({ replies: [] });
+  }
   const meta = url.pathname.match(/^\/v4\/spreadsheets\/([^/:]+)$/);
   if (meta) { const book = store.sheets[meta[1]]; return book ? ok({ sheets: Object.keys(book).map((t, i) => ({ properties: { title: t, sheetId: i } })) }) : ok({ error: { message: 'not found' } }, 404); }
   const m = url.pathname.match(/^\/v4\/spreadsheets\/([^/]+)\/values(.*)$/);
@@ -54,6 +58,9 @@ function sheets(url, opts) {
   const rest = decodeURIComponent(m[2]);
   if (rest === ':batchGet') {
     const ranges = url.searchParams.getAll('ranges');
+    // like Google: asking for a tab that isn't there fails the whole read
+    const gone = ranges.map(r => tabOf(r).tab).find(t => !book[t]);
+    if (gone) return ok({ error: { code: 400, message: `Unable to parse range: ${gone}` } }, 400);
     return ok({ valueRanges: ranges.map(r => { const { tab } = tabOf(r); return { range: r, values: (book[tab] || []).map(row => row.slice()) }; }) });
   }
   if (rest === ':batchClear') {

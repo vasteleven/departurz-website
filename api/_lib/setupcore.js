@@ -19,7 +19,7 @@ async function findSheet(title, folderId) {
 }
 
 // a sheet made by an older version gets the tabs and columns it's missing, added at the end
-async function upgradeSheet(title, id, schema, log) {
+export async function upgradeSheet(title, id, schema, log = () => {}) {
   const meta = await g(`${SHEETS}/${id}?fields=sheets.properties`);
   const have = Object.fromEntries(meta.sheets.map(x => [x.properties.title, x.properties.sheetId]));
   const missingTabs = Object.keys(schema).filter(t => have[t] === undefined);

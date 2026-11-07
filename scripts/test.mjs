@@ -72,6 +72,10 @@ await ok('client portal data', async () => {
   assert.equal(r.data.data.project.code, 'DPZ-0142');
   assert.equal(r.data.data.deliverables[0].tag, 'Review');
   assert.equal(r.data.data.invoices.filter(i => i.status === 'due').length, 2);
+  const inv = r.data.data.invoices.find(i => i.no === 'DPZ-0142-P2');
+  assert.equal(inv.color, 'violet'); assert.equal(inv.items.length, 3);
+  assert.deepEqual(inv.items[2], { t: 'Less deposit received', d: '', a: '-$3,250' });
+  assert.deepEqual(r.data.data.invoices.find(i => i.no === 'DPZ-0142-P3').items, [], 'no items typed means one line from the label');
 });
 await ok('crew and admin portal data', async () => {
   const t = await call('GET', 'portal', null, T); assert.equal(t.data.side, 'team'); assert.equal(t.data.data.admin, undefined);
@@ -228,10 +232,14 @@ await ok('documents are numbered under the confirmation and can be accepted', as
   const guide = mock.addFile('Domain setup guide.pdf', docs, 1000, 'application/pdf');
   const r = await call('GET', 'portal', null, C);
   const d = r.data.data.documents;
-  // the portal guide is always first; the thank-you letter only comes once the project is delivered
-  assert.deepEqual(d.map(x => x.ref), ['DPZ-0142-GUIDE', 'DPZ-0142-D1', 'DPZ-0142-D2', 'DPZ-0142-D3', 'DPZ-0142-D4', 'DPZ-0142-D5']);
+  // the portal guide, the welcome letter and the getting-started guides for the service come first; the thank-you letter only once delivered
+  assert.deepEqual(d.map(x => x.ref), ['DPZ-0142-GUIDE', 'DPZ-0142-WELCOME', 'DPZ-0142-SHOOT', 'DPZ-0142-EDIT', 'DPZ-0142-D1', 'DPZ-0142-D2', 'DPZ-0142-D3', 'DPZ-0142-D4', 'DPZ-0142-D5']);
   assert.equal(d[0].url, '/docs/DEPARTURZ-Portal-Guide.pdf');
-  assert.equal(d[5].kind, 'guide');
+  assert.equal(d[1].url, '#letter:client-welcome');
+  assert.equal(d[2].url, '/docs/DEPARTURZ-Getting-Started-Production.pdf');
+  assert.equal(d[3].url, '/docs/DEPARTURZ-Getting-Started-Post-Production.pdf');
+  assert.equal(d[8].kind, 'guide');
+  assert.equal(d[8].status, 'info', 'a guide dropped in the folder is not something to sign');
   assert.ok(!d.some(x => x.ref.endsWith('-THANKS')), 'no thank-you letter before delivery');
   const { delivered } = await import('../api/_lib/client.js');
   assert.ok(delivered({ status: 'Delivered' }) && !delivered({ status: 'In the edit' }));
@@ -241,8 +249,34 @@ await ok('documents are numbered under the confirmation and can be accepted', as
   assert.equal((await call('POST', 'docs/accept', { ref: 'DPZ-0142-D4', name: 'Jordan Rivera', agree: true }, C)).status, 200);
   assert.equal((await call('POST', 'docs/accept', { ref: 'DPZ-0142-D1', name: 'Jordan Rivera', agree: true }, C)).status, 409);
   const again = await call('GET', 'portal', null, C);
-  assert.equal(again.data.data.documents.length, 6, 'no duplicates on the next load');
-  assert.equal(again.data.data.documents[4].status, 'signed');
+  assert.equal(again.data.data.documents.length, 9, 'no duplicates on the next load');
+  assert.equal(again.data.data.documents[7].status, 'signed');
+  // a contract dropped in the folder is marked to sign
+  mock.addFile('Website services agreement.pdf', docs, 1000, 'application/pdf');
+  const third = await call('GET', 'portal', null, C);
+  const k = third.data.data.documents.find(x => x.ref === 'DPZ-0142-D6');
+  assert.ok(k && k.kind === 'contract' && k.status === 'to sign', 'new contract is to sign');
+});
+await ok('crew members read and accept the Crew Agreement', async () => {
+  const t = await call('GET', 'portal', null, T);
+  const docs = t.data.data.docs;
+  assert.deepEqual(docs.map(x => x.ref), ['CREW-WELCOME', 'CREW-AGREEMENT']);
+  assert.equal(docs[1].status, 'to sign');
+  assert.equal(docs[1].url, '#letter:crew-agreement');
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-AGREEMENT', name: 'Amara Okafor', agree: true }, C)).status, 403, 'clients cannot');
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-AGREEMENT', name: 'Amara Okafor' }, T)).status, 400, 'must tick the box');
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-WELCOME', name: 'Amara Okafor', agree: true }, T)).status, 404);
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-AGREEMENT', name: 'Amara Okafor', agree: true }, T)).status, 200);
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-AGREEMENT', name: 'Amara Okafor', agree: true }, T)).status, 200, 'accepting twice is harmless');
+  const again = await call('GET', 'portal', null, T);
+  const ag = again.data.data.docs[1];
+  assert.equal(ag.status, 'signed');
+  assert.ok(ag.acceptedBy.includes('Amara Okafor') && ag.acceptedBy.includes('amara@crew.example'));
+  const rows = Object.values(mock.store.sheets).flatMap(sh => (sh.Agreements || []).slice(1));
+  assert.ok(rows.length >= 1, 'logged on the Agreements tab');
+  const n = await call('GET', 'portal', null, N);
+  assert.equal(n.data.data.docs[1].status, 'info', 'the owner signs on the DEPARTURZ side');
+  assert.equal((await call('POST', 'team/docs/accept', { ref: 'CREW-AGREEMENT', name: 'Nate', agree: true }, N)).status, 409);
 });
 await ok('crew actions and admin pay', async () => {
   assert.equal((await call('POST', 'tasks/toggle', { id: 't2' }, T)).data.status, 'done');

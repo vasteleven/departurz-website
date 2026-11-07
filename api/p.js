@@ -149,6 +149,7 @@ const ROUTES = {
 
   // crew
   'POST tasks/toggle': teamOnly(({ user, body: b }) => team.toggleTask(user.email, b).then(r => json(r))),
+  'POST team/docs/accept': teamOnly(({ user, body: b }) => team.acceptCrewDoc(user.email, b).then(r => json(r))),
   'POST hours': teamOnly(({ user, body: b }) => team.submitHours(user.email, b).then(r => json(r))),
   'POST payout-method': teamOnly(({ user, body: b }) => team.payoutMethod(user.email, b).then(r => json(r))),
   'POST admin/payout/approve': teamOnly(({ user, body: b }) => team.approvePayout(user.email, b).then(r => json(r))),

@@ -7,7 +7,7 @@ export const CLIENTS = {
   Projects: ['code', 'client_email', 'title', 'service', 'status', 'progress', 'lead', 'crew', 'code_name', 'review_rounds', 'seat', 'start_date', 'delivered_date', 'review_title', 'review_file_id', 'review_date', 'review_length', 'review_state', 'review_notified', 'thanked_at', 'drive_folder_id'],
   Milestones: ['project_code', 'label', 'date', 'state', 'note', 'notified_at'],
   Needs: ['id', 'project_code', 'kind', 'label', 'detail', 'due', 'status', 'text', 'received_at', 'reply', 'reminded_at'],
-  Invoices: ['no', 'project_code', 'label', 'amount', 'due', 'status', 'paid_date', 'via', 'ref'],
+  Invoices: ['no', 'project_code', 'label', 'amount', 'due', 'status', 'paid_date', 'via', 'ref', 'issued', 'items', 'note', 'color'],
   Events: ['project_code', 'date', 'type', 'title', 'note', 'by', 'created_at', 'status', 'handled_by'],
   Documents: ['ref', 'project_code', 'title', 'kind', 'file_id', 'url', 'date', 'status', 'note', 'accepted_at', 'accepted_by', 'notified_at'],
   // the client review room: everything dropped in a project's For review folder, newest version on top
@@ -22,7 +22,9 @@ export const TEAM = {
   Channels: ['id', 'name', 'members'],
   Files: ['date', 'by', 'name', 'size', 'mime', 'folder', 'project', 'drive_id'],
   // the editors room: cuts the crew send Nate before anything goes to a client
-  Cuts: ['id', 'project_code', 'title', 'version', 'file_id', 'kind', 'by', 'status', 'submitted_at', 'decided_at', 'sent_at', 'note']
+  Cuts: ['id', 'project_code', 'title', 'version', 'file_id', 'kind', 'by', 'status', 'submitted_at', 'decided_at', 'sent_at', 'note'],
+  // crew documents accepted in the portal (the Crew Agreement), one row per acceptance
+  Agreements: ['email', 'ref', 'title', 'version', 'accepted_at', 'accepted_by']
 };
 
 // dropdowns the setup script adds, so the sheets stay tidy

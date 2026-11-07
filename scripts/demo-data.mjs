@@ -30,7 +30,8 @@ export function demo() {
     ]),
     Invoices: rows(CLIENTS.Invoices, [
       { no: 'DPZ-0142-P1', project_code: 'DPZ-0142', label: 'Deposit (50%)', amount: 3250, status: 'paid', paid_date: D(-35), via: 'Apple Pay' },
-      { no: 'DPZ-0142-P2', project_code: 'DPZ-0142', label: 'Balance (50%)', amount: 3250, status: 'due', due: D(15) },
+      { no: 'DPZ-0142-P2', project_code: 'DPZ-0142', label: 'Balance (50%)', amount: 3250, status: 'due', due: D(15), issued: D(-1), color: 'Violet', note: 'Thank you for a great shoot day.',
+        items: 'Brand film, 60 to 90 seconds | Edit, color, sound and two rounds of revisions | $5,200\nShoot day | Director, camera, lighting and sound | $1,300\nLess deposit received | | -$3,250' },
       { no: 'DPZ-0142-P3', project_code: 'DPZ-0142', label: 'Add-on: 3 social cutdowns', amount: 600, status: 'due', due: D(15) }
     ]),
     Documents: rows(CLIENTS.Documents, [

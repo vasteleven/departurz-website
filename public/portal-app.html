@@ -395,6 +395,58 @@ button.att:hover{background:rgba(128,128,128,.22)}
   .hello h1{font-size:34px}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+/* paper: letters, agreements and invoices, filled in for the reader, printable as a PDF */
+.paper{position:fixed;inset:0;z-index:65;overflow:auto;background:rgba(10,10,10,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:0 12px 48px;overscroll-behavior:contain}
+body.paper-on{overflow:hidden}
+@media (max-width:560px){.paper-bar .t{display:none}.paper-bar{justify-content:flex-end;gap:6px;padding:10px 8px}.paper-bar .btn{padding:0 11px;font-size:12.5px;white-space:nowrap}.paper-bar .btn svg{display:none}}
+.paper-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;max-width:8.5in;margin:0 auto 10px;padding:10px 12px;background:rgba(10,10,10,.85);border-radius:0 0 14px 14px}
+.paper-bar .t{flex:1 1 0;min-width:0;color:#fff;font:500 12px/1.3 var(--f-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.paper-page{max-width:8.5in;margin:0 auto;background:#fff;color:#1A1A1D;border-radius:14px;box-shadow:0 40px 80px -30px rgba(0,0,0,.6);overflow:hidden}
+.letter{padding:26px clamp(20px,6vw,64px) 48px;font-size:15px;line-height:1.6}
+.letter .lb{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0A0A0A;border-radius:12px;padding:16px 20px;margin-bottom:30px}
+.letter .lb img{height:15px;width:auto;display:block}
+.letter .lb span{color:#fff;font:500 11px/1 var(--f-mono);letter-spacing:.04em}
+.letter .kick{font:500 11px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--vink);margin:0 0 8px}
+.letter h1{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:clamp(34px,6vw,52px);line-height:.92;margin:0 0 24px}
+.letter h2{font-family:var(--f-cond);font-weight:400;text-transform:uppercase;font-size:22px;line-height:1.05;margin:28px 0 8px}
+.letter h3,.letter h4{font-size:15px;margin:18px 0 6px}
+.letter p{margin:0 0 12px}.letter ul,.letter ol{margin:0 0 12px;padding-left:22px}.letter li{margin:0 0 6px}
+.letter blockquote{margin:16px 0;padding:14px 16px;border-radius:12px;background:#F3EFFE;border-left:4px solid var(--violet)}
+.letter blockquote p:last-child{margin:0}
+.letter table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:14px}
+.letter th,.letter td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.letter th{background:#0A0A0A;color:#fff;font-weight:600;font-size:12px}
+.letter .fillv{font-weight:700}
+.letter .seal{margin-top:30px;padding:16px 18px;border:1.5px dashed var(--line2);border-radius:12px;display:grid;gap:4px;font-size:14px}
+.letter .seal b{font-family:var(--f-cond);font-weight:400;font-size:22px;line-height:1;text-transform:uppercase}
+.letter .seal.ok{border-color:var(--ok);background:#F2FAF6}
+.dinv{--main:#7CB518;--dark:#5A8A0E;--light:#EAF5D3;font-family:Arial,Helvetica,sans-serif;color:#1F2937;font-size:9pt;line-height:1.4;background:#fff}
+.dinv .band{background:var(--main);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:.28in .75in .26in}
+.dinv .logo{display:flex;flex-direction:column;align-items:center;gap:.1in}.dinv .logo img.lm{width:.62in}.dinv .logo img.lw{width:1.55in}
+.dinv .band .r{text-align:right}.dinv .band h1{margin:0 0 .06in;font-size:30pt;letter-spacing:.01em;font-weight:800;color:#fff}.dinv .band .r div{color:var(--light);font-size:9pt;line-height:1.55}
+.dinv .body{padding:.26in .75in 0}
+.dinv .from b{display:block;color:var(--dark);font-size:11pt}.dinv .from span{color:#6B7280;font-size:8.6pt}
+.dinv .lbl{font-size:7.4pt;font-weight:700;color:#6B7280;letter-spacing:.04em;margin:.16in 0 .03in}
+.dinv table{width:100%;border-collapse:collapse;margin:.18in 0 .08in}
+.dinv th{background:var(--main);color:#fff;text-align:left;font-size:8pt;padding:.07in .1in}.dinv th:last-child,.dinv td:last-child{text-align:right;white-space:nowrap}
+.dinv td{border-bottom:1px solid #E5E7EB;padding:.06in .1in;vertical-align:top}.dinv td b{display:block}.dinv td small{color:#6B7280;font-size:8pt}
+.dinv .totals{margin-left:auto;width:4.2in;max-width:100%}.dinv .totals div{display:flex;justify-content:space-between;gap:.2in;padding:.035in .12in}
+.dinv .totals .acc{color:var(--dark);font-weight:700}.dinv .totals .due{background:#EEF1F6;color:var(--dark);font-weight:800;font-size:12.5pt;padding:.08in .12in}
+.dinv .note{margin:.12in 0 0;font-style:italic;color:#6B7280;font-size:8.4pt}
+.dinv h4{color:var(--dark);font-size:9.2pt;margin:.13in 0 .02in;letter-spacing:.01em}.dinv .small{color:#6B7280;font-size:8.4pt}
+.dinv .foot{text-align:center;color:#6B7280;font-size:8pt;margin:.22in 0 0;padding-bottom:.05in}
+.dinv .fill{background:#FFF6C9;border-radius:2px}.dinv .band .fill{background:rgba(255,255,255,.18);color:#fff}
+.dinv.lime{--main:#7CB518;--dark:#5A8A0E;--light:#EAF5D3}.dinv.violet{--main:#6D28D9;--dark:#6D28D9;--light:#DDD1F5}.dinv.sky{--main:#1C8FCB;--dark:#1C7FB0;--light:#D9EFFA}
+.paper .dinv .band .r div b{color:#fff}
+@media (max-width:700px){.paper .dinv .band{padding:20px 18px;gap:12px}.paper .dinv .logo img.lm{width:.45in}.paper .dinv .logo img.lw{width:1.05in}.paper .dinv .band h1{font-size:22pt}.paper .dinv .body{padding:16px 18px 0}.paper .dinv .totals{width:100%}}
+@media print{
+  body{background:#fff}
+  .app,.toast,.modal,.paper-bar{display:none!important}
+  .paper{position:static;overflow:visible;background:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .paper-page{max-width:none;border-radius:0;box-shadow:none}
+  .letter{padding:0;font-size:11pt}
+  .paper *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -409,6 +461,8 @@ button.att:hover{background:rgba(128,128,128,.22)}
   <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="paper" id="paper" role="dialog" aria-modal="true" aria-label="Document" hidden></div>
+<style id="paperPage"></style>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
 
 <script src="portal-room.js"></script>
@@ -442,7 +496,7 @@ function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add(
 function modal(html, wide){ $('#sheet').classList.toggle('wide', !!wide); $('#sheet').innerHTML = html; $('#modal').hidden = false; const f = $('#sheet').querySelector('button,input,select,textarea,a'); if (f) f.focus(); }
 function closeModal(){ $('#modal').hidden = true; $('#sheet').innerHTML = ''; }
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$('#modal').hidden) closeModal(); else if (!$('#paper').hidden) paperClose(); });
 const initials = n => String(n || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
 
 /* icons */
@@ -518,10 +572,15 @@ const DATA = {
     ],
     invoices: [
       { no: 'DPZ-0142-P1', label: 'Deposit (50%)', amount: 3250, status: 'paid', date: D(-35), via: 'Apple Pay' },
-      { no: 'DPZ-0142-P2', label: 'Balance (50%)', amount: 3250, status: 'due', due: D(15) },
+      { no: 'DPZ-0142-P2', label: 'Balance (50%)', amount: 3250, status: 'due', due: D(15), issued: D(-1), color: 'violet', note: 'Thank you for a great shoot day. The balance covers the edit, color and sound through final delivery.',
+        items: [{ t: 'Brand film, 60 to 90 seconds', d: 'Edit, color, sound mix and two rounds of revisions', a: '$5,200' }, { t: 'Shoot day, Arts District roastery', d: 'Director, camera, lighting and sound, 10 hours', a: '$1,300' }, { t: 'Less deposit received', d: 'Paid ' + fmt(D(-35)) + ' by Apple Pay', a: '-$3,250' }] },
       { no: 'DPZ-0142-P3', label: 'Add-on: 3 social cutdowns', amount: 600, status: 'due', due: D(15) }
     ],
     documents: [
+      { ref: 'DPZ-0142-GUIDE', title: 'Your portal, step by step', kind: 'guide', date: D(-38), status: 'info', note: 'How to sign in, set up your profile and find your way around.', url: '/docs/DEPARTURZ-Portal-Guide.pdf' },
+      { ref: 'DPZ-0142-WELCOME', title: 'Welcome to DEPARTURZ', kind: 'letter', date: D(-38), status: 'info', note: 'What happens next, and how we work together.', url: '#letter:client-welcome' },
+      { ref: 'DPZ-0142-SHOOT', title: 'Getting started with your shoot', kind: 'guide', date: D(-38), status: 'info', note: 'What we need from you, step by step.', url: '/docs/DEPARTURZ-Getting-Started-Production.pdf' },
+      { ref: 'DPZ-0142-EDIT', title: 'Getting started with your edit', kind: 'guide', date: D(-38), status: 'info', note: 'What we need from you, step by step.', url: '/docs/DEPARTURZ-Getting-Started-Post-Production.pdf' },
       { ref: 'DPZ-0142-D1', title: 'Service agreement', kind: 'contract', date: D(-37), status: 'signed', acceptedAt: D(-36), acceptedBy: 'Jordan Rivera', note: '' },
       { ref: 'DPZ-0142-D2', title: 'Proposal and budget', kind: 'proposal', date: D(-38), status: 'info', note: '' },
       { ref: 'DPZ-0142-D3', title: 'Call sheet, shoot day', kind: 'call sheet', date: D(-14), status: 'info', note: 'Arts District roastery, 7am call.' },
@@ -535,7 +594,11 @@ const DATA = {
     ]
   },
   team: {
-    me: { name: 'Amara Okafor', role: 'Editor', access: 'crew', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 'Crew since 2025',
+    docs: [
+      { ref: 'CREW-WELCOME', title: 'Welcome to the crew', kind: 'letter', note: 'How we work, how you get paid, and the house rules.', url: '#letter:crew-welcome', status: 'info', date: D(-210) },
+      { ref: 'CREW-AGREEMENT', title: 'DEPARTURZ Crew Agreement', kind: 'contract', note: 'The terms for every job you take on with DEPARTURZ.', url: '#letter:crew-agreement', pdf: '/docs/DEPARTURZ-Crew-Agreement.pdf', status: 'to sign', date: D(-210) }
+    ],
+    me: { name: 'Amara Okafor', email: 'amara@example.com', role: 'Editor', access: 'crew', city: 'Lagos, Nigeria', tz: 'Africa/Lagos', since: 'Crew since 2025',
       bio: 'Story-first editor. Documentaries, brand films and music videos. Premiere and Resolve.',
       skills: ['Premiere Pro', 'DaVinci Resolve', 'Story editing', 'Subtitles', 'Social cutdowns'],
       socials: { Instagram: '@amara.cuts', Vimeo: 'amaracuts', LinkedIn: 'amara-okafor', Website: '' },
@@ -658,7 +721,7 @@ const NAV = {
   get team(){
     const staff = access() !== 'crew';
     return [['lounge', 'Lounge', 'home'], ...(staff ? [['desk', 'Desk', 'list2']] : []), ['comms', 'Comms', 'chat'], ['callsheet', 'Deadlines', 'cal'], ['cargo', 'Files', 'box'],
-      ['editors', 'Editors room', 'film'], ...(staff ? [['review', 'Client review', 'play']] : []), ['payroll', 'Payroll', 'cash'], ['crewcard', 'Crew card', 'user']];
+      ['editors', 'Editors room', 'film'], ...(staff ? [['review', 'Client review', 'play']] : []), ['payroll', 'Payroll', 'cash'], ['papers', 'Documents', 'doc'], ['crewcard', 'Crew card', 'user']];
   }
 };
 const TABS = { client: ['overview', 'review', 'calendar', 'messages', 'more'], team: ['lounge', 'comms', 'callsheet', 'editors', 'more'] };
@@ -674,6 +737,7 @@ function badge(side, key){
   if (side === 'client' && key === 'messages') return CONFIG.live ? (C.unread || 0) : 1;
   if (side === 'client' && key === 'review') return (C.review && C.review.waiting) || 0;
   if (side === 'team' && key === 'desk') return T.desk ? T.desk.requests.length : 0;
+  if (side === 'team' && key === 'papers') return (T.docs || []).filter(d => d.status === 'to sign').length;
   if (side === 'team' && key === 'editors') return T.rooms ? (access() === 'crew' ? T.rooms.changes : T.rooms.cuts) : 0;
   if (key === 'more'){ const shown = TABS[side]; return NAV[side].filter(n => !shown.includes(n[0])).reduce((a, n) => a + badge(side, n[0]), 0); }
   if (side === 'team' && key === 'comms') return DATA.team.channels.reduce((a, c) => a + c.unread, 0);
@@ -772,14 +836,17 @@ function recordsCard(){
     <p class="mute" style="margin:-4px 0 10px;font-size:13.5px">Every document and payment for this project carries your confirmation number.</p>
     ${recs.length ? `<ul class="list recs">${recs.map(x => `<li><a class="row" href="${x.go}"><span class="ico">${ic(x.ico)}</span><span class="grow"><span class="t">${esc(x.t)}</span><br><span class="s mono">${esc(x.ref)} · ${esc(x.sub)}</span></span>${x.chip}</a></li>`).join('')}</ul>` : '<div class="empty">Contracts, guides and invoices show up here.</div>'}</section>`;
 }
+const STUB = { 'CREW-WELCOME': 'HELLO', 'CREW-AGREEMENT': 'CREW' };
 function docCard(d){
-  const short = String(d.ref).replace(String(C.project.code) + '-', '');
+  const code = route().side === 'client' && C.project ? String(C.project.code) + '-' : '';
+  const short = STUB[d.ref] || (code ? String(d.ref).replace(code, '') : String(d.ref));
+  const when = d.status === 'signed' ? ' · accepted' + (d.acceptedAt ? ' ' + fmt(d.acceptedAt, { month: 'short', day: 'numeric', year: 'numeric' }) : '') : d.date ? ' · added ' + fmt(d.date, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
   return `<article class="doc${d.status === 'to sign' ? ' sign' : ''}">
-    <div class="doc-stub"><span class="ico">${ic(docIco(d.kind))}</span><b${short.length > 5 ? ' style="font-size:21px"' : ''}>${esc(short)}</b></div>
+    <div class="doc-stub"><span class="ico">${ic(docIco(d.kind))}</span><b${short.length > 6 ? ' style="font-size:17px"' : short.length > 5 ? ' style="font-size:21px"' : ''}>${esc(short)}</b></div>
     <div class="doc-body"><div class="doc-top"><span class="mono mute">${esc(d.ref)}</span>${docChip(d)}</div>
       <b class="doc-title">${esc(d.title)}</b>${d.note ? `<p>${esc(d.note)}</p>` : ''}
-      <span class="doc-meta mute">${esc(KINDNAME[d.kind] || 'Document')} · ${d.status === 'signed' ? 'accepted' + (d.acceptedAt ? ' ' + fmt(d.acceptedAt, { month: 'short', day: 'numeric', year: 'numeric' }) : '') : 'added ' + fmt(d.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-      <div class="doc-acts"><button class="btn sm${d.status === 'to sign' ? ' ghost' : ''}" type="button" data-act="doc-view" data-ref="${esc(d.ref)}">View</button>${d.status === 'to sign' ? `<button class="btn sm" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button>` : ''}</div>
+      <span class="doc-meta mute">${esc(KINDNAME[d.kind] || 'Document')}${when}</span>
+      <div class="doc-acts"><button class="btn sm${d.status === 'to sign' ? ' ghost' : ''}" type="button" data-act="doc-view" data-ref="${esc(d.ref)}">${d.status === 'to sign' ? 'Read' : 'View'}</button>${d.status === 'to sign' ? `<button class="btn sm" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button>` : ''}${d.pdf ? `<a class="btn sm ghost" href="${esc(d.pdf)}" target="_blank" rel="noopener">${ic('dl', ' width="14" height="14"')}Blank PDF</a>` : ''}</div>
     </div></article>`;
 }
 function pageDocs(){
@@ -793,11 +860,14 @@ function pageDocs(){
   <h3 class="sec">${sign.length ? 'Everything else' : 'All documents'}</h3>
   ${rest.length ? `<div class="docs">${rest.map(docCard).join('')}</div>` : `<div class="empty">${docs.length ? 'Nothing else yet.' : 'Contracts, guides and proposals land here, each numbered under your confirmation.'}</div>`}
   <h3 class="sec">Payments under ${esc(p.code)}</h3>
-  <section class="card">${C.invoices.length ? `<ul class="list recs">${C.invoices.map(i => `<li><a class="row" href="#/client/fare"><span class="ico">${ic('card')}</span><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) : 'Due ' + fmt(i.due)}</span></span><b class="amt">${money(i.amount)}</b>${payChip(i)}</a></li>`).join('')}</ul>` : '<div class="empty">Invoices show up here.</div>'}</section>`;
+  <section class="card">${C.invoices.length ? `<ul class="list recs">${C.invoices.map(i => `<li><a class="row" href="#/client/fare" data-act="inv-view" data-no="${esc(i.no)}"><span class="ico">${ic('card')}</span><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) : 'Due ' + fmt(i.due)}</span></span><b class="amt">${money(i.amount)}</b>${payChip(i)}</a></li>`).join('')}</ul>` : '<div class="empty">Invoices show up here.</div>'}</section>`;
 }
-function findDoc(ref){ return (C.documents || []).find(d => d.ref === ref); }
+const docList = () => route().side === 'team' ? (T.docs || []) : (C.documents || []);
+function findDoc(ref){ return docList().find(d => d.ref === ref); }
 async function docView(ref, newTab){
   const d = findDoc(ref); if (!d) return;
+  if (d.url && d.url.startsWith('#letter:')){ if (!$('#modal').hidden) closeModal(); return openLetter(d.url.slice(8), d); }
+  if (d.url && !d.fileId){ window.open(d.url, '_blank', 'noopener'); return; }
   if (!CONFIG.live){ modal(`<h3 id="sheetTitle">${esc(d.title)}</h3><p class="mono mute" style="margin:0">${esc(d.ref)} · ${esc(KINDNAME[d.kind] || 'Document')}</p><div class="player" style="background:var(--stone);color:var(--mute)">In the live portal, the document opens right here.</div><div class="acts"><button class="btn" type="button" data-close>Close</button></div>`, true); return; }
   if (d.url && !d.fileId){ window.open(d.url, '_blank', 'noopener'); return; }
   if (newTab) return LIVE.dl({ dataset: { id: d.fileId } });
@@ -807,11 +877,12 @@ async function docView(ref, newTab){
 }
 function docAccept(ref){
   const d = findDoc(ref); if (!d) return;
+  const team = route().side === 'team', me = (team ? T.me : C.me) || {};
   modal(`<h3 id="sheetTitle">Review and accept</h3><p class="mono mute" style="margin:0 0 12px">${esc(d.ref)} · ${esc(d.title)}</p>
     <button class="btn ghost sm" type="button" data-act="doc-open" data-ref="${esc(d.ref)}">${ic('doc', ' width="15" height="15"')}Open the document</button>
     <label class="check"><input type="checkbox" id="agree"><span>I've read <b>${esc(d.title)}</b> and agree to its terms.</span></label>
-    <label class="field">Type your full name<input id="signName" autocomplete="name" value="${esc(C.me.name || '')}"></label>
-    <p class="mute" style="font-size:12.5px;margin:10px 0 0">We record your name, email and the time, and email you a copy. It's filed under <b style="white-space:nowrap">${esc(C.project.code)}</b>.</p>
+    <label class="field">Type your full name<input id="signName" autocomplete="name" value="${esc(me.name || '')}"></label>
+    <p class="mute" style="font-size:12.5px;margin:10px 0 0">We record your name, email and the time, and email you a copy. ${team ? 'It stays in your portal under Documents.' : `It's filed under <b style="white-space:nowrap">${esc(C.project.code)}</b>.`}</p>
     <div class="acts"><button class="btn" type="button" data-act="doc-accept-go" data-ref="${esc(d.ref)}">Accept</button><button class="btn ghost" type="button" data-close>Not yet</button></div>`);
 }
 async function docAcceptGo(b){
@@ -819,9 +890,10 @@ async function docAcceptGo(b){
   const name = ($('#signName').value || '').trim(), agree = $('#agree').checked;
   if (!agree || name.length < 3) return toast('Tick the box and type your full name to accept.');
   if (STATE.viewAs) return toast('This is a view-only copy of their portal.');
-  if (!CONFIG.live){ d.status = 'signed'; d.acceptedAt = iso(TODAY); closeModal(); toast('Accepted (preview).'); render(true); return; }
+  const team = route().side === 'team';
+  if (!CONFIG.live){ d.status = 'signed'; d.acceptedAt = iso(TODAY); d.acceptedBy = name; closeModal(); paperClose(); toast('Accepted (preview).'); render(true); return; }
   busy(b, true, 'Saving…');
-  try { const j = await api('docs/accept', { ref: d.ref, name, agree, project: C.project.code }); d.status = 'signed'; d.acceptedAt = j.acceptedAt; closeModal(); toast('Accepted. A copy is on its way to your inbox.'); render(true); }
+  try { const j = await api(team ? 'team/docs/accept' : 'docs/accept', team ? { ref: d.ref, name, agree } : { ref: d.ref, name, agree, project: C.project.code }); d.status = 'signed'; d.acceptedAt = j.acceptedAt; d.acceptedBy = name; closeModal(); paperClose(); toast('Accepted. A copy is on its way to your inbox.'); render(true); }
   catch (e) { busy(b, false); toast(e.message); }
 }
 document.addEventListener('click', e => {
@@ -831,8 +903,88 @@ document.addEventListener('click', e => {
   else if (a === 'doc-open') docView(b.dataset.ref, true);
   else if (a === 'doc-accept') docAccept(b.dataset.ref);
   else if (a === 'doc-accept-go') docAcceptGo(b);
+  else if (a === 'paper-print') window.print();
+  else if (a === 'paper-close') paperClose();
+  else if (a === 'inv-view'){ e.preventDefault(); invoicePaper(b.dataset.no); }
   else if (a === 'copy-conf'){ const c = C.project ? C.project.code : ''; (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => toast('Copied ' + c + '.'), () => toast(c)); }
 });
+/* ---------- paper: letters, agreements and invoices, filled in for the reader, printable as a PDF ---------- */
+function paperOpen(title, html, opts){
+  const o = opts || {}, p = $('#paper');
+  p.innerHTML = `<div class="paper-bar"><span class="t">${esc(title)}</span>${o.acts || ''}<button class="btn light sm" type="button" data-act="paper-print">${ic('dl', ' width="15" height="15"')}Save as PDF</button><button class="btn light sm" type="button" data-act="paper-close">Close</button></div><div class="paper-page">${html}</div>`;
+  $('#paperPage').textContent = `@page{size:Letter;margin:${o.margin || '.6in .7in'}}`;
+  p.hidden = false; p.scrollTop = 0; document.body.classList.add('paper-on');
+  const f = p.querySelector('.paper-bar button'); if (f) f.focus();
+}
+function paperClose(){ const p = $('#paper'); if (p.hidden) return; p.hidden = true; p.innerHTML = ''; document.body.classList.remove('paper-on'); }
+window.addEventListener('hashchange', paperClose);
+const firstName = n => String(n || '').trim().split(/\s+/)[0] || '';
+const longDate = s => fmt(s || iso(TODAY), { month: 'long', day: 'numeric', year: 'numeric' });
+// what goes in each highlighted blank of the house letters (anything not listed just loses its brackets)
+function letterFills(name, d){
+  if (name === 'client-welcome'){ const me = C.me || {}, p = C.project || {};
+    return { 'Date': longDate(d.date), 'Client first name': firstName(me.name) || 'there', 'project name': p.title, 'the email we have for you': me.email, 'DPZ-0000': p.code }; }
+  const me = T.me || {}, method = me.payout && me.payout.method;
+  if (name === 'crew-welcome') return { 'Date': longDate(d.date), 'First name': firstName(me.name) || 'there', 'your email': me.email };
+  if (name === 'crew-agreement') return { 'Date': longDate(d.acceptedAt || d.date), 'Full legal name': me.name, 'Business name': 'None on file', 'Email, phone': me.email, 'City, state': me.city,
+    'For example: Editor, Camera operator, Assistant DP, Sound, DJ, Drone operator': me.role,
+    'Zelle, PayPal, Venmo or direct deposit, added in your portal profile': method && method !== 'Not set yet' ? method : 'Added in your portal profile' };
+  return {};
+}
+const LETTERS = {};
+async function openLetter(name, d){
+  try {
+    if (!LETTERS[name]){ const r = await fetch('/docs/fragments/' + encodeURIComponent(name) + '.html', { credentials: 'same-origin' }); if (!r.ok) throw new Error(); LETTERS[name] = await r.text(); }
+  } catch (e) { return toast('That letter could not be opened. Try again in a minute.'); }
+  const map = letterFills(name, d);
+  let body = LETTERS[name];
+  if (name === 'crew-agreement') body = body.replace(/\$<span class="fill">\[Amount\]<\/span> per <span class="fill">\[[^\]<]*\]<\/span>/, `<b class="fillv">${esc((T.pay && T.pay.rate) || 'As set in each booking')}</b>`);
+  body = body.replace(/<span class="fill">\[([^\]<]*)\]<\/span>/g, (m, k) => map[k] ? `<b class="fillv">${esc(map[k])}</b>` : k);
+  const contract = d.kind === 'contract', team = route().side === 'team';
+  const seal = !contract ? '' : d.status === 'signed'
+    ? `<div class="seal ok"><span class="mono mute">Accepted in the DEPARTURZ portal</span><b>${esc(String(d.acceptedBy || 'Accepted').split(' <')[0])}</b><span class="mute">${d.acceptedAt ? 'Accepted ' + esc(longDate(d.acceptedAt)) + '. ' : ''}For DEPARTURZ: Nathan Olu, Founder &amp; Creative Director.</span>${/<.+>/.test(d.acceptedBy || '') ? `<span class="mono mute" style="font-size:11px">${esc(d.acceptedBy)}</span>` : ''}</div>`
+    : d.status === 'to sign'
+    ? `<div class="seal"><span class="mono mute">Not signed yet</span><b>Your signature</b><span class="mute">Tap Review and accept, tick the box and type your full name. We record the date and time and email you a copy.</span><div class="acts" style="margin-top:8px"><button class="btn sm" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button></div></div>`
+    : `<div class="seal"><span class="mono mute">Owner view</span><span class="mute">Each crew member accepts this in their portal. You get an email for every signature, and it's logged on the Agreements tab of the Team sheet.</span></div>`;
+  const kick = contract ? (team ? 'Crew · Independent contractor' : 'Agreement') : (team ? 'Crew · Welcome' : 'Welcome');
+  paperOpen(d.title, `<div class="letter"><div class="lb"><img src="/logo/wordmark.svg" alt="DEPARTURZ"><span>departurz.com</span></div><p class="kick">${esc(kick)}</p><h1>${esc(d.title.replace(/^DEPARTURZ /, ''))}</h1>${body}${seal}</div>`,
+    { acts: d.status === 'to sign' ? `<button class="btn sm grad-b" type="button" data-act="doc-accept" data-ref="${esc(d.ref)}">Review and accept</button>` : '' });
+}
+
+/* ---------- crew documents: the welcome letter and the Crew Agreement ---------- */
+function pageCrewDocs(){
+  const docs = T.docs || [], sign = docs.filter(d => d.status === 'to sign'), rest = docs.filter(d => d.status !== 'to sign');
+  return hello('Documents', 'Your agreement and guides') + `
+  ${sign.length ? `<section class="card ink"><span class="mono" style="color:var(--sky)">Before your next job</span><p style="margin:8px 0 14px;font-size:15px;max-width:60ch">Read and accept the Crew Agreement. It covers every job you take on with DEPARTURZ: how bookings and pay work, code names, confidentiality and who owns the work. It takes about ten minutes.</p><button class="btn light sm" type="button" data-act="doc-view" data-ref="${esc(sign[0].ref)}">Read the agreement</button></section>
+  <h3 class="sec">Needs your signature</h3><div class="docs">${sign.map(docCard).join('')}</div>` : ''}
+  <h3 class="sec">${sign.length ? 'Everything else' : 'Your documents'}</h3>
+  ${rest.length ? `<div class="docs">${rest.map(docCard).join('')}</div>` : '<div class="empty">Your welcome letter and agreement show up here.</div>'}
+  ${access() === 'owner' ? `<section class="card stone" style="margin-top:16px"><span class="mono mute">Owner view</span><p style="margin:6px 0 0;font-size:14px">Every crew member sees the Crew Agreement here and accepts it with their name. Each signature is emailed to you and logged on the Agreements tab of the Team sheet. Blank Word and PDF copies are in the DEPARTURZ folder under Templates.</p></section>` : ''}`;
+}
+
+/* ---------- invoices: the colorful DEPARTURZ invoice, built from the Invoices row ---------- */
+const INV_COLORS = ['lime', 'violet', 'sky'];
+const invColor = i => i.color || INV_COLORS[[...String((C.project && C.project.code) || i.no)].reduce((a, c) => a + c.charCodeAt(0), 0) % 3];
+const invAmt = a => /^-?\s*\$?\s*[\d,]+(\.\d+)?$/.test(String(a).trim()) ? (/^\s*-/.test(a) ? '- ' : '') + money(Math.abs(Number(String(a).replace(/[^\d.-]/g, '')))) : String(a);
+function invoicePaper(no){
+  const i = (C.invoices || []).find(x => x.no === no); if (!i) return;
+  const p = C.project || {}, me = C.me || {}, paid = i.status === 'paid';
+  const items = i.items && i.items.length ? i.items : [{ t: i.label, d: p.title ? 'For ' + p.title : '', a: String(i.amount) }];
+  const zelle = String((CONFIG.pay && CONFIG.pay.zelle) || '8328370772');
+  const html = `<div class="dinv ${invColor(i)}"><div class="band"><div class="logo"><img class="lm" src="/logo/mark.png" alt=""><img class="lw" src="/logo/wordmark.svg" alt="DEPARTURZ"></div>
+  <div class="r"><h1>INVOICE</h1><div>Invoice #: <b>${esc(i.no)}</b></div>${i.issued ? `<div>Date: ${esc(longDate(i.issued))}</div>` : ''}<div>${paid ? 'Paid: ' + esc(longDate(i.date)) : i.status === 'sent' ? 'Payment sent, confirming' : 'Due: ' + (i.due ? esc(longDate(i.due)) : 'Upon receipt')}</div></div></div>
+  <div class="body"><div class="from"><b>DEPARTURZ</b><span>wecreate@departurz.com · 832-837-0772 · Los Angeles, CA</span></div>
+  <div class="lbl">BILL TO</div><div><b>${esc(me.company || me.name || '')}</b>${me.company && me.name ? ' · ' + esc(me.name) : ''}${me.email ? ' · ' + esc(me.email) : ''}</div>
+  <div>Project: ${esc(p.title || '')} <span style="color:#6B7280">· Confirmation ${esc(p.code || '')}</span></div>
+  <table><tr><th>DESCRIPTION</th><th>AMOUNT</th></tr>${items.map(x => `<tr><td><b>${esc(x.t)}</b>${x.d ? `<small>${esc(x.d)}</small>` : ''}</td><td>${esc(x.a ? invAmt(x.a) : '')}</td></tr>`).join('')}</table>
+  <div class="totals"><div class="due"><span>${paid ? 'PAID IN FULL' : 'TOTAL DUE'}</span><span>${money(i.amount)}</span></div>${paid ? `<div class="acc"><span>Paid ${esc(fmt(i.date, { month: 'short', day: 'numeric', year: 'numeric' }))}${i.via ? ' · ' + esc(i.via) : ''}</span><span>Thank you</span></div>` : ''}</div>
+  ${i.note ? `<p class="note">${esc(i.note)}</p>` : ''}
+  ${paid ? '' : `<h4>HOW TO PAY</h4><div>Pay online in your DEPARTURZ portal under Payments (card, Apple Pay, Cash App Pay, PayPal or Venmo), or by Zelle to ${esc(zelle)}. The name shown in Zelle is Nathaniel Shoyinka. Put ${esc(i.no)} in the memo.</div><div class="small">Zelle payments are instant and can't be reversed, so please double-check the recipient name before sending.</div>`}
+  <h4>NOT INCLUDED IN THIS INVOICE</h4><div class="small">Paid directly by you to the providers: platform and store subscriptions, card processing fees, domain registration, hosting (if not included with the platform), rentals, licensed music and stock, and printing, blanks and shipping costs.</div>
+  <h4>TERMS</h4><div class="small">${paid ? '' : 'Due by the date above. As your agreement explains, a balance more than 15 days past due may carry a late charge of 1.5% a month. '}You keep ownership of everything you supply, and of the finished work once it is paid in full.</div>
+  <div class="foot">Questions?  wecreate@departurz.com · 832-837-0772 · Thank you.</div></div></div>`;
+  paperOpen(i.no + ' · ' + i.label, html, { margin: '0' });
+}
 function pageTimeline(){
   return hello('Flight path', 'Where your project stands') + `<div class="grid g-main"><section class="card">${C.milestones.length ? '' : '<div class="empty">Your timeline shows up here once the project is booked.</div>'}<ol class="tl">
   ${C.milestones.map(m => `<li class="${m.state}"><span class="dot">${m.state === 'done' ? ic('check') : m.state === 'now' ? ic('plane', ' style="color:#0A0A0A;transform:rotate(-30deg)"') : ''}</span>
@@ -938,7 +1090,7 @@ function pageFare(){
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px"><button class="btn grad-b" type="button" data-act="pay" style="height:52px;padding:0 26px;font-size:15px">Pay ${money(due)}</button><button class="btn ghost" type="button" data-act="pay-part">Pay one invoice</button></div>
     <p class="mute" style="margin:12px 0 0;font-size:12.5px">Card, Apple Pay and Cash App Pay check out securely on Stripe. PayPal and Venmo open PayPal. We never see or store your card number.</p>` : ''}
   </section>
-  <section class="card"><div class="c-head"><h2>Invoices</h2></div><ul class="list">${C.invoices.map(i => `<li class="row"><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono" style="font-size:10px">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) + (i.via ? ' · ' + esc(i.via) : '') : i.status === 'sent' ? 'Sent by ' + esc(i.via || 'you') + ', confirming' : 'Due ' + fmt(i.due)}</span></span><span style="font-weight:800">${money(i.amount)}</span>${i.status === 'paid' ? '<span class="chip ok">Paid</span>' : i.status === 'sent' ? '<span class="chip info">Confirming</span>' : '<span class="chip due">Due</span>'}</li>`).join('')}</ul>${C.invoices.length ? '' : '<div class="empty">Invoices show up here.</div>'}
+  <section class="card"><div class="c-head"><h2>Invoices</h2></div><ul class="list">${C.invoices.map(i => `<li class="row"><span class="grow"><span class="t">${esc(i.label)}</span><br><span class="s mono" style="font-size:10px">${esc(i.no)} · ${i.status === 'paid' ? 'Paid ' + fmt(i.date) + (i.via ? ' · ' + esc(i.via) : '') : i.status === 'sent' ? 'Sent by ' + esc(i.via || 'you') + ', confirming' : 'Due ' + fmt(i.due)}</span></span><span style="font-weight:800">${money(i.amount)}</span>${i.status === 'paid' ? '<span class="chip ok">Paid</span>' : i.status === 'sent' ? '<span class="chip info">Confirming</span>' : '<span class="chip due">Due</span>'}<button class="btn sm ghost" type="button" data-act="inv-view" data-no="${esc(i.no)}" aria-label="View invoice ${esc(i.no)}">View</button></li>`).join('')}</ul>${C.invoices.length ? '' : '<div class="empty">Invoices show up here.</div>'}
     <button class="btn sm ghost" type="button" data-act="receipts" style="margin-top:12px">${ic('dl', ' width="15" height="15"')}Download receipts</button></section>
   </div>`;
 }
@@ -1175,7 +1327,7 @@ function booksCard(){
 
 /* ===================== render + events ===================== */
 const PAGES = { overview: pageOverview, review: pageReview, timeline: pageTimeline, checkin: pageCheckin, calendar: pageCalendar, docs: pageDocs, fare: pageFare, messages: pageMessages, profile: pageProfile,
-  lounge: pageLounge, desk: pageDesk, comms: pageComms, callsheet: pageCallsheet, cargo: pageCargo, editors: pageEditors, payroll: pagePayroll, crewcard: pageCrewcard };
+  lounge: pageLounge, desk: pageDesk, comms: pageComms, callsheet: pageCallsheet, cargo: pageCargo, editors: pageEditors, payroll: pagePayroll, papers: pageCrewDocs, crewcard: pageCrewcard };
 let lastKey = '', ROOM = null;
 function render(keepScroll){
   const r = route(); shell(r);
