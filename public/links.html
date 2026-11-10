@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DEPARTURZ · Links</title>
+<meta name="description" content="DEPARTURZ, the storytelling studio in Los Angeles and Houston. Start a project, watch the work, and find us everywhere.">
+<meta name="theme-color" content="#F0EFFB">
+<link rel="canonical" href="https://www.departurz.com/links">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DEPARTURZ">
+<meta property="og:title" content="DEPARTURZ · The storytelling studio">
+<meta property="og:description" content="Start a project, watch the work, and find us everywhere. Los Angeles + Houston.">
+<meta property="og:url" content="https://www.departurz.com/links">
+<meta property="og:image" content="https://www.departurz.com/links-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@900&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* The link page for Instagram, TikTok and the rest: one card on the same live line maze as the About page.
+   Start a project first, then the work, the studio, the portal, the services and every profile. */
+:root{
+  --paper:#FAFAF8; --ink:#0A0A0A; --mute:#5F5E5A; --rule:rgba(10,10,10,.12); --sky:#3FB8EE; --violet:#9E80F2;
+  --maze-ground:#F0EFFB; --maze-ink:#3FB8EE; --maze-ink2:#9E80F2;
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100svh;background:var(--maze-ground);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.5;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* the maze, fixed behind everything (drawn by about-flow.js) */
+.open-bg{position:fixed;inset:0;width:100vw;height:100vh;height:100lvh;z-index:-1;display:block;pointer-events:none}
+
+.hub{width:min(100%,480px);margin-inline:auto;
+  padding:max(18px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) max(22px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}
+.card{padding:26px 20px 18px;border-radius:28px;background:rgba(244,243,252,.9);box-shadow:0 0 0 1px rgba(158,128,242,.12),0 18px 50px -24px rgba(40,30,90,.35);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+@media (min-width:520px){.hub{padding-top:44px}.card{padding:32px 28px 20px}}
+
+/* who */
+.who{display:grid;justify-items:center;text-align:center;gap:10px;margin-bottom:22px}
+.mark{width:64px;height:64px;background:var(--ink);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.wm{display:block;height:21px;aspect-ratio:1280 / 107;background:var(--ink);-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;
+  overflow:hidden;text-indent:110%;white-space:nowrap;margin:0}
+.lab{margin:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;line-height:1.7;text-transform:uppercase;color:var(--mute)}
+.tag{margin:2px 0 0;font-size:15px;max-width:30ch}
+
+/* now showing: three films, one tap to the viewing room */
+.feature{display:block;text-decoration:none;border-radius:18px;overflow:hidden;background:var(--ink);color:var(--paper);margin-bottom:12px;
+  transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+.feature:hover{transform:translateY(-2px)}
+.strip{display:grid;grid-template-columns:1.25fr 1fr 1fr;height:118px}
+.strip img{width:100%;height:100%;object-fit:cover;display:block}
+.feature .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 14px}
+.feature .lab{color:rgba(250,250,248,.62)}
+.feature b{display:block;font-size:17px;font-weight:700;letter-spacing:.01em}
+.play{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--sky),var(--violet))}
+.play svg{width:13px;height:13px;margin-left:2px;fill:var(--paper)}
+
+/* the main links */
+.links{display:grid;gap:10px;margin:0 0 20px;padding:0;list-style:none}
+.btn{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:0 18px 0 20px;border-radius:16px;text-decoration:none;
+  background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink);font-weight:600;font-size:16px;letter-spacing:.01em;
+  transition:transform .25s cubic-bezier(.2,.7,.2,1),background-color .2s,color .2s}
+.btn small{display:block;font-weight:400;font-size:12.5px;color:var(--mute);letter-spacing:0}
+.btn .ar{flex:none;width:18px;height:18px;transition:transform .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn:hover .ar{transform:translateX(3px)}
+.btn.go{background:var(--ink);color:var(--paper);box-shadow:none}
+.btn.go small{color:rgba(250,250,248,.66)}
+.btn.go:hover{background:linear-gradient(110deg,var(--sky),var(--violet));color:var(--ink)}
+.btn.go:hover small{color:rgba(10,10,10,.7)}
+
+/* services, straight into their drawer on the Work page */
+.sec{margin:0 0 10px}
+.svc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;padding:0;list-style:none}
+.svc a{display:inline-block;padding:9px 14px;border-radius:99px;background:rgba(250,250,248,.8);box-shadow:inset 0 0 0 1px var(--rule);text-decoration:none;font-size:14px;font-weight:500;transition:background-color .2s,box-shadow .2s}
+.svc a:hover{background:var(--paper);box-shadow:inset 0 0 0 1px var(--violet)}
+
+/* profiles */
+.social{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 20px;padding:0;list-style:none}
+.social li:last-child:nth-child(odd){grid-column:1 / -1}
+.social a{display:block;padding:11px 14px;border-radius:14px;background:rgba(250,250,248,.8);box-shadow:inset 0 0 0 1px var(--rule);text-decoration:none;transition:box-shadow .2s,background-color .2s}
+.social a:hover{background:var(--paper);box-shadow:inset 0 0 0 1px var(--sky)}
+.social b{display:block;font-size:14.5px;font-weight:600}
+.social span{display:block;font-size:12.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+footer{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;padding-top:14px;border-top:1px solid var(--rule);font-size:12px;color:var(--mute)}
+footer a{text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<canvas class="open-bg" aria-hidden="true"></canvas>
+<main class="hub">
+  <div class="card">
+    <header class="who">
+      <a href="./" aria-label="DEPARTURZ home"><i class="mark" aria-hidden="true" style="display:block"></i></a>
+      <h1 class="wm">DEPARTURZ</h1>
+      <p class="lab">The storytelling studio<br>Los Angeles + Houston</p>
+      <p class="tag">Web design, production, post-production and sound, from the first idea to the final file.</p>
+    </header>
+
+    <a class="feature" href="/work#room">
+      <div class="strip" aria-hidden="true">
+        <img src="work/morning-coffee.webp" alt="" width="1280" height="546">
+        <img src="work/go-again.webp" alt="" width="1280" height="544">
+        <img src="work/right-my-wrongs.webp" alt="" width="1280" height="720">
+      </div>
+      <div class="row">
+        <span><span class="lab">Now showing</span><b>Watch the work</b></span>
+        <span class="play" aria-hidden="true"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></span>
+      </div>
+    </a>
+
+    <ul class="links">
+      <li><a class="btn go" href="/contact"><span>Start a project<small>We get back to you within 24 hours</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/work"><span>See every project<small>Websites, films, drone and sound</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/about"><span>Meet the studio<small>Who we are and how we work</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/portal"><span>Client portal<small>Files, proofs and invoices</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+    </ul>
+
+    <h2 class="lab sec">What we do</h2>
+    <ul class="svc">
+      <li><a href="/work#web-design">Web design</a></li>
+      <li><a href="/work#production">Production</a></li>
+      <li><a href="/work#drone">Drone</a></li>
+      <li><a href="/work#post-production">Post-production</a></li>
+      <li><a href="/work#sound">Sound</a></li>
+    </ul>
+
+    <h2 class="lab sec">Find us</h2>
+    <ul class="social">
+      <li><a href="https://www.instagram.com/departurzinc" rel="noopener"><b>Instagram</b><span>@departurzinc</span></a></li>
+      <li><a href="https://www.tiktok.com/@departurzinc" rel="noopener"><b>TikTok</b><span>@departurzinc</span></a></li>
+      <li><a href="https://www.youtube.com/@DEPARTURZ" rel="noopener"><b>YouTube</b><span>@DEPARTURZ</span></a></li>
+      <li><a href="https://www.linkedin.com/company/departurz/" rel="noopener"><b>LinkedIn</b><span>DEPARTURZ</span></a></li>
+      <li><a href="https://www.facebook.com/people/Departurz-Studio/61595630318182/" rel="noopener"><b>Facebook</b><span>Departurz Studio</span></a></li>
+    </ul>
+
+    <footer>
+      <span>© 2026 DEPARTURZ</span>
+      <a href="./">departurz.com</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </footer>
+  </div>
+</main>
+<script src="about-flow.js" defer></script>
+</body>
+</html>
