@@ -41,7 +41,9 @@ export default async function handler(req, res) {
         from: process.env.CONTACT_FROM || 'DEPARTURZ site <site@departurz.com>',
         to: [process.env.CONTACT_TO || 'wecreate@departurz.com'],
         reply_to: p.email,
-        subject: 'New project: ' + p.name + (p.services.length ? ' (' + p.services.join(', ') + ')' : ''),
+        subject: p.services[0] === 'Brand partnership'
+          ? 'Brand deal: ' + (p.company || p.name) + (p.services.length > 1 ? ' (' + p.services.slice(1).join(', ') + ')' : '')
+          : 'New project: ' + p.name + (p.services.length ? ' (' + p.services.join(', ') + ')' : ''),
         text, html
       })
     });

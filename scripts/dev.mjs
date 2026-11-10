@@ -51,6 +51,7 @@ rowsP[1][head.indexOf('review_file_id')] = cut;
 
 const api = await import('../api/p.js');
 const cron = await import('../api/cron.js');
+const shop = await import('../api/shop.js');
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.webm': 'video/webm', '.woff2': 'font/woff2' };
 
@@ -84,6 +85,8 @@ http.createServer(async (req, res) => {
       const out = await api[req.method === 'POST' ? 'POST' : 'GET'](await toWeb(req, buf, u));
       return sendWeb(res, out);
     }
+    if (url.pathname === '/api/shop') return sendWeb(res, await shop[req.method === 'POST' ? 'POST' : 'GET'](await toWeb(req, buf, url)));
+    if (['/links', '/media-kit', '/shop'].includes(url.pathname)) url.pathname += '.html';
     if (url.pathname === '/api/cron') return sendWeb(res, await cron.GET(new Request(base + '/api/cron', { headers: { authorization: 'Bearer dev' } })));
     let file = path.join(site, decodeURIComponent(url.pathname === '/' ? (fs.existsSync(path.join(site, 'index.html')) && site !== path.resolve(root, '..') ? '/index.html' : '/departurz.html') : url.pathname));
     if (!file.startsWith(site) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end('Not found'); }

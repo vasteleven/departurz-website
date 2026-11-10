@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shop · DEPARTURZ</title>
+<meta name="description" content="The DEPARTURZ shop. First drop coming soon: the clothing line and the magazine. Get first access.">
+<meta name="theme-color" content="#F0EFFB">
+<link rel="canonical" href="https://www.departurz.com/shop">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DEPARTURZ">
+<meta property="og:title" content="The DEPARTURZ shop">
+<meta property="og:description" content="First drop coming soon: the clothing line and the magazine. Get first access.">
+<meta property="og:url" content="https://www.departurz.com/shop">
+<meta property="og:image" content="https://www.departurz.com/links-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@800;900&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* The shop. Products come from the server's list (deploy/api/_lib/catalog.js) and pay through Stripe Checkout.
+   Until the first drop, it's a first-access sign-up for the clothing line and the magazine. */
+:root{
+  --paper:#FAFAF8; --ink:#0A0A0A; --mute:#5F5E5A; --rule:rgba(10,10,10,.12); --sky:#3FB8EE; --violet:#9E80F2;
+  --maze-ground:#F0EFFB; --maze-ink:#3FB8EE; --maze-ink2:#9E80F2;
+  --f:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mark:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace;
+  --grad:linear-gradient(100deg,var(--sky),var(--violet));
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--maze-ground);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1180px;margin-inline:auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.lab{margin:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;line-height:1.7;text-transform:uppercase;color:var(--mute)}
+.h{margin:6px 0 0;font-family:var(--f-mark);font-weight:900;font-size:clamp(56px,10vw,128px);line-height:.88;text-transform:uppercase}
+.h em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.open-bg{position:fixed;inset:0;width:100vw;height:100vh;height:100lvh;z-index:-1;display:block;pointer-events:none}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
+.home{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.home i{width:26px;height:26px;background:var(--ink);-webkit-mask:url(logo/mark.png) center / contain no-repeat;mask:url(logo/mark.png) center / contain no-repeat}
+.wm{display:block;height:15px;aspect-ratio:1280 / 107;background:var(--ink);-webkit-mask:url(logo/wordmark.svg) center / contain no-repeat;mask:url(logo/wordmark.svg) center / contain no-repeat;overflow:hidden;text-indent:110%;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border-radius:99px;border:0;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;cursor:pointer;text-decoration:none}
+.pill b{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:var(--grad);color:var(--ink);font-size:12px}
+
+.panel{padding:clamp(22px,3.4vw,44px);border-radius:28px;background:rgba(244,243,252,.92);box-shadow:0 0 0 1px rgba(158,128,242,.12),0 18px 50px -26px rgba(40,30,90,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.head{margin:clamp(8px,2vw,24px) 0 18px}
+.head p.sub{max-width:52ch;margin:14px 0 0;font-size:17px}
+
+/* first drop */
+.soon{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.tile{position:relative;min-height:220px;padding:22px;border-radius:22px;overflow:hidden;color:var(--paper);background:var(--ink);display:flex;flex-direction:column;justify-content:flex-end}
+.tile::before{content:"";position:absolute;inset:-40% -20% auto auto;width:80%;aspect-ratio:1;border-radius:50%;background:var(--grad);opacity:.85;filter:blur(2px)}
+.tile.mag::before{inset:auto auto -45% -25%;background:linear-gradient(100deg,var(--violet),var(--sky))}
+.tile *{position:relative}
+.tile .lab{color:rgba(250,250,248,.7)}
+.tile h2{margin:6px 0 4px;font-family:var(--f-mark);font-size:40px;font-weight:900;line-height:.92;text-transform:uppercase}
+.tile p{margin:0;font-size:14.5px;color:rgba(250,250,248,.85)}
+@media (max-width:640px){.soon{grid-template-columns:1fr}.tile{min-height:170px}}
+.notify{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-top:22px}
+.notify input{min-height:52px;padding:0 14px;border-radius:12px;border:0;background:var(--paper);box-shadow:inset 0 0 0 1.5px rgba(10,10,10,.18);font-size:16px}
+.notify input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--violet)}
+.go{min-height:52px;padding:0 22px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);font-weight:600;cursor:pointer}
+.go:hover{background:var(--grad);color:var(--ink)}
+.go[disabled]{opacity:.6;cursor:wait}
+.hp{position:absolute;left:-9999px}
+.out{margin:10px 0 0;font-size:14.5px;min-height:1.5em}
+@media (max-width:640px){.notify{grid-template-columns:1fr}}
+
+/* products */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:26px 0 0;padding:0;list-style:none}
+.card{border-radius:20px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 1px var(--rule);display:flex;flex-direction:column}
+.card .img{aspect-ratio:4 / 5;background:#ECEAF6}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:14px 16px 16px;display:grid;gap:8px}
+.card h3{margin:0;font-size:17px}
+.card .price{font-weight:700}
+.card .blurb{margin:0;font-size:14px;color:var(--mute)}
+.card select{min-height:44px;border-radius:10px;border:0;padding:0 10px;background:#F2F0FA;box-shadow:inset 0 0 0 1px var(--rule)}
+.card .add{min-height:46px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);font-weight:600;cursor:pointer}
+.card .add:hover{background:var(--grad);color:var(--ink)}
+.card .add[disabled]{background:#CFCBC2;color:var(--mute);cursor:default}
+.tag{justify-self:start;padding:2px 9px;border-radius:99px;background:var(--grad);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+
+/* bag */
+.bag{position:fixed;inset:auto 0 0 auto;z-index:5;width:min(100%,420px);max-height:85vh;overflow:auto;margin:0 max(0px,env(safe-area-inset-right,0px)) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));
+  border-radius:22px 22px 0 0;background:var(--paper);box-shadow:0 -10px 50px rgba(20,15,50,.25)}
+@media (min-width:700px){.bag{inset:auto 18px 18px auto;border-radius:22px}}
+.bag h2{margin:0 0 10px;font-size:18px}
+.bag ul{margin:0;padding:0;list-style:none}
+.bag li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.bag li button{border:0;background:none;color:var(--mute);cursor:pointer;text-decoration:underline}
+.bag .tot{display:flex;justify-content:space-between;margin:12px 0;font-weight:700}
+.bag .go{width:100%}
+.bag .x{position:absolute;top:12px;right:12px;width:36px;height:36px;border:0;border-radius:50%;background:#F2F0FA;cursor:pointer}
+
+.thanks h2{margin:6px 0 8px;font-family:var(--f-mark);font-size:44px;font-weight:900;text-transform:uppercase;line-height:.95}
+.thanks ul{padding-left:18px}
+footer{padding-block:26px calc(26px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:var(--mute)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px}
+.foot nav{display:flex;gap:18px}
+.foot a{text-decoration:none}
+</style>
+</head>
+<body>
+<canvas class="open-bg" aria-hidden="true"></canvas>
+<header class="wrap bar">
+  <a class="home" href="/links" aria-label="DEPARTURZ links"><i aria-hidden="true"></i><span class="wm">DEPARTURZ</span></a>
+  <button class="pill" type="button" id="bagBtn" hidden aria-controls="bag">Bag <b id="bagN">0</b></button>
+</header>
+
+<main class="wrap">
+  <div class="panel thanks" id="thanks" hidden tabindex="-1" style="margin-bottom:16px">
+    <p class="lab">Order</p>
+    <h2 id="tH">Thank you</h2>
+    <p id="tP">Checking your order…</p>
+    <div id="tDl"></div>
+  </div>
+
+  <div class="panel">
+    <div class="head">
+      <p class="lab">The shop</p>
+      <h1 class="h">Shop <em>DEPARTURZ</em></h1>
+      <p class="sub" id="sub">Our first drop is on the way: the DEPARTURZ clothing line and the magazine. Get on the list and you'll hear about it before anyone else.</p>
+    </div>
+
+    <ul class="grid" id="grid" hidden></ul>
+
+    <div id="soonBlock">
+      <div class="soon">
+        <div class="tile"><p class="lab">Coming soon</p><h2>The clothing line</h2><p>Pieces made for people running their own race.</p></div>
+        <div class="tile mag"><p class="lab">Coming soon</p><h2>The magazine</h2><p>Stories, faces and frames from behind the camera.</p></div>
+      </div>
+      <form class="notify" id="notify" novalidate>
+        <label class="sr" for="nName">Your name</label><input id="nName" name="name" autocomplete="name" placeholder="Your name">
+        <label class="sr" for="nEmail">Email</label><input id="nEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Email" required>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="go" type="submit" id="nGo" data-track="shop: first access">Get first access</button>
+      </form>
+      <p class="out" id="nOut" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</main>
+
+<aside class="bag" id="bag" hidden aria-labelledby="bagT">
+  <button class="x" type="button" id="bagX" aria-label="Close the bag">✕</button>
+  <h2 id="bagT">Your bag</h2>
+  <ul id="bagList"></ul>
+  <p class="tot"><span>Subtotal</span><span id="bagTot">$0</span></p>
+  <button class="go" type="button" id="payBtn" data-track="shop: checkout">Check out</button>
+  <p class="out" id="payOut" role="status" aria-live="polite"></p>
+</aside>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 DEPARTURZ · Los Angeles + Houston</span>
+    <nav><a href="/links">Links</a><a href="./">departurz.com</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></nav>
+  </div>
+</footer>
+
+<script src="about-flow.js" defer></script>
+<script src="analytics.js" defer></script>
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const money = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: Number(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  const store = { get(){ try { return JSON.parse(localStorage.getItem('dzBag') || '[]'); } catch (e) { return []; } },
+                  set(v){ try { localStorage.setItem('dzBag', JSON.stringify(v)); } catch (e) {} } };
+  let products = [], bag = store.get();
+
+  // first-access list
+  $('notify').addEventListener('submit', async e => {
+    e.preventDefault();
+    const d = new FormData(e.target), email = (d.get('email') || '').trim(), name = (d.get('name') || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('nOut').textContent = 'Add your email so we can reach you.'; return; }
+    $('nGo').disabled = true; $('nOut').textContent = 'One sec…';
+    let ok = false;
+    try { const r = await fetch('/api/shop?r=notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, name, website: d.get('website') || '' }) }); ok = r.ok; } catch (e) {}
+    $('nGo').disabled = false;
+    if (ok) { e.target.hidden = true; $('nOut').textContent = "You're on the list. We'll email you before the first drop."; return; }
+    $('nOut').textContent = 'Your email app should open. Just hit send and you\'re on the list.';
+    location.href = 'mailto:wecreate@departurz.com?subject=' + encodeURIComponent('Shop first drop: ' + email) + '&body=' + encodeURIComponent((name ? name + ' ' : '') + 'wants first access to the DEPARTURZ clothing line and magazine.');
+  });
+
+  // products
+  function render(){
+    const g = $('grid');
+    g.innerHTML = '';
+    products.forEach(p => {
+      const li = document.createElement('li'); li.className = 'card';
+      li.innerHTML = '<div class="img"></div><div class="body"></div>';
+      if (p.images[0]) { const im = new Image(); im.src = p.images[0]; im.alt = p.name; im.loading = 'lazy'; li.firstChild.appendChild(im); }
+      const b = li.lastChild;
+      if (p.drop) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = p.drop; b.appendChild(t); }
+      const h = document.createElement('h3'); h.textContent = p.name; b.appendChild(h);
+      const pr = document.createElement('span'); pr.className = 'price'; pr.textContent = money(p.price) + (p.kind === 'digital' ? ' · Download' : ''); b.appendChild(pr);
+      if (p.blurb) { const q = document.createElement('p'); q.className = 'blurb'; q.textContent = p.blurb; b.appendChild(q); }
+      let sel = null;
+      if (p.sizes.length) {
+        sel = document.createElement('select'); sel.setAttribute('aria-label', 'Size for ' + p.name);
+        sel.innerHTML = '<option value="">Size</option>'; p.sizes.forEach(s => { const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
+        b.appendChild(sel);
+      }
+      const add = document.createElement('button'); add.className = 'add'; add.type = 'button';
+      add.textContent = p.soldOut ? 'Sold out' : 'Add to bag'; add.disabled = p.soldOut;
+      add.addEventListener('click', () => {
+        if (sel && !sel.value) { sel.focus(); return; }
+        const size = sel ? sel.value : '', hit = bag.find(x => x.id === p.id && x.size === size);
+        if (hit) hit.qty = Math.min(10, hit.qty + 1); else bag.push({ id: p.id, size, qty: 1 });
+        store.set(bag); drawBag(true);
+        window.dzTrack && window.dzTrack('add_to_cart', { item_id: p.id });
+      });
+      b.appendChild(add);
+      g.appendChild(li);
+    });
+  }
+  function drawBag(open){
+    bag = bag.filter(x => products.some(p => p.id === x.id));
+    const n = bag.reduce((a, x) => a + x.qty, 0);
+    $('bagBtn').hidden = !n; $('bagN').textContent = n;
+    const ul = $('bagList'); ul.innerHTML = ''; let tot = 0;
+    bag.forEach((x, i) => {
+      const p = products.find(q => q.id === x.id); tot += p.price * x.qty;
+      const li = document.createElement('li');
+      const t = document.createElement('span'); t.textContent = x.qty + ' × ' + p.name + (x.size ? ' (' + x.size + ')' : '') + '  ' + money(p.price * x.qty);
+      const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = 'Remove';
+      rm.addEventListener('click', () => { bag.splice(i, 1); store.set(bag); drawBag(true); });
+      li.append(t, rm); ul.appendChild(li);
+    });
+    $('bagTot').textContent = money(tot);
+    $('bag').hidden = !(open && n);
+  }
+  $('bagBtn').addEventListener('click', () => { $('bag').hidden = false; });
+  $('bagX').addEventListener('click', () => { $('bag').hidden = true; });
+  $('payBtn').addEventListener('click', async () => {
+    $('payBtn').disabled = true; $('payOut').textContent = 'Opening secure checkout…';
+    try {
+      const r = await fetch('/api/shop?r=checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: bag }) });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.url) { location.href = j.url; return; }
+      $('payOut').textContent = j.error || 'Checkout isn\'t available right now. Try again soon.';
+    } catch (e) { $('payOut').textContent = 'Checkout isn\'t available right now. Try again soon.'; }
+    $('payBtn').disabled = false;
+  });
+
+  fetch('/api/shop?r=catalog').then(r => r.ok ? r.json() : null).then(j => {
+    products = (j && j.products) || [];
+    if (!products.length) return;
+    $('grid').hidden = false; render(); drawBag(false);
+    $('sub').textContent = 'Pick what you like and check out securely with Stripe. More from the clothing line and the magazine is on the way.';
+  }).catch(() => {});
+
+  // back from Stripe
+  const paid = new URLSearchParams(location.search).get('paid');
+  if (paid) {
+    $('thanks').hidden = false; $('thanks').focus();
+    bag = []; store.set(bag);
+    fetch('/api/shop?r=check&session=' + encodeURIComponent(paid)).then(r => r.json()).then(j => {
+      if (!j.ok || !j.paid) { $('tP').textContent = 'We couldn\'t confirm that payment yet. If you were charged, email us and we\'ll sort it out.'; return; }
+      $('tH').textContent = 'Thank you' + (j.name ? ', ' + j.name.split(' ')[0] : '');
+      $('tP').textContent = 'Your order is in: ' + j.items.join(', ') + '.' + (j.ships ? ' We\'ll email you tracking when it ships.' : '') + (j.email ? ' A receipt is on its way to ' + j.email + '.' : '');
+      if (j.downloads.length) {
+        const ul = document.createElement('ul');
+        j.downloads.forEach(d => { const li = document.createElement('li'), a = document.createElement('a'); a.href = d.url; a.textContent = 'Download ' + d.name; a.rel = 'noopener'; li.appendChild(a); ul.appendChild(li); });
+        $('tDl').appendChild(ul);
+      }
+      window.dzTrack && window.dzTrack('purchase_done', {});
+    }).catch(() => { $('tP').textContent = 'Your payment went through Stripe. A receipt is on its way to your email.'; });
+  }
+})();
+</script>
+</body>
+</html>

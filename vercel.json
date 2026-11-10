@@ -59,6 +59,18 @@
     {
       "source": "/link",
       "destination": "/links.html"
+    },
+    {
+      "source": "/media-kit",
+      "destination": "/media-kit.html"
+    },
+    {
+      "source": "/mediakit",
+      "destination": "/media-kit.html"
+    },
+    {
+      "source": "/shop",
+      "destination": "/shop.html"
     }
   ],
   "functions": {

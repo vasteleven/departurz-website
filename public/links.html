@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DEPARTURZ · Links</title>
-<meta name="description" content="DEPARTURZ, the storytelling studio in Los Angeles and Houston. Start a project, watch the work, and find us everywhere.">
+<meta name="description" content="DEPARTURZ, the storytelling studio in Los Angeles and Houston. Watch Run Your Own Race, start a project, see the media kit, and find us everywhere.">
 <meta name="theme-color" content="#F0EFFB">
 <link rel="canonical" href="https://www.departurz.com/links">
 <meta property="og:type" content="website">
@@ -56,17 +56,22 @@ a{color:inherit}
 .lab{margin:0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;line-height:1.7;text-transform:uppercase;color:var(--mute)}
 .tag{margin:2px 0 0;font-size:15px;max-width:30ch}
 
-/* now showing: three films, one tap to the viewing room */
-.feature{display:block;text-decoration:none;border-radius:18px;overflow:hidden;background:var(--ink);color:var(--paper);margin-bottom:12px;
-  transition:transform .25s cubic-bezier(.2,.7,.2,1)}
-.feature:hover{transform:translateY(-2px)}
-.strip{display:grid;grid-template-columns:1.25fr 1fr 1fr;height:118px}
-.strip img{width:100%;height:100%;object-fit:cover;display:block}
-.feature .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 14px}
-.feature .lab{color:rgba(250,250,248,.62)}
-.feature b{display:block;font-size:17px;font-weight:700;letter-spacing:.01em}
-.play{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--sky),var(--violet))}
-.play svg{width:13px;height:13px;margin-left:2px;fill:var(--paper)}
+/* the new film: plays right here */
+.film{margin:0 0 14px;border-radius:20px;overflow:hidden;background:var(--ink);color:var(--paper)}
+.screen{position:relative;aspect-ratio:16 / 9;background:#000}
+.screen video{position:absolute;inset:0;width:100%;height:100%;display:block;background:#000}
+.cover{position:absolute;inset:0;padding:0;border:0;margin:0;background:#000;cursor:pointer;display:block;width:100%}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover .play{position:absolute;left:50%;top:50%;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--sky),var(--violet));box-shadow:0 8px 30px rgba(0,0,0,.45);transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+.cover:hover .play{transform:scale(1.08)}
+.cover .play svg{width:18px;height:18px;margin-left:3px;fill:var(--paper)}
+.cover .len{position:absolute;right:10px;bottom:10px;padding:3px 8px;border-radius:99px;background:rgba(10,10,10,.7);font-family:var(--f-mono);font-size:11px;letter-spacing:.06em}
+.film-txt{padding:16px 18px 18px}
+.film-txt .lab{color:rgba(250,250,248,.6)}
+.film h2{margin:6px 0 8px;font-family:var(--f-mark);font-weight:900;font-size:34px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;
+  background:linear-gradient(100deg,var(--sky),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sum{margin:0;font-size:15px;line-height:1.55;color:rgba(250,250,248,.9)}
 
 /* the main links */
 .links{display:grid;gap:10px;margin:0 0 20px;padding:0;list-style:none}
@@ -81,6 +86,10 @@ a{color:inherit}
 .btn.go small{color:rgba(250,250,248,.66)}
 .btn.go:hover{background:linear-gradient(110deg,var(--sky),var(--violet));color:var(--ink)}
 .btn.go:hover small{color:rgba(10,10,10,.7)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair .btn{padding:0 12px 0 16px}
+.soon{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:linear-gradient(100deg,var(--sky),var(--violet));color:var(--paper);
+  font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
 
 /* services, straight into their drawer on the Work page */
 .sec{margin:0 0 10px}
@@ -110,45 +119,66 @@ footer a:hover{color:var(--ink)}
     <header class="who">
       <a href="./" aria-label="DEPARTURZ home"><i class="mark" aria-hidden="true" style="display:block"></i></a>
       <h1 class="wm">DEPARTURZ</h1>
-      <p class="lab">The storytelling studio<br>Los Angeles + Houston</p>
-      <p class="tag">Web design, production, post-production and sound, from the first idea to the final file.</p>
+      <p class="lab">Los Angeles + Houston</p>
     </header>
 
-    <a class="feature" href="/work#room">
-      <div class="strip" aria-hidden="true">
-        <img src="work/morning-coffee.webp" alt="" width="1280" height="546">
-        <img src="work/go-again.webp" alt="" width="1280" height="544">
-        <img src="work/right-my-wrongs.webp" alt="" width="1280" height="720">
+    <section class="film" aria-labelledby="filmT">
+      <div class="screen">
+        <video id="film" controls playsinline preload="none" poster="work/run-your-own-race.webp" width="1280" height="720">
+          <source src="work/run-your-own-race.mp4" type="video/mp4">
+        </video>
+        <button class="cover" id="filmPlay" type="button" data-track="film: play">
+          <img src="work/run-your-own-race.webp" alt="" width="1280" height="720">
+          <span class="play" aria-hidden="true"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></span>
+          <span class="sr">Play Run Your Own Race</span>
+          <span class="len" aria-hidden="true">3:08</span>
+        </button>
       </div>
-      <div class="row">
-        <span><span class="lab">Now showing</span><b>Watch the work</b></span>
-        <span class="play" aria-hidden="true"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></span>
+      <div class="film-txt">
+        <p class="lab">New film · VersaStory</p>
+        <h2 id="filmT">Run Your Own Race</h2>
+        <p class="sum">Imagine competing with people who don't even know they're in a race with you. 😮‍💨<br>
+        Their success isn't your failure. Their timing isn't your deadline.<br>
+        Stop racing somebody else's life.<br>
+        Run Your Own Race. 🏁</p>
       </div>
-    </a>
+    </section>
 
     <ul class="links">
-      <li><a class="btn go" href="/contact"><span>Start a project<small>We get back to you within 24 hours</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
-      <li><a class="btn" href="/work"><span>See every project<small>Websites, films, drone and sound</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
-      <li><a class="btn" href="/about"><span>Meet the studio<small>Who we are and how we work</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
-      <li><a class="btn" href="/portal"><span>Client portal<small>Files, proofs and invoices</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn go" href="/contact" data-track="start a project"><span>Start a project<small>We get back to you within 24 hours</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li class="pair">
+        <a class="btn" href="/media-kit" data-track="media kit"><span>Media kit<small>For brands</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a>
+        <a class="btn" href="/media-kit#brand" data-track="brand deals"><span>Brand deals<small>Partner with us</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a>
+      </li>
+      <li><a class="btn" href="/shop" data-track="shop"><span>Shop <em class="soon">First drop soon</em><small>The clothing line and the magazine</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/work" data-track="see the work"><span>See every project<small>Websites, films, drone and sound</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/about" data-track="meet the studio"><span>Meet the studio<small>Who we are and how we work</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
+      <li><a class="btn" href="/portal" data-track="client portal"><span>Client portal<small>Files, proofs and invoices</small></span><svg class="ar" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9h11M10 4.5L14.5 9 10 13.5"/></svg></a></li>
     </ul>
 
     <h2 class="lab sec">What we do</h2>
     <ul class="svc">
-      <li><a href="/work#web-design">Web design</a></li>
-      <li><a href="/work#production">Production</a></li>
-      <li><a href="/work#drone">Drone</a></li>
-      <li><a href="/work#post-production">Post-production</a></li>
-      <li><a href="/work#sound">Sound</a></li>
+      <li><a href="/work#web-design" data-track="service: web-design">Web design</a></li>
+      <li><a href="/work#production" data-track="service: production">Production</a></li>
+      <li><a href="/work#drone" data-track="service: drone">Drone</a></li>
+      <li><a href="/work#post-production" data-track="service: post-production">Post-production</a></li>
+      <li><a href="/work#sound" data-track="service: sound">Sound</a></li>
     </ul>
 
-    <h2 class="lab sec">Find us</h2>
+    <h2 class="lab sec">Find DEPARTURZ</h2>
     <ul class="social">
-      <li><a href="https://www.instagram.com/departurzinc" rel="noopener"><b>Instagram</b><span>@departurzinc</span></a></li>
-      <li><a href="https://www.tiktok.com/@departurzinc" rel="noopener"><b>TikTok</b><span>@departurzinc</span></a></li>
-      <li><a href="https://www.youtube.com/@DEPARTURZ" rel="noopener"><b>YouTube</b><span>@DEPARTURZ</span></a></li>
-      <li><a href="https://www.linkedin.com/company/departurz/" rel="noopener"><b>LinkedIn</b><span>DEPARTURZ</span></a></li>
-      <li><a href="https://www.facebook.com/people/Departurz-Studio/61595630318182/" rel="noopener"><b>Facebook</b><span>Departurz Studio</span></a></li>
+      <li><a href="https://www.instagram.com/departurzinc" rel="noopener" data-track="studio: instagram"><b>Instagram</b><span>@departurzinc</span></a></li>
+      <li><a href="https://www.tiktok.com/@departurzinc" rel="noopener" data-track="studio: tiktok"><b>TikTok</b><span>@departurzinc</span></a></li>
+      <li><a href="https://www.youtube.com/@DEPARTURZ" rel="noopener" data-track="studio: youtube"><b>YouTube</b><span>@DEPARTURZ</span></a></li>
+      <li><a href="https://www.linkedin.com/company/departurz/" rel="noopener" data-track="studio: linkedin"><b>LinkedIn</b><span>DEPARTURZ</span></a></li>
+      <li><a href="https://www.facebook.com/people/Departurz-Studio/61595630318182/" rel="noopener" data-track="studio: facebook"><b>Facebook</b><span>Departurz Studio</span></a></li>
+    </ul>
+
+    <h2 class="lab sec">Find Nate</h2>
+    <ul class="social">
+      <li><a href="https://www.instagram.com/mrceoarchitect" rel="noopener" data-track="nate: instagram"><b>Instagram</b><span>@mrceoarchitect</span></a></li>
+      <li><a href="https://www.tiktok.com/@mrceoarchitect" rel="noopener" data-track="nate: tiktok"><b>TikTok</b><span>@mrceoarchitect</span></a></li>
+      <li><a href="https://www.linkedin.com/in/nateshoy/" rel="noopener" data-track="nate: linkedin"><b>LinkedIn</b><span>in/nateshoy</span></a></li>
     </ul>
 
     <footer>
@@ -160,5 +190,15 @@ footer a:hover{color:var(--ink)}
   </div>
 </main>
 <script src="about-flow.js" defer></script>
+<script src="analytics.js" defer></script>
+<script>
+/* the film: the cover plays it in place; the native controls take over from there */
+(function(){
+  const v = document.getElementById('film'), c = document.getElementById('filmPlay');
+  if (!v || !c) return;
+  c.addEventListener('click', () => { c.hidden = true; v.play().catch(() => {}); v.focus(); });
+  v.addEventListener('ended', () => window.dzTrack && window.dzTrack('film_complete', { film: 'Run Your Own Race' }));
+})();
+</script>
 </body>
 </html>
